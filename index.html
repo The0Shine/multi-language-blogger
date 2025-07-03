@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Medium Clone</title>
+    <link rel="stylesheet" href="assets/css/main.css" />
+    <link rel="stylesheet" href="assets/css/components.css" />
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="header">
+      <div class="header-content">
+        <a href="index.html" class="logo">Medium</a>
+
+        <div class="search-container">
+          <span class="search-icon">🔍</span>
+          <input type="text" class="search-input" placeholder="Search" />
+        </div>
+
+        <div class="header-actions">
+          <a href="#" class="write-btn">
+            <span>✏️</span>
+            Write
+          </a>
+          <button class="notification-btn">🔔</button>
+          <div class="profile-dropdown">
+            <button class="profile-btn" id="profileBtn">👤</button>
+            <div class="dropdown-menu" id="dropdownMenu">
+              <div class="dropdown-item">
+                <span class="dropdown-icon">👤</span>
+                Profile
+              </div>
+              <div class="dropdown-item">
+                <span class="dropdown-icon">📚</span>
+                Library
+              </div>
+              <div class="dropdown-item">
+                <span class="dropdown-icon">📝</span>
+                Stories
+              </div>
+              <div class="dropdown-item">
+                <span class="dropdown-icon">📊</span>
+                Stats
+              </div>
+              <div class="dropdown-divider"></div>
+              <div class="dropdown-item">Settings</div>
+              <div class="dropdown-item">Refine recommendations</div>
+              <div class="dropdown-item">Manage publications</div>
+              <div class="dropdown-item">Help</div>
+              <div class="dropdown-divider"></div>
+              <div class="dropdown-item premium">
+                <span class="dropdown-icon">⭐</span>
+                Become a Medium member
+              </div>
+              <div class="dropdown-item">Create a Mastodon account</div>
+              <div class="dropdown-item">Apply for author verification</div>
+              <div class="dropdown-item">Apply to the Partner Program</div>
+              <div class="dropdown-item">Gift a membership</div>
+              <div class="dropdown-divider"></div>
+              <div class="dropdown-item">
+                Sign out
+                <div class="email-hint">user@gmail.com</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="nav-tabs">
+      <div class="nav-content">
+        <a href="#" class="nav-tab active">For you</a>
+        <a href="#" class="nav-tab">Following</a>
+        <a href="#" class="nav-tab">Featured</a>
+        <a href="#" class="nav-tab">Productivity</a>
+        <a href="#" class="nav-tab">Self Improvement</a>
+        <a href="#" class="nav-tab">Technology</a>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-container">
+      <!-- Articles Feed -->
+      <div class="articles-feed">
+        <!-- Article 1 -->
+        <article class="article-card" data-article-id="1">
+          <div class="article-content">
+            <div class="article-meta">
+              <div class="publication-icon"></div>
+              <span>In Change Your Mind Change Your Life</span>
+              <span>by Olly J</span>
+            </div>
+            <h2 class="article-title">
+              18 Cheat Codes to Life, to Put You 10 Years Ahead of 90% Of People
+            </h2>
+            <p class="article-description">
+              (You have the power to change your life. Take small steps every
+              day, and soon you'll be unstoppable)
+            </p>
+            <div class="article-footer">
+              <div class="article-stats">
+                <div class="stat-item">
+                  <span>👏</span>
+                  <span>Mar 5</span>
+                </div>
+                <div class="stat-item">
+                  <span>14.3K</span>
+                </div>
+                <div class="stat-item">
+                  <span>💬</span>
+                  <span>323</span>
+                </div>
+              </div>
+              <div class="article-actions">
+                <button class="action-btn">📖</button>
+                <button class="action-btn">🔖</button>
+                <button class="action-btn">⋯</button>
+              </div>
+            </div>
+          </div>
+          <img
+            src="assets/images/article1.jpg"
+            alt="Article image"
+            class="article-image"
+          />
+        </article>
+
+        <!-- Article 2 -->
+        <article class="article-card" data-article-id="2">
+          <div class="article-content">
+            <div class="article-meta">
+              <div class="publication-icon"></div>
+              <span>In Pragmatic Wisdom</span>
+              <span>by Stephan Joppich</span>
+            </div>
+            <h2 class="article-title">Goodbye, Atomic Habits</h2>
+            <p class="article-description">
+              The overlooked problems with building healthy habits
+            </p>
+            <div class="article-footer">
+              <div class="article-stats">
+                <div class="stat-item">
+                  <span>👏</span>
+                  <span>Sep 5, 2024</span>
+                </div>
+                <div class="stat-item">
+                  <span>20K</span>
+                </div>
+                <div class="stat-item">
+                  <span>💬</span>
+                  <span>494</span>
+                </div>
+              </div>
+              <div class="article-actions">
+                <button class="action-btn">📖</button>
+                <button class="action-btn">🔖</button>
+                <button class="action-btn">⋯</button>
+              </div>
+            </div>
+          </div>
+          <img
+            src="assets/images/article2.jpg"
+            alt="Article image"
+            class="article-image"
+          />
+        </article>
+
+        <!-- Article 3 -->
+        <article class="article-card" data-article-id="3">
+          <div class="article-content">
+            <div class="article-meta">
+              <div class="publication-icon"></div>
+              <span>In Personal Growth</span>
+              <span>by Thomas Oppong</span>
+            </div>
+            <h2 class="article-title">
+              9 Japanese Concepts That Brought Clarity and Joy to My Life
+            </h2>
+            <p class="article-description">
+              8. Chisoku: Know when enough is enough.
+            </p>
+            <div class="article-footer">
+              <div class="article-stats">
+                <div class="stat-item">
+                  <span>👏</span>
+                  <span>Feb 12</span>
+                </div>
+                <div class="stat-item">
+                  <span>1.7K</span>
+                </div>
+                <div class="stat-item">
+                  <span>💬</span>
+                  <span>26</span>
+                </div>
+              </div>
+              <div class="article-actions">
+                <button class="action-btn">📖</button>
+                <button class="action-btn">🔖</button>
+                <button class="action-btn">⋯</button>
+              </div>
+            </div>
+          </div>
+          <img
+            src="assets/images/article3.jpg"
+            alt="Article image"
+            class="article-image"
+          />
+        </article>
+      </div>
+
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <!-- Staff Picks -->
+        <div class="sidebar-section">
+          <h3 class="sidebar-title">Staff Picks</h3>
+
+          <div class="staff-pick">
+            <div class="staff-pick-avatar"></div>
+            <div class="staff-pick-content">
+              <div class="staff-pick-author">
+                Carin-Isabel Knoop in Humans in the Digital Age
+              </div>
+              <h4 class="staff-pick-title">
+                On the Unseen Cost of Dis-Ease: What Chronic Illness Teaches Us
+                About Leading with Compassion
+              </h4>
+              <div class="staff-pick-date">Jun 9</div>
+            </div>
+          </div>
+
+          <div class="staff-pick">
+            <div class="staff-pick-avatar"></div>
+            <div class="staff-pick-content">
+              <div class="staff-pick-author">In Babel by Danish Farhan</div>
+              <h4 class="staff-pick-title">
+                The Vulnerability of Storytelling
+              </h4>
+              <div class="staff-pick-date">Jun 22</div>
+            </div>
+          </div>
+
+          <div class="staff-pick">
+            <div class="staff-pick-avatar"></div>
+            <div class="staff-pick-content">
+              <div class="staff-pick-author">
+                In Pragmatic Wisdom by Stephan Joppich
+              </div>
+              <h4 class="staff-pick-title">The Importance of Wasting Time</h4>
+              <div class="staff-pick-date">Apr 5</div>
+            </div>
+          </div>
+
+          <a
+            href="#"
+            style="color: #1a8917; font-size: 14px; text-decoration: none"
+            >See the full list</a
+          >
+        </div>
+
+        <!-- Writing Promotion -->
+        <div class="writing-card">
+          <h3>Writing on Medium</h3>
+          <ul>
+            <li>New writer FAQ</li>
+            <li>Expert writing advice</li>
+            <li>Grow your readership</li>
+          </ul>
+          <button class="start-writing-btn">Start writing</button>
+        </div>
+
+        <!-- Recommended Topics -->
+        <div class="sidebar-section">
+          <h3 class="sidebar-title">Recommended topics</h3>
+          <div class="topics-grid">
+            <a href="#" class="topic-tag">Programming</a>
+            <a href="#" class="topic-tag">Writing</a>
+            <a href="#" class="topic-tag">Technology</a>
+            <a href="#" class="topic-tag">Self Improvement</a>
+            <a href="#" class="topic-tag">Productivity</a>
+            <a href="#" class="topic-tag">Life</a>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <script src="assets/js/main.js"></script>
+  </body>
+</html>
