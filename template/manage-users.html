@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manage Users - Admin Dashboard</title>
+    <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+    <header>
+        <h1>Manage Users</h1>
+    </header>
+
+    <nav>
+        <a href="index.html">Dashboard</a>
+        <a href="manage-users.html">Manage Users</a>
+        <a href="manage-posts.html">Manage Posts</a>
+        <a href="manage-language.html">Manage Languages</a>
+        <a href="manage-role.html">Manage Roles</a>
+        <a href="manage-categories.html">Manage Categories</a>
+    </nav>
+
+    <div class="content">
+        <section class="section">
+            <h2>Manage Users</h2>
+            <p>View, add, update, or deactivate users in the system.</p>
+
+            <table border ="1" cellpadding="8" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>User ID</th>
+                        <th>Username</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>johndoe</td>
+                        <td>Admin</td>
+                        <td>Active</td>
+                        <td>
+                            <a href="#" class="btn">Edit</a>
+                            <a href="#" class="btn">Deactivate</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>janedoe</td>
+                        <td>AuthUser</td>
+                        <td>Inactive</td>
+                        <td>
+                            <a href="#" class="btn">Edit</a>
+                            <a href="#" class="btn">Activate</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <br />
+            <a href="#" class="btn">Add New User</a>
+        </section>
+    </div>
+</body>
+</html>
