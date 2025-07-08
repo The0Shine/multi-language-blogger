@@ -4,287 +4,589 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Medium Clone</title>
-    <link rel="stylesheet" href="assets/css/main.css" />
-    <link rel="stylesheet" href="assets/css/components.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <link href="assets/css/main.css" rel="stylesheet" />
   </head>
-  <body>
+  <body class="bg-white">
     <!-- Header -->
-    <header class="header">
-      <div class="header-content">
-        <a href="index.html" class="logo">Medium</a>
+    <header
+      id="mainHeader"
+      class="border-b border-gray-200 bg-white sticky top-0 z-50 header-container"
+    >
+      <div class="w-full mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-[57px]">
+          <!-- Logo -->
+          <div class="flex items-center">
+            <h1 class="text-2xl font-bold text-black">Medium</h1>
+          </div>
 
-        <div class="search-container">
-          <span class="search-icon">🔍</span>
-          <input type="text" class="search-input" placeholder="Search" />
-        </div>
+          <!-- Search Bar -->
+          <div class="flex-1 max-w-lg mx-8">
+            <div class="relative">
+              <i
+                class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+              ></i>
+              <input
+                type="text"
+                placeholder="Search"
+                class="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              />
+            </div>
+          </div>
 
-        <div class="header-actions">
-          <a href="#" class="write-btn">
-            <span>✏️</span>
-            Write
-          </a>
-          <button class="notification-btn">🔔</button>
-          <div class="profile-dropdown">
-            <button class="profile-btn" id="profileBtn">👤</button>
-            <div class="dropdown-menu" id="dropdownMenu">
-              <div class="dropdown-item">
-                <span class="dropdown-icon">👤</span>
-                Profile
-              </div>
-              <div class="dropdown-item">
-                <span class="dropdown-icon">📚</span>
-                Library
-              </div>
-              <div class="dropdown-item">
-                <span class="dropdown-icon">📝</span>
-                Stories
-              </div>
-              <div class="dropdown-item">
-                <span class="dropdown-icon">📊</span>
-                Stats
-              </div>
-              <div class="dropdown-divider"></div>
-              <div class="dropdown-item">Settings</div>
-              <div class="dropdown-item">Refine recommendations</div>
-              <div class="dropdown-item">Manage publications</div>
-              <div class="dropdown-item">Help</div>
-              <div class="dropdown-divider"></div>
-              <div class="dropdown-item premium">
-                <span class="dropdown-icon">⭐</span>
-                Become a Medium member
-              </div>
-              <div class="dropdown-item">Create a Mastodon account</div>
-              <div class="dropdown-item">Apply for author verification</div>
-              <div class="dropdown-item">Apply to the Partner Program</div>
-              <div class="dropdown-item">Gift a membership</div>
-              <div class="dropdown-divider"></div>
-              <div class="dropdown-item">
-                Sign out
-                <div class="email-hint">user@gmail.com</div>
-              </div>
+          <!-- Right Navigation -->
+          <div class="flex items-center space-x-6">
+            <button class="flex items-center text-gray-600 hover:text-black">
+              <i class="fas fa-pen mr-2"></i>
+              <span>Write</span>
+            </button>
+            <button class="text-gray-600 hover:text-black">
+              <i class="fas fa-bell text-xl"></i>
+            </button>
+            <div
+              class="w-8 h-8 bg-red-600 rounded-full flex items-center justify-center"
+            >
+              <span class="text-white font-semibold">T</span>
             </div>
           </div>
         </div>
       </div>
     </header>
 
-    <!-- Navigation Tabs -->
-    <nav class="nav-tabs">
-      <div class="nav-content">
-        <a href="#" class="nav-tab active">For you</a>
-        <a href="#" class="nav-tab">Following</a>
-        <a href="#" class="nav-tab">Featured</a>
-        <a href="#" class="nav-tab">Productivity</a>
-        <a href="#" class="nav-tab">Self Improvement</a>
-        <a href="#" class="nav-tab">Technology</a>
-      </div>
-    </nav>
-
-    <!-- Main Content -->
-    <main class="main-container">
-      <!-- Articles Feed -->
-      <div class="articles-feed">
-        <!-- Article 1 -->
-        <article class="article-card" data-article-id="1">
-          <div class="article-content">
-            <div class="article-meta">
-              <div class="publication-icon"></div>
-              <span>In Change Your Mind Change Your Life</span>
-              <span>by Olly J</span>
-            </div>
-            <h2 class="article-title">
-              18 Cheat Codes to Life, to Put You 10 Years Ahead of 90% Of People
-            </h2>
-            <p class="article-description">
-              (You have the power to change your life. Take small steps every
-              day, and soon you'll be unstoppable)
-            </p>
-            <div class="article-footer">
-              <div class="article-stats">
-                <div class="stat-item">
-                  <span>👏</span>
-                  <span>Mar 5</span>
-                </div>
-                <div class="stat-item">
-                  <span>14.3K</span>
-                </div>
-                <div class="stat-item">
-                  <span>💬</span>
-                  <span>323</span>
-                </div>
-              </div>
-              <div class="article-actions">
-                <button class="action-btn">📖</button>
-                <button class="action-btn">🔖</button>
-                <button class="action-btn">⋯</button>
-              </div>
-            </div>
-          </div>
-          <img
-            src="assets/images/article1.jpg"
-            alt="Article image"
-            class="article-image"
-          />
-        </article>
-
-        <!-- Article 2 -->
-        <article class="article-card" data-article-id="2">
-          <div class="article-content">
-            <div class="article-meta">
-              <div class="publication-icon"></div>
-              <span>In Pragmatic Wisdom</span>
-              <span>by Stephan Joppich</span>
-            </div>
-            <h2 class="article-title">Goodbye, Atomic Habits</h2>
-            <p class="article-description">
-              The overlooked problems with building healthy habits
-            </p>
-            <div class="article-footer">
-              <div class="article-stats">
-                <div class="stat-item">
-                  <span>👏</span>
-                  <span>Sep 5, 2024</span>
-                </div>
-                <div class="stat-item">
-                  <span>20K</span>
-                </div>
-                <div class="stat-item">
-                  <span>💬</span>
-                  <span>494</span>
-                </div>
-              </div>
-              <div class="article-actions">
-                <button class="action-btn">📖</button>
-                <button class="action-btn">🔖</button>
-                <button class="action-btn">⋯</button>
-              </div>
-            </div>
-          </div>
-          <img
-            src="assets/images/article2.jpg"
-            alt="Article image"
-            class="article-image"
-          />
-        </article>
-
-        <!-- Article 3 -->
-        <article class="article-card" data-article-id="3">
-          <div class="article-content">
-            <div class="article-meta">
-              <div class="publication-icon"></div>
-              <span>In Personal Growth</span>
-              <span>by Thomas Oppong</span>
-            </div>
-            <h2 class="article-title">
-              9 Japanese Concepts That Brought Clarity and Joy to My Life
-            </h2>
-            <p class="article-description">
-              8. Chisoku: Know when enough is enough.
-            </p>
-            <div class="article-footer">
-              <div class="article-stats">
-                <div class="stat-item">
-                  <span>👏</span>
-                  <span>Feb 12</span>
-                </div>
-                <div class="stat-item">
-                  <span>1.7K</span>
-                </div>
-                <div class="stat-item">
-                  <span>💬</span>
-                  <span>26</span>
-                </div>
-              </div>
-              <div class="article-actions">
-                <button class="action-btn">📖</button>
-                <button class="action-btn">🔖</button>
-                <button class="action-btn">⋯</button>
-              </div>
-            </div>
-          </div>
-          <img
-            src="assets/images/article3.jpg"
-            alt="Article image"
-            class="article-image"
-          />
-        </article>
-      </div>
-
-      <!-- Sidebar -->
-      <aside class="sidebar">
-        <!-- Staff Picks -->
-        <div class="sidebar-section">
-          <h3 class="sidebar-title">Staff Picks</h3>
-
-          <div class="staff-pick">
-            <div class="staff-pick-avatar"></div>
-            <div class="staff-pick-content">
-              <div class="staff-pick-author">
-                Carin-Isabel Knoop in Humans in the Digital Age
-              </div>
-              <h4 class="staff-pick-title">
-                On the Unseen Cost of Dis-Ease: What Chronic Illness Teaches Us
-                About Leading with Compassion
-              </h4>
-              <div class="staff-pick-date">Jun 9</div>
-            </div>
-          </div>
-
-          <div class="staff-pick">
-            <div class="staff-pick-avatar"></div>
-            <div class="staff-pick-content">
-              <div class="staff-pick-author">In Babel by Danish Farhan</div>
-              <h4 class="staff-pick-title">
-                The Vulnerability of Storytelling
-              </h4>
-              <div class="staff-pick-date">Jun 22</div>
-            </div>
-          </div>
-
-          <div class="staff-pick">
-            <div class="staff-pick-avatar"></div>
-            <div class="staff-pick-content">
-              <div class="staff-pick-author">
-                In Pragmatic Wisdom by Stephan Joppich
-              </div>
-              <h4 class="staff-pick-title">The Importance of Wasting Time</h4>
-              <div class="staff-pick-date">Apr 5</div>
-            </div>
-          </div>
-
-          <a
-            href="#"
-            style="color: #1a8917; font-size: 14px; text-decoration: none"
-            >See the full list</a
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex">
+        <!-- Main Content -->
+        <main class="flex-1 max-w-4xl">
+          <!-- Navigation Tabs -->
+          <nav
+            id="navTabs"
+            class="flex border-b border-gray-200 mb-8 nav-container nav-sticky"
           >
-        </div>
+            <div
+              class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex space-x-4 overflow-x-auto"
+            >
+              <button
+                class="flex items-center py-4 border-b-2 border-black text-black font-medium"
+              >
+                <i class="fas fa-plus mr-2"></i>
+                For you
+              </button>
+              <button class="py-4 text-gray-500 hover:text-black">
+                Following
+              </button>
+              <button
+                class="py-4 text-gray-500 hover:text-black flex items-center"
+              >
+                Featured
+                <span
+                  class="ml-1 px-2 py-1 bg-green-100 text-green-800 text-xs rounded"
+                  >New</span
+                >
+              </button>
+              <button class="py-4 text-gray-500 hover:text-black">
+                Self Improvement
+              </button>
+              <button class="py-4 text-gray-500 hover:text-black">
+                Productivity
+              </button>
+              <button class="py-4 text-gray-500 hover:text-black">
+                Machine Learning
+              </button>
+              <button class="text-gray-400">
+                <i class="fas fa-chevron-right"></i>
+              </button>
+            </div>
+          </nav>
 
-        <!-- Writing Promotion -->
-        <div class="writing-card">
-          <h3>Writing on Medium</h3>
-          <ul>
-            <li>New writer FAQ</li>
-            <li>Expert writing advice</li>
-            <li>Grow your readership</li>
-          </ul>
-          <button class="start-writing-btn">Start writing</button>
-        </div>
+          <!-- Articles -->
+          <div class="space-y-8">
+            <!-- Article 1 -->
+            <article
+              class="flex items-start space-x-4 pb-8 border-b border-gray-100"
+            >
+              <div class="flex-1">
+                <div class="flex items-center mb-2">
+                  <div
+                    class="w-6 h-6 bg-red-500 rounded-sm flex items-center justify-center mr-2"
+                  >
+                    <span class="text-white text-xs font-bold">LL</span>
+                  </div>
+                  <span class="text-sm text-gray-600">in Language Lab</span>
+                  <span class="text-sm text-gray-400 mx-1">by</span>
+                  <span class="text-sm text-gray-600">Viktoria Verde, PhD</span>
+                </div>
+                <h2
+                  class="text-xl font-bold text-gray-900 mb-2 hover-underline cursor-pointer"
+                >
+                  How to Learn a Language: The Complete System That Actually
+                  Works
+                </h2>
+                <p class="text-gray-600 mb-4">
+                  20 Science-Based Principles and Strategies for Building
+                  Fluency — From a Linguist, Language Teacher, and Polyglot
+                </p>
+                <div class="flex items-center justify-between">
+                  <div
+                    class="flex items-center space-x-4 text-sm text-gray-500"
+                  >
+                    <div class="flex items-center">
+                      <i class="fas fa-star text-yellow-500 mr-1"></i>
+                      <span>May 21</span>
+                    </div>
+                    <div class="flex items-center">
+                      <i class="fas fa-hands-clapping mr-1"></i>
+                      <span>4K</span>
+                    </div>
+                    <div class="flex items-center">
+                      <i class="fas fa-comment mr-1"></i>
+                      <span>116</span>
+                    </div>
+                  </div>
+                  <div class="flex items-center space-x-2">
+                    <button class="text-gray-400 hover:text-gray-600">
+                      <i class="fas fa-ellipsis-h"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="w-32 h-32 bg-gray-200 rounded flex-shrink-0">
+                <img
+                  src="https://images.pexels.com/photos/8197562/pexels-photo-8197562.jpeg?auto=compress&cs=tinysrgb&w=400"
+                  alt="Language learning"
+                  class="w-full h-full object-cover rounded"
+                />
+              </div>
+            </article>
 
-        <!-- Recommended Topics -->
-        <div class="sidebar-section">
-          <h3 class="sidebar-title">Recommended topics</h3>
-          <div class="topics-grid">
-            <a href="#" class="topic-tag">Programming</a>
-            <a href="#" class="topic-tag">Writing</a>
-            <a href="#" class="topic-tag">Technology</a>
-            <a href="#" class="topic-tag">Self Improvement</a>
-            <a href="#" class="topic-tag">Productivity</a>
-            <a href="#" class="topic-tag">Life</a>
+            <!-- Article 2 -->
+            <article
+              class="flex items-start space-x-4 pb-8 border-b border-gray-100"
+            >
+              <div class="flex-1">
+                <div class="flex items-center mb-2">
+                  <div
+                    class="w-6 h-6 bg-orange-500 rounded-sm flex items-center justify-center mr-2"
+                  >
+                    <span class="text-white text-xs font-bold">DS</span>
+                  </div>
+                  <span class="text-sm text-gray-600"
+                    >in Data Science Collective</span
+                  >
+                  <span class="text-sm text-gray-400 mx-1">by</span>
+                  <span class="text-sm text-gray-600">James Wilkins</span>
+                </div>
+                <h2
+                  class="text-xl font-bold text-gray-900 mb-2 hover-underline cursor-pointer"
+                >
+                  You're using ChatGPT wrong. Here's how to prompt like a pro
+                </h2>
+                <p class="text-gray-600 mb-4">
+                  Smarter prompts lead to smarter responses.
+                </p>
+                <div class="flex items-center justify-between">
+                  <div
+                    class="flex items-center space-x-4 text-sm text-gray-500"
+                  >
+                    <div class="flex items-center">
+                      <i class="fas fa-star text-yellow-500 mr-1"></i>
+                      <span>Jun 5</span>
+                    </div>
+                    <div class="flex items-center">
+                      <i class="fas fa-hands-clapping mr-1"></i>
+                      <span>1.5K</span>
+                    </div>
+                    <div class="flex items-center">
+                      <i class="fas fa-comment mr-1"></i>
+                      <span>72</span>
+                    </div>
+                  </div>
+                  <div class="flex items-center space-x-2">
+                    <button class="text-gray-400 hover:text-gray-600">
+                      <i class="fas fa-ellipsis-h"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="w-32 h-32 bg-gray-200 rounded flex-shrink-0">
+                <img
+                  src="https://images.pexels.com/photos/8386440/pexels-photo-8386440.jpeg?auto=compress&cs=tinysrgb&w=400"
+                  alt="ChatGPT"
+                  class="w-full h-full object-cover rounded"
+                />
+              </div>
+            </article>
+            <article
+              class="flex items-start space-x-4 pb-8 border-b border-gray-100"
+            >
+              <div class="flex-1">
+                <div class="flex items-center mb-2">
+                  <div
+                    class="w-6 h-6 bg-orange-500 rounded-sm flex items-center justify-center mr-2"
+                  >
+                    <span class="text-white text-xs font-bold">DS</span>
+                  </div>
+                  <span class="text-sm text-gray-600"
+                    >in Data Science Collective</span
+                  >
+                  <span class="text-sm text-gray-400 mx-1">by</span>
+                  <span class="text-sm text-gray-600">James Wilkins</span>
+                </div>
+                <h2
+                  class="text-xl font-bold text-gray-900 mb-2 hover-underline cursor-pointer"
+                >
+                  You're using ChatGPT wrong. Here's how to prompt like a pro
+                </h2>
+                <p class="text-gray-600 mb-4">
+                  Smarter prompts lead to smarter responses.
+                </p>
+                <div class="flex items-center justify-between">
+                  <div
+                    class="flex items-center space-x-4 text-sm text-gray-500"
+                  >
+                    <div class="flex items-center">
+                      <i class="fas fa-star text-yellow-500 mr-1"></i>
+                      <span>Jun 5</span>
+                    </div>
+                    <div class="flex items-center">
+                      <i class="fas fa-hands-clapping mr-1"></i>
+                      <span>1.5K</span>
+                    </div>
+                    <div class="flex items-center">
+                      <i class="fas fa-comment mr-1"></i>
+                      <span>72</span>
+                    </div>
+                  </div>
+                  <div class="flex items-center space-x-2">
+                    <button class="text-gray-400 hover:text-gray-600">
+                      <i class="fas fa-ellipsis-h"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="w-32 h-32 bg-gray-200 rounded flex-shrink-0">
+                <img
+                  src="https://images.pexels.com/photos/8386440/pexels-photo-8386440.jpeg?auto=compress&cs=tinysrgb&w=400"
+                  alt="ChatGPT"
+                  class="w-full h-full object-cover rounded"
+                />
+              </div>
+            </article>
+            <article
+              class="flex items-start space-x-4 pb-8 border-b border-gray-100"
+            >
+              <div class="flex-1">
+                <div class="flex items-center mb-2">
+                  <div
+                    class="w-6 h-6 bg-orange-500 rounded-sm flex items-center justify-center mr-2"
+                  >
+                    <span class="text-white text-xs font-bold">DS</span>
+                  </div>
+                  <span class="text-sm text-gray-600"
+                    >in Data Science Collective</span
+                  >
+                  <span class="text-sm text-gray-400 mx-1">by</span>
+                  <span class="text-sm text-gray-600">James Wilkins</span>
+                </div>
+                <h2
+                  class="text-xl font-bold text-gray-900 mb-2 hover-underline cursor-pointer"
+                >
+                  You're using ChatGPT wrong. Here's how to prompt like a pro
+                </h2>
+                <p class="text-gray-600 mb-4">
+                  Smarter prompts lead to smarter responses.
+                </p>
+                <div class="flex items-center justify-between">
+                  <div
+                    class="flex items-center space-x-4 text-sm text-gray-500"
+                  >
+                    <div class="flex items-center">
+                      <i class="fas fa-star text-yellow-500 mr-1"></i>
+                      <span>Jun 5</span>
+                    </div>
+                    <div class="flex items-center">
+                      <i class="fas fa-hands-clapping mr-1"></i>
+                      <span>1.5K</span>
+                    </div>
+                    <div class="flex items-center">
+                      <i class="fas fa-comment mr-1"></i>
+                      <span>72</span>
+                    </div>
+                  </div>
+                  <div class="flex items-center space-x-2">
+                    <button class="text-gray-400 hover:text-gray-600">
+                      <i class="fas fa-ellipsis-h"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="w-32 h-32 bg-gray-200 rounded flex-shrink-0">
+                <img
+                  src="https://images.pexels.com/photos/8386440/pexels-photo-8386440.jpeg?auto=compress&cs=tinysrgb&w=400"
+                  alt="ChatGPT"
+                  class="w-full h-full object-cover rounded"
+                />
+              </div>
+            </article>
+            <article
+              class="flex items-start space-x-4 pb-8 border-b border-gray-100"
+            >
+              <div class="flex-1">
+                <div class="flex items-center mb-2">
+                  <div
+                    class="w-6 h-6 bg-orange-500 rounded-sm flex items-center justify-center mr-2"
+                  >
+                    <span class="text-white text-xs font-bold">DS</span>
+                  </div>
+                  <span class="text-sm text-gray-600"
+                    >in Data Science Collective</span
+                  >
+                  <span class="text-sm text-gray-400 mx-1">by</span>
+                  <span class="text-sm text-gray-600">James Wilkins</span>
+                </div>
+                <h2
+                  class="text-xl font-bold text-gray-900 mb-2 hover-underline cursor-pointer"
+                >
+                  You're using ChatGPT wrong. Here's how to prompt like a pro
+                </h2>
+                <p class="text-gray-600 mb-4">
+                  Smarter prompts lead to smarter responses.
+                </p>
+                <div class="flex items-center justify-between">
+                  <div
+                    class="flex items-center space-x-4 text-sm text-gray-500"
+                  >
+                    <div class="flex items-center">
+                      <i class="fas fa-star text-yellow-500 mr-1"></i>
+                      <span>Jun 5</span>
+                    </div>
+                    <div class="flex items-center">
+                      <i class="fas fa-hands-clapping mr-1"></i>
+                      <span>1.5K</span>
+                    </div>
+                    <div class="flex items-center">
+                      <i class="fas fa-comment mr-1"></i>
+                      <span>72</span>
+                    </div>
+                  </div>
+                  <div class="flex items-center space-x-2">
+                    <button class="text-gray-400 hover:text-gray-600">
+                      <i class="fas fa-ellipsis-h"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="w-32 h-32 bg-gray-200 rounded flex-shrink-0">
+                <img
+                  src="https://images.pexels.com/photos/8386440/pexels-photo-8386440.jpeg?auto=compress&cs=tinysrgb&w=400"
+                  alt="ChatGPT"
+                  class="w-full h-full object-cover rounded"
+                />
+              </div>
+            </article>
+            <!-- Article 3 -->
+            <article
+              class="flex items-start space-x-4 pb-8 border-b border-gray-100"
+            >
+              <div class="flex-1">
+                <div class="flex items-center mb-2">
+                  <div
+                    class="w-6 h-6 bg-black rounded-sm flex items-center justify-center mr-2"
+                  >
+                    <span class="text-white text-xs font-bold">EH</span>
+                  </div>
+                  <span class="text-sm text-gray-600"
+                    >in Entrepreneurship Handbook</span
+                  >
+                  <span class="text-sm text-gray-400 mx-1">by</span>
+                  <span class="text-sm text-gray-600">smoul</span>
+                  <i
+                    class="fas fa-check-circle text-green-500 ml-1 text-xs"
+                  ></i>
+                </div>
+                <h2
+                  class="text-xl font-bold text-gray-900 mb-2 hover-underline cursor-pointer"
+                >
+                  Build A Brand, Not A Business
+                </h2>
+                <p class="text-gray-600 mb-4">
+                  Rise above the noise that clutters your thinking
+                </p>
+                <div class="flex items-center justify-between">
+                  <div
+                    class="flex items-center space-x-4 text-sm text-gray-500"
+                  >
+                    <div class="flex items-center">
+                      <i class="fas fa-star text-yellow-500 mr-1"></i>
+                      <span>Feb 10</span>
+                    </div>
+                    <div class="flex items-center">
+                      <i class="fas fa-hands-clapping mr-1"></i>
+                      <span>1.4K</span>
+                    </div>
+                    <div class="flex items-center">
+                      <i class="fas fa-comment mr-1"></i>
+                      <span>105</span>
+                    </div>
+                  </div>
+                  <div class="flex items-center space-x-2">
+                    <button class="text-gray-400 hover:text-gray-600">
+                      <i class="fas fa-ellipsis-h"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="w-32 h-32 bg-gray-200 rounded flex-shrink-0">
+                <img
+                  src="https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg?auto=compress&cs=tinysrgb&w=400"
+                  alt="Business"
+                  class="w-full h-full object-cover rounded"
+                />
+              </div>
+            </article>
           </div>
-        </div>
-      </aside>
-    </main>
+        </main>
 
-    <script src="assets/js/main.js"></script>
+        <!-- Sidebar -->
+        <aside class="w-80 ml-16 sticky top-24 h-fit">
+          <!-- Staff Picks -->
+          <div class="mb-8">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">
+              Staff Picks
+            </h3>
+            <div class="space-y-4">
+              <div class="flex items-start space-x-3">
+                <div
+                  class="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0"
+                >
+                  <span class="text-white text-xs">AH</span>
+                </div>
+                <div class="flex-1">
+                  <div class="flex items-center text-sm text-gray-600 mb-1">
+                    <span>in AI Home</span>
+                    <span class="mx-1">by</span>
+                    <span>Dim Niko</span>
+                    <i
+                      class="fas fa-check-circle text-green-500 ml-1 text-xs"
+                    ></i>
+                  </div>
+                  <h4
+                    class="text-sm font-medium text-gray-900 hover-underline cursor-pointer"
+                  >
+                    These Are the Only Pots and Pans I'd Buy Twice
+                  </h4>
+                  <div class="flex items-center mt-2">
+                    <i class="fas fa-star text-yellow-500 mr-1 text-xs"></i>
+                    <span class="text-xs text-gray-500">6d ago</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex items-start space-x-3">
+                <div
+                  class="w-6 h-6 bg-teal-500 rounded-full flex items-center justify-center flex-shrink-0"
+                >
+                  <span class="text-white text-xs">WW</span>
+                </div>
+                <div class="flex-1">
+                  <div class="flex items-center text-sm text-gray-600 mb-1">
+                    <span>in Wise & Well</span>
+                    <span class="mx-1">by</span>
+                    <span>John Kruse MD, PhD</span>
+                    <i
+                      class="fas fa-check-circle text-green-500 ml-1 text-xs"
+                    ></i>
+                  </div>
+                  <h4
+                    class="text-sm font-medium text-gray-900 hover-underline cursor-pointer"
+                  >
+                    Why Escalation of Force Doesn't Work
+                  </h4>
+                  <div class="flex items-center mt-2">
+                    <i class="fas fa-star text-yellow-500 mr-1 text-xs"></i>
+                    <span class="text-xs text-gray-500">4d ago</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex items-start space-x-3">
+                <div
+                  class="w-6 h-6 bg-gray-600 rounded-full flex items-center justify-center flex-shrink-0"
+                >
+                  <span class="text-white text-xs">H</span>
+                </div>
+                <div class="flex-1">
+                  <div class="flex items-center text-sm text-gray-600 mb-1">
+                    <span>Carin-Isabel Knoop (on Humans in the Digital...</span>
+                    <i
+                      class="fas fa-check-circle text-green-500 ml-1 text-xs"
+                    ></i>
+                  </div>
+                  <h4
+                    class="text-sm font-medium text-gray-900 hover-underline cursor-pointer"
+                  >
+                    On the Unseen Cost of Dis-Ease: What Chronic Illness Teaches
+                    Us About Leading with Compassion
+                  </h4>
+                  <div class="flex items-center mt-2">
+                    <span class="text-xs text-gray-500">Jun 9</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <a
+              href="#"
+              class="text-sm text-green-600 hover:underline mt-4 inline-block"
+              >See the full list</a
+            >
+          </div>
+
+          <!-- Recommended Topics -->
+          <div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">
+              Recommended topics
+            </h3>
+            <div class="flex flex-wrap gap-2 mb-4">
+              <span
+                class="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full hover:bg-gray-200 cursor-pointer"
+                >Programming</span
+              >
+              <span
+                class="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full hover:bg-gray-200 cursor-pointer"
+                >Relationships</span
+              >
+              <span
+                class="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full hover:bg-gray-200 cursor-pointer"
+                >Data Science</span
+              >
+              <span
+                class="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full hover:bg-gray-200 cursor-pointer"
+                >Writing</span
+              >
+              <span
+                class="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full hover:bg-gray-200 cursor-pointer"
+                >Cryptocurrency</span
+              >
+              <span
+                class="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full hover:bg-gray-200 cursor-pointer"
+                >Politics</span
+              >
+              <span
+                class="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full hover:bg-gray-200 cursor-pointer"
+                >Technology</span
+              >
+            </div>
+            <a href="#" class="text-sm text-green-600 hover:underline"
+              >See more topics</a
+            >
+          </div>
+        </aside>
+      </div>
+    </div>
+
+    <script src="./assets/js/main.js"></script>
   </body>
 </html>

@@ -3,356 +3,395 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Article Detail - Medium Clone</title>
-    <link rel="stylesheet" href="../assets/css/main.css" />
-    <link rel="stylesheet" href="../assets/css/components.css" />
-    <link rel="stylesheet" href="../assets/css/post-detail.css" />
+    <title>How to Learn a Language - Medium</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
   </head>
-  <body>
+  <body class="bg-white">
     <!-- Header -->
-    <header class="header">
-      <div class="header-content">
-        <a href="../index.html" class="logo">Medium</a>
-
-        <div class="search-container">
-          <span class="search-icon">🔍</span>
-          <input type="text" class="search-input" placeholder="Search" />
-        </div>
-
-        <div class="header-actions">
-          <a href="#" class="write-btn">
-            <span>✏️</span>
-            Write
-          </a>
-          <button class="notification-btn">🔔</button>
-          <div class="profile-dropdown">
-            <button class="profile-btn" id="profileBtn">👤</button>
-            <div class="dropdown-menu" id="dropdownMenu">
-              <div class="dropdown-item">
-                <span class="dropdown-icon">👤</span>
-                Profile
-              </div>
-              <div class="dropdown-item">
-                <span class="dropdown-icon">📚</span>
-                Library
-              </div>
-              <div class="dropdown-item">
-                <span class="dropdown-icon">📝</span>
-                Stories
-              </div>
-              <div class="dropdown-item">
-                <span class="dropdown-icon">📊</span>
-                Stats
-              </div>
-              <div class="dropdown-divider"></div>
-              <div class="dropdown-item">Settings</div>
-              <div class="dropdown-item">Refine recommendations</div>
-              <div class="dropdown-item">Manage publications</div>
-              <div class="dropdown-item">Help</div>
-              <div class="dropdown-divider"></div>
-              <div class="dropdown-item premium">
-                <span class="dropdown-icon">⭐</span>
-                Become a Medium member
-              </div>
-              <div class="dropdown-item">Create a Mastodon account</div>
-              <div class="dropdown-item">Apply for author verification</div>
-              <div class="dropdown-item">Apply to the Partner Program</div>
-              <div class="dropdown-item">Gift a membership</div>
-              <div class="dropdown-divider"></div>
-              <div class="dropdown-item">
-                Sign out
-                <div class="email-hint">user@gmail.com</div>
-              </div>
+    <header class="border-b border-gray-200 bg-white sticky top-0 z-50">
+      <div class="w-full mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+          <div class="flex items-center">
+            <a href="/" class="text-2xl font-bold text-black">Medium</a>
+          </div>
+          <div class="flex items-center space-x-6">
+            <button class="text-gray-600 hover:text-black">
+              <i class="fas fa-bell text-xl"></i>
+            </button>
+            <div
+              class="w-8 h-8 bg-red-600 rounded-full flex items-center justify-center"
+            >
+              <span class="text-white font-semibold">T</span>
             </div>
           </div>
         </div>
       </div>
     </header>
 
-    <!-- Article Detail Content -->
-    <main class="article-detail-container">
-      <!-- Left Sidebar -->
-      <aside class="article-sidebar-left">
-        <div class="publication-info">
-          <div class="publication-header">
-            <div class="publication-icon-large">PG</div>
-            <div class="publication-details">
-              <h3>Personal Growth</h3>
-              <p>
-                Practical wisdom for life drawn from philosophy, psychology,
-                spirituality and personal experiences.
-              </p>
-              <button class="follow-publication-btn">Follow publication</button>
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <!-- Article Header -->
+      <article>
+        <div class="mb-8">
+          <h1 class="text-4xl font-bold text-gray-900 mb-6 leading-tight">
+            How to Learn a Language: The Complete System That Actually Works
+          </h1>
+          <h2 class="text-xl text-gray-600 mb-8">
+            20 Science-Based Principles and Strategies for Building Fluency —
+            From a Linguist, Language Teacher, and Polyglot
+          </h2>
+
+          <!-- Author Info -->
+          <div class="flex items-center justify-between mb-8">
+            <div class="flex items-center">
+              <div
+                class="w-12 h-12 bg-red-500 rounded-full flex items-center justify-center mr-4"
+              >
+                <span class="text-white font-bold">VV</span>
+              </div>
+              <div>
+                <div class="flex items-center">
+                  <span class="font-medium text-gray-900"
+                    >Viktoria Verde, PhD</span
+                  >
+                  <button
+                    class="ml-2 text-green-600 text-sm font-medium hover:underline"
+                  >
+                    Follow
+                  </button>
+                </div>
+                <div class="flex items-center text-sm text-gray-500">
+                  <span>Published in Language Lab</span>
+                  <span class="mx-2">·</span>
+                  <span>12 min read</span>
+                  <span class="mx-2">·</span>
+                  <span>May 21, 2024</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div
+            class="flex items-center justify-between border-t border-b border-gray-200 py-4 mb-8"
+          >
+            <div class="flex items-center space-x-6">
+              <button class="flex items-center text-gray-600 hover:text-black">
+                <i class="fas fa-comment mr-2"></i>
+                <span>116</span>
+              </button>
+            </div>
+            <div class="flex items-center space-x-4">
+              <button class="text-gray-600 hover:text-black">
+                <i class="fas fa-share"></i>
+              </button>
+              <button class="text-gray-600 hover:text-black">
+                <i class="fas fa-ellipsis-h"></i>
+              </button>
             </div>
           </div>
         </div>
-      </aside>
-
-      <!-- Main Article Content -->
-      <article class="article-detail-content">
-        <!-- Article Header -->
-        <header class="article-header">
-          <div class="article-badges">
-            <span class="member-badge">⭐ Member-only story</span>
-            <span class="featured-badge">🏆 Featured</span>
-          </div>
-
-          <h1 class="article-detail-title">
-            9 Japanese Concepts That Brought Clarity and Joy to My Life
-          </h1>
-          <p class="article-subtitle">
-            8. Chisoku: Know when enough is enough.
-          </p>
-
-          <div class="article-author-info">
-            <div class="author-avatar">
-              <img
-                src="../assets/images/author-avatar.jpg"
-                alt="Thomas Oppong"
-              />
-            </div>
-            <div class="author-details">
-              <div class="author-name">
-                Thomas Oppong
-                <span class="verified-badge">✓</span>
-              </div>
-              <button class="follow-author-btn">Follow</button>
-              <div class="article-meta-info">
-                <span>5 min read</span>
-                <span>•</span>
-                <span>Feb 12, 2025</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="article-actions-bar">
-            <div class="engagement-stats">
-              <button class="clap-btn">
-                <span class="clap-icon">👏</span>
-                <span class="clap-count">1.7K</span>
-              </button>
-              <button class="comment-btn">
-                <span class="comment-icon">💬</span>
-                <span class="comment-count">26</span>
-              </button>
-            </div>
-            <div class="article-actions">
-              <button class="bookmark-btn">🔖</button>
-              <button class="listen-btn">🎧</button>
-              <button class="share-btn">📤</button>
-              <button class="more-btn">⋯</button>
-            </div>
-          </div>
-        </header>
 
         <!-- Article Image -->
-        <div class="article-image-container">
+        <div class="mb-8">
           <img
-            src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-wKVA2q8LDegVujn4ikf1OCQc63ZnEa.png"
-            alt="Japanese cherry blossoms"
-            class="article-detail-image"
+            src="https://images.pexels.com/photos/8197562/pexels-photo-8197562.jpeg?auto=compress&cs=tinysrgb&w=1200"
+            alt="Language learning brain"
+            class="w-full h-96 object-cover rounded"
           />
         </div>
 
-        <!-- Article Body -->
-        <div class="article-body">
-          <p class="article-intro">
-            Life can be overwhelming. We're constantly bombarded with
-            information, expectations, and the pressure to do more, be more, and
-            have more. But what if the secret to a fulfilling life isn't about
-            adding more—it's about understanding when we have enough?
+        <!-- Article Content -->
+        <div class="prose prose-lg max-w-none">
+          <p class="text-lg text-gray-700 mb-6 leading-relaxed">
+            Learning a new language can feel overwhelming. With so many methods,
+            apps, and approaches available, it's easy to get lost in the noise.
+            But what if I told you there's a systematic approach backed by
+            science that actually works?
           </p>
 
-          <p>
-            Japanese culture offers profound wisdom through concepts that have
-            guided people toward clarity and contentment for centuries. These
-            aren't just philosophical ideas; they're practical approaches to
-            living that can transform how we see ourselves and our place in the
-            world.
+          <p class="text-lg text-gray-700 mb-6 leading-relaxed">
+            As a linguist who speaks seven languages fluently and has taught
+            thousands of students, I've distilled the most effective language
+            learning strategies into a comprehensive system. This isn't about
+            quick fixes or magic bullets — it's about understanding how your
+            brain actually acquires language and working with it, not against
+            it.
           </p>
 
-          <h2>1. Ikigai (生き甲斐) - Your Reason for Being</h2>
-          <p>
-            Ikigai is perhaps the most well-known Japanese concept in the West,
-            but it's often misunderstood. It's not just about finding your
-            passion or purpose—it's about discovering the intersection of what
-            you love, what you're good at, what the world needs, and what you
-            can be paid for.
+          <h3 class="text-2xl font-bold text-gray-900 mb-4 mt-8">
+            The Foundation: Understanding How We Learn Languages
+          </h3>
+
+          <p class="text-lg text-gray-700 mb-6 leading-relaxed">
+            Before diving into specific techniques, it's crucial to understand
+            that language acquisition is fundamentally different from other
+            types of learning. Your brain has specialized mechanisms for
+            processing language that evolved over millions of years.
           </p>
 
-          <p>
-            The beauty of ikigai lies in its simplicity. It doesn't demand that
-            you change your entire life overnight. Instead, it encourages you to
-            pay attention to the small moments that bring you joy and meaning.
+          <p class="text-lg text-gray-700 mb-6 leading-relaxed">
+            Research in neurolinguistics shows that successful language learners
+            activate the same brain regions that native speakers use. This
+            happens through a process called "implicit learning" — your brain
+            naturally picks up patterns without conscious effort.
           </p>
 
-          <h2>2. Wabi-Sabi (侘寂) - Finding Beauty in Imperfection</h2>
-          <p>
-            In a world obsessed with perfection, wabi-sabi teaches us to find
-            beauty in imperfection, impermanence, and incompleteness. This
-            aesthetic philosophy celebrates the natural cycle of growth and
-            decay.
+          <h3 class="text-2xl font-bold text-gray-900 mb-4 mt-8">
+            The 20 Science-Based Principles
+          </h3>
+
+          <h4 class="text-xl font-semibold text-gray-900 mb-3 mt-6">
+            1. Comprehensible Input is King
+          </h4>
+          <p class="text-lg text-gray-700 mb-6 leading-relaxed">
+            Stephen Krashen's Input Hypothesis remains one of the most validated
+            theories in language acquisition. You need to consume content that's
+            slightly above your current level — challenging enough to learn
+            from, but not so difficult that you're lost.
           </p>
 
-          <p>
-            When I learned to embrace wabi-sabi, I stopped trying to make
-            everything perfect. I began to see the beauty in weathered wood, in
-            the patina of age, in the gentle wear that comes from being loved
-            and used.
+          <h4 class="text-xl font-semibold text-gray-900 mb-3 mt-6">
+            2. Embrace the Silent Period
+          </h4>
+          <p class="text-lg text-gray-700 mb-6 leading-relaxed">
+            Don't rush to speak. Just as children listen for months before
+            uttering their first words, adult learners benefit from an initial
+            period focused on listening and comprehension. This builds the
+            neural pathways necessary for fluent production later.
           </p>
 
-          <h2>
-            3. Mono no Aware (物の哀れ) - The Bittersweet Awareness of
-            Impermanence
-          </h2>
-          <p>
-            This concept captures the bittersweet feeling of recognizing that
-            all things are temporary. It's the gentle sadness that comes with
-            understanding that beautiful moments will pass, but also the
-            appreciation that makes those moments more precious.
+          <h4 class="text-xl font-semibold text-gray-900 mb-3 mt-6">
+            3. Focus on High-Frequency Words
+          </h4>
+          <p class="text-lg text-gray-700 mb-6 leading-relaxed">
+            The Pareto Principle applies to language learning: 20% of words
+            account for 80% of usage. Master the most common 2,000 words in your
+            target language, and you'll understand about 80% of everyday
+            conversation.
           </p>
 
-          <h2>4. Kaizen (改善) - Continuous Small Improvements</h2>
-          <p>
-            Kaizen is the practice of making small, continuous improvements.
-            Rather than dramatic changes, kaizen focuses on tiny adjustments
-            that compound over time.
+          <blockquote
+            class="border-l-4 border-green-500 pl-6 my-8 italic text-lg text-gray-700"
+          >
+            "The limits of my language mean the limits of my world." — Ludwig
+            Wittgenstein
+          </blockquote>
+
+          <p class="text-lg text-gray-700 mb-6 leading-relaxed">
+            The journey of language learning is deeply personal and
+            transformative. Each new language opens doors to different ways of
+            thinking, cultural perspectives, and human connections that would
+            otherwise remain closed to us.
           </p>
 
-          <p>
-            I've applied kaizen to everything from my morning routine to my
-            writing practice. The key is consistency, not intensity.
+          <h3 class="text-2xl font-bold text-gray-900 mb-4 mt-8">
+            Putting It All Together: Your Action Plan
+          </h3>
+
+          <p class="text-lg text-gray-700 mb-6 leading-relaxed">
+            Now that you understand the principles, here's how to implement them
+            in a structured way:
           </p>
 
-          <h2>5. Shinrin-yoku (森林浴) - Forest Bathing</h2>
-          <p>
-            Literally meaning "forest bath," shinrin-yoku is the practice of
-            immersing yourself mindfully in nature. It's not about hiking or
-            exercising—it's about being present with the natural world.
+          <ol
+            class="list-decimal list-inside space-y-4 text-lg text-gray-700 mb-8"
+          >
+            <li>
+              <strong>Week 1-4:</strong> Focus entirely on listening. Use
+              podcasts, YouTube videos, and audio content at your level.
+            </li>
+            <li>
+              <strong>Week 5-8:</strong> Add reading to your routine. Start with
+              children's books and gradually increase complexity.
+            </li>
+            <li>
+              <strong>Week 9-12:</strong> Begin speaking practice with language
+              exchange partners or tutors.
+            </li>
+            <li>
+              <strong>Week 13+:</strong> Integrate all skills while maintaining
+              heavy input focus.
+            </li>
+          </ol>
+
+          <p class="text-lg text-gray-700 mb-6 leading-relaxed">
+            Remember, language learning is a marathon, not a sprint. Consistency
+            beats intensity every time. Dedicate at least 30 minutes daily to
+            your target language, and you'll see remarkable progress within
+            months.
           </p>
 
-          <h2>6. Oubaitori (桜梅桃李) - Never Compare Yourself to Others</h2>
-          <p>
-            This concept comes from the idea that cherry blossoms, plum
-            blossoms, peach blossoms, and damson blossoms all bloom in their own
-            time and in their own unique way. Each is beautiful, but none should
-            be compared to the others.
-          </p>
-
-          <h2>
-            7. Gaman (我慢) - Enduring the Seemingly Unbearable with Patience
-          </h2>
-          <p>
-            Gaman is about enduring difficult situations with patience and
-            dignity. It's not passive resignation—it's active perseverance with
-            grace.
-          </p>
-
-          <h2>8. Chisoku (知足) - Know When Enough is Enough</h2>
-          <p>
-            Perhaps the most transformative concept for me has been
-            chisoku—knowing when you have enough. In our consumer-driven
-            culture, this wisdom feels revolutionary.
-          </p>
-
-          <p>
-            Chisoku isn't about deprivation; it's about contentment. It's
-            recognizing that happiness doesn't come from having more, but from
-            appreciating what you already have.
-          </p>
-
-          <h2>9. Komorebi (木漏れ日) - Sunlight Filtering Through Leaves</h2>
-          <p>
-            Komorebi describes the interplay between light and leaves when
-            sunlight filters through trees. It's a reminder to notice and
-            appreciate the small, beautiful moments that happen around us every
-            day.
-          </p>
-
-          <p>
-            These concepts have taught me that wisdom often lies not in
-            complexity, but in simplicity. Not in having more, but in
-            appreciating what is. Not in perfection, but in acceptance.
-          </p>
-
-          <p>
-            The Japanese understanding of life offers us a different way of
-            being—one that values presence over productivity, contentment over
-            consumption, and wisdom over wealth.
-          </p>
-
-          <p>
-            Which of these concepts resonates most with you? How might you begin
-            to incorporate this wisdom into your own life?
-          </p>
+          <div class="bg-gray-50 p-6 rounded-lg my-8">
+            <h4 class="text-lg font-semibold text-gray-900 mb-3">
+              Key Takeaways:
+            </h4>
+            <ul class="list-disc list-inside space-y-2 text-gray-700">
+              <li>Prioritize comprehensible input over grammar drills</li>
+              <li>Allow for a natural silent period before speaking</li>
+              <li>Focus on high-frequency vocabulary first</li>
+              <li>Maintain consistency over intensity</li>
+              <li>
+                Trust the process — your brain knows how to learn languages
+              </li>
+            </ul>
+          </div>
         </div>
 
         <!-- Article Footer -->
-        <footer class="article-footer">
-          <div class="article-tags">
-            <a href="#" class="tag">Personal Growth</a>
-            <a href="#" class="tag">Philosophy</a>
-            <a href="#" class="tag">Japanese Culture</a>
-            <a href="#" class="tag">Mindfulness</a>
-            <a href="#" class="tag">Life Lessons</a>
+        <div class="border-t border-gray-200 pt-8 mt-12">
+          <div class="flex items-center justify-between mb-8">
+            <div class="flex items-center space-x-6">
+              <button class="flex items-center text-gray-600 hover:text-black">
+                <i class="fas fa-comment mr-2"></i>
+                <span>116</span>
+              </button>
+            </div>
+            <div class="flex items-center space-x-4">
+              <button class="text-gray-600 hover:text-black">
+                <i class="fas fa-share"></i>
+              </button>
+            </div>
           </div>
 
-          <div class="article-engagement">
-            <button class="clap-btn-large">
-              <span class="clap-icon">👏</span>
-              <span class="clap-count">1.7K</span>
-            </button>
-            <button class="comment-btn-large">
-              <span class="comment-icon">💬</span>
-              <span class="comment-count">26</span>
-            </button>
+          <!-- Author Bio -->
+          <div class="bg-gray-50 p-6 rounded-lg mb-8">
+            <div class="flex items-start">
+              <div
+                class="w-16 h-16 bg-red-500 rounded-full flex items-center justify-center mr-4 flex-shrink-0"
+              >
+                <span class="text-white font-bold text-lg">VV</span>
+              </div>
+              <div class="flex-1">
+                <div class="flex items-center mb-2">
+                  <h4 class="text-lg font-semibold text-gray-900">
+                    Viktoria Verde, PhD
+                  </h4>
+                  <button
+                    class="ml-3 px-4 py-1 bg-green-600 text-white text-sm rounded-full hover:bg-green-700"
+                  >
+                    Follow
+                  </button>
+                </div>
+                <p class="text-gray-600 mb-3">
+                  Linguist, polyglot, and language teacher with 15+ years of
+                  experience. I help people learn languages faster using
+                  science-based methods.
+                </p>
+                <div class="flex items-center space-x-4 text-sm text-gray-500">
+                  <span>2.3K Followers</span>
+                  <span>·</span>
+                  <span>Language Learning Expert</span>
+                </div>
+              </div>
+            </div>
           </div>
-        </footer>
+        </div>
       </article>
 
-      <!-- Right Sidebar -->
-      <aside class="article-sidebar-right">
-        <div class="author-card">
-          <div class="author-info">
-            <img
-              src="../assets/images/author-avatar.jpg"
-              alt="Thomas Oppong"
-              class="author-avatar-large"
-            />
-            <div class="author-details-card">
-              <h4>Thomas Oppong</h4>
-              <p>
-                Founder of AllTopStartups. I write about personal development,
-                entrepreneurship, and life lessons.
+      <!-- Comments Section -->
+      <section class="mt-12 border-t border-gray-200 pt-8">
+        <div class="flex items-center justify-between mb-6">
+          <h3 class="text-2xl font-bold text-gray-900">Responses (116)</h3>
+        </div>
+
+        <!-- Comment Input -->
+        <div class="mb-8">
+          <div class="flex items-start space-x-3">
+            <div
+              class="w-10 h-10 bg-red-600 rounded-full flex items-center justify-center flex-shrink-0"
+            >
+              <span class="text-white font-semibold">T</span>
+            </div>
+            <div class="flex-1">
+              <textarea
+                placeholder="What are your thoughts?"
+                class="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none"
+                rows="3"
+              ></textarea>
+              <div class="flex justify-between items-center mt-3">
+                <div class="flex items-center space-x-4 text-sm text-gray-500">
+                  <button class="hover:text-gray-700">
+                    <i class="fas fa-bold"></i>
+                  </button>
+                  <button class="hover:text-gray-700">
+                    <i class="fas fa-italic"></i>
+                  </button>
+                  <button class="hover:text-gray-700">
+                    <i class="fas fa-link"></i>
+                  </button>
+                </div>
+                <div class="flex items-center space-x-3">
+                  <button class="text-gray-500 hover:text-gray-700">
+                    Cancel
+                  </button>
+                  <button
+                    class="px-4 py-2 bg-green-600 text-white rounded-full hover:bg-green-700"
+                  >
+                    Respond
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Comments List -->
+        <div class="space-y-6">
+          <!-- Comment 1 -->
+          <div class="flex items-start space-x-3">
+            <div
+              class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0"
+            >
+              <span class="text-white font-semibold">M</span>
+            </div>
+            <div class="flex-1">
+              <div class="flex items-center mb-2">
+                <span class="font-medium text-gray-900">Maria Rodriguez</span>
+                <span class="text-sm text-gray-500 ml-2">2 days ago</span>
+              </div>
+              <p class="text-gray-700 mb-3">
+                This is exactly what I needed! I've been struggling with Spanish
+                for months using traditional methods. The comprehensible input
+                approach makes so much sense. Thank you for sharing your
+                expertise!
               </p>
-              <button class="follow-btn-card">Follow</button>
             </div>
           </div>
-        </div>
 
-        <div class="more-from-author">
-          <h4>More from Thomas Oppong</h4>
-          <div class="related-article">
-            <h5>The Art of Slow Living: Why Rushing is Ruining Your Life</h5>
-            <div class="related-meta">
-              <span>4 min read</span>
-              <span>•</span>
-              <span>Jan 28</span>
+          <!-- Comment 2 -->
+          <div class="flex items-start space-x-3">
+            <div
+              class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0"
+            >
+              <span class="text-white font-semibold">J</span>
             </div>
-          </div>
-          <div class="related-article">
-            <h5>10 Habits That Will Change Your Life in 6 Months</h5>
-            <div class="related-meta">
-              <span>6 min read</span>
-              <span>•</span>
-              <span>Jan 15</span>
-            </div>
-          </div>
-        </div>
-      </aside>
-    </main>
+            <div class="flex-1">
+              <div class="flex items-center mb-2">
+                <span class="font-medium text-gray-900">James Chen</span>
+                <span class="text-sm text-gray-500 ml-2">1 day ago</span>
+              </div>
+              <p class="text-gray-700 mb-3">
+                As someone who learned Mandarin using similar principles, I can
+                confirm this works! The silent period was crucial for me. I
+                spent 3 months just listening to podcasts and watching shows
+                before I even attempted to speak.
+              </p>
+              
 
-    <script src="../assets/js/main.js"></script>
-    <!-- <script src="../assets/js/post-detail.js"></script> -->
+          
+
+        <!-- Load More Comments -->
+        <div class="text-center mt-8">
+          <button class="text-green-600 hover:underline">
+            Show more responses
+          </button>
+        </div>
+      </section>
+    </div>
+    <script src="../assets/js/post-detail.js"></script>
   </body>
 </html>
