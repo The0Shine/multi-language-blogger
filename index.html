@@ -113,39 +113,112 @@
           <!-- Navigation Tabs -->
           <nav
             id="navTabs"
-            class="flex border-b border-gray-200 mb-8 nav-container nav-sticky"
+            class="border-b border-gray-200 mb-8 nav-container sticky bg-white"
           >
-            <div
-              class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex space-x-4 overflow-x-auto"
-            >
-              <button
-                class="flex items-center py-4 border-b-2 border-black text-black font-medium"
-              >
-                <i class="fas fa-plus mr-2"></i>
-                For you
-              </button>
-
-              <button
-                class="py-4 text-gray-500 hover:text-black flex items-center"
-              >
-                Featured
-                <span
-                  class="ml-1 px-2 py-1 bg-green-100 text-green-800 text-xs rounded"
-                  >New</span
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div class="relative">
+                <!-- Left scroll button -->
+                <button
+                  id="scrollLeft"
+                  class="absolute left-[-40px] top-0 z-10 h-full px-10 bg-white/70 text-gray-500 hover:text-black transition-all duration-200 hidden"
+                  onclick="scrollTabs('left')"
                 >
-              </button>
-              <button class="py-4 text-gray-500 hover:text-black">
-                Self Improvement
-              </button>
-              <button class="py-4 text-gray-500 hover:text-black">
-                Productivity
-              </button>
-              <button class="py-4 text-gray-500 hover:text-black">
-                Machine Learning
-              </button>
-              <button class="text-gray-400">
-                <i class="fas fa-chevron-right"></i>
-              </button>
+                  <i class="fas fa-chevron-left"></i>
+                </button>
+
+                <!-- Scrollable tabs container -->
+                <div
+                  id="tabsContainer"
+                  class="flex space-x-4 overflow-x-hidden scroll-smooth transition-all duration-300"
+                  style="margin-left: 0; margin-right: 0"
+                >
+                  <button
+                    class="flex items-center py-4 border-b-2 border-black text-black font-medium whitespace-nowrap"
+                  >
+                    <i class="fas fa-plus mr-2"></i>
+                    For you
+                  </button>
+
+                  <button
+                    class="py-4 text-gray-500 hover:text-black flex items-center whitespace-nowrap"
+                  >
+                    Featured
+                    <span
+                      class="ml-1 px-2 py-1 bg-green-100 text-green-800 text-xs rounded"
+                      >New</span
+                    >
+                  </button>
+
+                  <button
+                    class="py-4 text-gray-500 hover:text-black whitespace-nowrap"
+                  >
+                    Self Improvement
+                  </button>
+
+                  <button
+                    class="py-4 text-gray-500 hover:text-black whitespace-nowrap"
+                  >
+                    Productivity
+                  </button>
+
+                  <button
+                    class="py-4 text-gray-500 hover:text-black whitespace-nowrap"
+                  >
+                    Machine Learning
+                  </button>
+
+                  <button
+                    class="py-4 text-gray-500 hover:text-black whitespace-nowrap"
+                  >
+                    Data Science
+                  </button>
+
+                  <button
+                    class="py-4 text-gray-500 hover:text-black whitespace-nowrap"
+                  >
+                    Web Development
+                  </button>
+
+                  <button
+                    class="py-4 text-gray-500 hover:text-black whitespace-nowrap"
+                  >
+                    Mobile Development
+                  </button>
+
+                  <button
+                    class="py-4 text-gray-500 hover:text-black whitespace-nowrap"
+                  >
+                    Cloud Computing
+                  </button>
+
+                  <button
+                    class="py-4 text-gray-500 hover:text-black whitespace-nowrap"
+                  >
+                    DevOps
+                  </button>
+
+                  <button
+                    class="py-4 text-gray-500 hover:text-black whitespace-nowrap"
+                  >
+                    Artificial Intelligence
+                  </button>
+
+                  <button
+                    class="py-4 text-gray-500 hover:text-black whitespace-nowrap"
+                  >
+                    Blockchain
+                  </button>
+                </div>
+
+                <!-- Right scroll button -->
+                <button
+                  id="scrollRight"
+                  class="absolute right-[-20px] top-0 z-10 h-full px-10 text-gray-800 bg-white/70 hover:text-black transition-all duration-200"
+                  onclick="scrollTabs('right')"
+                >
+                  <i class="fas fa-chevron-right text-xl"></i>
+                </button>
+              </div>
             </div>
           </nav>
 

@@ -86,3 +86,80 @@ if (profileDropdown && dropdownMenu) {
     e.stopPropagation();
   });
 }
+let scrollAmount = 200; // Amount to scroll each time
+
+function scrollTabs(direction) {
+  const container = document.getElementById("tabsContainer");
+  const scrollLeft = container.scrollLeft;
+  const scrollWidth = container.scrollWidth;
+  const clientWidth = container.clientWidth;
+
+  if (direction === "left") {
+    container.scrollLeft = Math.max(0, scrollLeft - scrollAmount);
+  } else {
+    container.scrollLeft = Math.min(
+      scrollWidth - clientWidth,
+      scrollLeft + scrollAmount
+    );
+  }
+
+  // Update button visibility after scroll
+  setTimeout(updateScrollButtons, 100);
+}
+
+function updateScrollButtons() {
+  const container = document.getElementById("tabsContainer");
+  const leftButton = document.getElementById("scrollLeft");
+  const rightButton = document.getElementById("scrollRight");
+
+  const scrollLeft = container.scrollLeft;
+  const scrollWidth = container.scrollWidth;
+  const clientWidth = container.clientWidth;
+
+  // Show/hide left button
+  if (scrollLeft > 0) {
+    leftButton.classList.remove("hidden");
+    container.style.marginLeft = "40px";
+  } else {
+    leftButton.classList.add("hidden");
+    container.style.marginLeft = "0";
+  }
+
+  // Show/hide right button
+  if (scrollLeft < scrollWidth - clientWidth - 1) {
+    rightButton.classList.remove("hidden");
+    container.style.marginRight = "40px";
+  } else {
+    rightButton.classList.add("hidden");
+    container.style.marginRight = "0";
+  }
+}
+
+// Initial check and resize handler
+function checkScrollNeeded() {
+  const container = document.getElementById("tabsContainer");
+  const scrollWidth = container.scrollWidth;
+  const clientWidth = container.clientWidth;
+
+  if (scrollWidth > clientWidth) {
+    updateScrollButtons();
+  } else {
+    // Hide all buttons if no scroll needed
+    document.getElementById("scrollLeft").classList.add("hidden");
+    document.getElementById("scrollRight").classList.add("hidden");
+    container.style.marginLeft = "0";
+    container.style.marginRight = "0";
+  }
+}
+
+// Add scroll event listener to update buttons
+document
+  .getElementById("tabsContainer")
+  .addEventListener("scroll", updateScrollButtons);
+
+// Check on load and resize
+window.addEventListener("load", checkScrollNeeded);
+window.addEventListener("resize", checkScrollNeeded);
+
+// Initial check
+checkScrollNeeded();
