@@ -1,0 +1,15 @@
+.story-card:hover {
+  background-color: #f9fafb;
+}
+.status-draft {
+  color: #f59e0b;
+  background-color: #fef3c7;
+}
+.status-published {
+  color: #10b981;
+  background-color: #d1fae5;
+}
+.status-unlisted {
+  color: #6b7280;
+  background-color: #f3f4f6;
+}

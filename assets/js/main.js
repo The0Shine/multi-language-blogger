@@ -67,3 +67,22 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 });
+const profileDropdown = document.getElementById("profileDropdown");
+const dropdownMenu = document.getElementById("dropdownMenu");
+
+if (profileDropdown && dropdownMenu) {
+  profileDropdown.addEventListener("click", function (e) {
+    e.stopPropagation();
+    dropdownMenu.classList.toggle("hidden");
+  });
+
+  // Close dropdown when clicking outside
+  document.addEventListener("click", function () {
+    dropdownMenu.classList.add("hidden");
+  });
+
+  // Prevent dropdown from closing when clicking inside it
+  dropdownMenu.addEventListener("click", function (e) {
+    e.stopPropagation();
+  });
+}

@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Your Stories - Medium</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="../assets/css/my-stories.css" />
+  </head>
+  <body class="bg-white">
+    <!-- Header -->
+    <header class="border-b border-gray-200 bg-white sticky top-0 z-50">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+          <div class="flex items-center space-x-8">
+            <a href="/" class="text-2xl font-bold text-black">Medium</a>
+            <span class="text-sm text-gray-500">Your stories</span>
+          </div>
+          <div class="flex items-center space-x-6">
+            <button
+              class="flex items-center text-gray-600 hover:text-black"
+              onclick="window.location.href='write.html'"
+            >
+              <i class="fas fa-pen mr-2"></i>
+              <span>Write</span>
+            </button>
+            <!-- <button class="text-gray-600 hover:text-black">
+              <i class="fas fa-bell text-xl"></i>
+            </button> -->
+            <div
+              class="w-8 h-8 bg-red-600 rounded-full flex items-center justify-center"
+            >
+              <span class="text-white font-semibold">T</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <!-- Page Header -->
+      <div class="flex items-center justify-between mb-8">
+        <div>
+          <h1 class="text-3xl font-bold text-gray-900 mb-2">Your stories</h1>
+          <p class="text-gray-600">
+            Manage and track your published stories and drafts
+          </p>
+        </div>
+        <button
+          class="px-6 py-2 bg-green-600 text-white rounded-full hover:bg-green-700 font-medium"
+          onclick="window.location.href='write.html'"
+        >
+          <i class="fas fa-plus mr-2"></i>
+          Write story
+        </button>
+      </div>
+
+      <!-- Stats Cards -->
+      <!-- <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div class="bg-white border border-gray-200 rounded-lg p-6">
+          <div class="flex items-center">
+            <div class="p-2 bg-green-100 rounded-lg">
+              <i class="fas fa-file-alt text-green-600"></i>
+            </div>
+            <div class="ml-4">
+              <p class="text-sm font-medium text-gray-600">Published</p>
+              <p class="text-2xl font-bold text-gray-900">12</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white border border-gray-200 rounded-lg p-6">
+          <div class="flex items-center">
+            <div class="p-2 bg-yellow-100 rounded-lg">
+              <i class="fas fa-edit text-yellow-600"></i>
+            </div>
+            <div class="ml-4">
+              <p class="text-sm font-medium text-gray-600">Drafts</p>
+              <p class="text-2xl font-bold text-gray-900">3</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white border border-gray-200 rounded-lg p-6">
+          <div class="flex items-center">
+            <div class="p-2 bg-blue-100 rounded-lg">
+              <i class="fas fa-eye text-blue-600"></i>
+            </div>
+            <div class="ml-4">
+              <p class="text-sm font-medium text-gray-600">Total Views</p>
+              <p class="text-2xl font-bold text-gray-900">24.5K</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white border border-gray-200 rounded-lg p-6">
+          <div class="flex items-center">
+            <div class="p-2 bg-purple-100 rounded-lg">
+              <i class="fas fa-hands-clapping text-purple-600"></i>
+            </div>
+            <div class="ml-4">
+              <p class="text-sm font-medium text-gray-600">Total Claps</p>
+              <p class="text-2xl font-bold text-gray-900">1.2K</p>
+            </div>
+          </div>
+        </div>
+      </div> -->
+
+      <!-- Filters and Search -->
+      <div class="flex items-center justify-between mb-6">
+        <div class="flex items-center space-x-4">
+          <select
+            class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+          >
+            <option value="newest">Newest first</option>
+            <option value="oldest">Oldest first</option>
+          </select>
+        </div>
+        <div class="relative">
+          <i
+            class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+          ></i>
+          <input
+            type="text"
+            placeholder="Search your stories..."
+            class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 w-64"
+          />
+        </div>
+      </div>
+
+      <!-- Stories List -->
+      <div class="bg-white border border-gray-200 rounded-lg overflow-hidden">
+        <!-- Story 1 - Published -->
+        <div
+          class="story-card border-b border-gray-100 p-6 transition-colors duration-150"
+        >
+          <div class="flex items-start justify-between">
+            <div class="flex-1">
+              <div class="flex items-center mb-2">
+                <span
+                  class="status-published px-2 py-1 text-xs font-medium rounded-full"
+                  >Published</span
+                >
+                <span class="text-sm text-gray-500 ml-3">May 21, 2024</span>
+              </div>
+              <h3
+                class="text-xl font-bold text-gray-900 mb-2 hover:text-green-600 cursor-pointer"
+              >
+                Building Scalable Web Applications with Modern JavaScript
+              </h3>
+              <p class="text-gray-600 mb-4 leading-relaxed">
+                A comprehensive guide to creating maintainable and performant
+                web applications using the latest JavaScript frameworks and best
+                practices.
+              </p>
+              <div class="flex items-center space-x-6 text-sm text-gray-500">
+                <div class="flex items-center">
+                  <i class="fas fa-comment mr-1"></i>
+                  <span>18 responses</span>
+                </div>
+              </div>
+            </div>
+            <div class="flex items-center space-x-2 ml-6">
+              <button
+                class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded"
+                title="Edit"
+              >
+                <i class="fas fa-edit"></i>
+              </button>
+
+              <button
+                class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded"
+                title="More options"
+              >
+                <i class="fas fa-ellipsis-h"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Story 3 - Published -->
+        <div
+          class="story-card border-b border-gray-100 p-6 transition-colors duration-150"
+        >
+          <div class="flex items-start justify-between">
+            <div class="flex-1">
+              <div class="flex items-center mb-2">
+                <span
+                  class="status-published px-2 py-1 text-xs font-medium rounded-full"
+                  >Published</span
+                >
+                <span class="text-sm text-gray-500 ml-3">Apr 15, 2024</span>
+              </div>
+              <h3
+                class="text-xl font-bold text-gray-900 mb-2 hover:text-green-600 cursor-pointer"
+              >
+                The Future of AI in Software Development
+              </h3>
+              <p class="text-gray-600 mb-4 leading-relaxed">
+                Exploring how artificial intelligence is transforming the way we
+                write code, debug applications, and approach software
+                architecture.
+              </p>
+              <div class="flex items-center space-x-6 text-sm text-gray-500">
+                <div class="flex items-center">
+                  <i class="fas fa-comment mr-1"></i>
+                  <span>32 responses</span>
+                </div>
+              </div>
+            </div>
+            <div class="flex items-center space-x-2 ml-6">
+              <button
+                class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded"
+                title="Edit"
+              >
+                <i class="fas fa-edit"></i>
+              </button>
+
+              <button
+                class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded"
+                title="More options"
+              >
+                <i class="fas fa-ellipsis-h"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pagination -->
+      <div class="flex items-center justify-between mt-8">
+        <p class="text-sm text-gray-700">
+          Showing <span class="font-medium">1</span> to
+          <span class="font-medium">5</span> of
+          <span class="font-medium">15</span> stories
+        </p>
+        <div class="flex items-center space-x-2">
+          <button
+            class="px-3 py-2 text-sm text-gray-500 hover:text-gray-700 disabled:opacity-50"
+            disabled
+          >
+            Previous
+          </button>
+          <button class="px-3 py-2 text-sm bg-green-600 text-white rounded">
+            1
+          </button>
+          <button class="px-3 py-2 text-sm text-gray-700 hover:text-gray-900">
+            2
+          </button>
+          <button class="px-3 py-2 text-sm text-gray-700 hover:text-gray-900">
+            3
+          </button>
+          <button class="px-3 py-2 text-sm text-gray-700 hover:text-gray-900">
+            Next
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Modal -->
+    <div
+      id="actionModal"
+      class="fixed inset-0 bg-black bg-opacity-50 hidden z-50"
+    >
+      <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-white rounded-lg max-w-md w-full p-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">
+            Story Actions
+          </h3>
+          <div class="space-y-2">
+            <button
+              class="w-full text-left px-4 py-2 hover:bg-gray-100 rounded flex items-center"
+            >
+              <i class="fas fa-edit mr-3 text-gray-400"></i>
+              Edit story
+            </button>
+
+            <button
+              class="w-full text-left px-4 py-2 hover:bg-gray-100 rounded flex items-center"
+            >
+              <i class="fas fa-share mr-3 text-gray-400"></i>
+              Share story
+            </button>
+
+            <button
+              class="w-full text-left px-4 py-2 hover:bg-gray-100 rounded flex items-center text-red-600"
+            >
+              <i class="fas fa-trash mr-3"></i>
+              Delete story
+            </button>
+          </div>
+          <div class="mt-6 flex justify-end">
+            <button
+              class="px-4 py-2 text-gray-600 hover:text-gray-800"
+              onclick="closeModal()"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="../assets/js/my-stories.js"></script>
+  </body>
+</html>
