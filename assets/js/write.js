@@ -129,3 +129,25 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 });
+const textarea = document.getElementById("subtitleInput");
+
+textarea.addEventListener("input", () => {
+  textarea.style.height = "auto"; // Reset trước
+  textarea.style.height = textarea.scrollHeight + "px"; // Set lại theo nội dung
+});
+
+// Khởi tạo khi load
+window.addEventListener("DOMContentLoaded", () => {
+  textarea.style.height = "auto";
+  textarea.style.height = textarea.scrollHeight + "px";
+});
+const titleInput = document.getElementById("titleInput");
+
+function autoResize(el) {
+  el.style.height = "auto";
+  el.style.height = el.scrollHeight + "px";
+}
+
+titleInput.addEventListener("input", () => autoResize(titleInput));
+
+window.addEventListener("DOMContentLoaded", () => autoResize(titleInput));

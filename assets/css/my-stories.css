@@ -1,15 +1,27 @@
+/* Custom styles for the Medium stories page */
+
+/* Status badges */
+.status-published {
+  background-color: #dcfce7;
+  color: #16a34a;
+}
+
+.status-draft {
+  background-color: #fef3c7;
+  color: #d97706;
+}
+
+.status-scheduled {
+  background-color: #dbeafe;
+  color: #2563eb;
+}
+
+/* Story cards hover effect */
 .story-card:hover {
   background-color: #f9fafb;
 }
-.status-draft {
-  color: #f59e0b;
-  background-color: #fef3c7;
-}
-.status-published {
-  color: #10b981;
-  background-color: #d1fae5;
-}
-.status-unlisted {
-  color: #6b7280;
-  background-color: #f3f4f6;
+
+/* Basic dropdown styling */
+.dropdown-menu {
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
 }

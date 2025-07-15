@@ -22,7 +22,7 @@
           </div>
           <div class="flex items-center space-x-4">
             <button
-              class="text-green-600 hover:text-green-700 text-sm font-medium"
+              class="bg-green-600 text-white hover:bg-green-700 text-sm font-medium px-4 py-2 rounded-full"
             >
               Publish
             </button>
@@ -47,22 +47,22 @@
       <div class="mb-8">
         <!-- Title Input -->
         <div class="mb-8">
-          <input
-            type="text"
-            placeholder="Title"
-            class="w-full text-4xl font-bold text-gray-900 placeholder-gray-400 border-none focus:outline-none resize-none"
+          <textarea
             id="titleInput"
-          />
+            placeholder="Title"
+            rows="1"
+            class="w-full text-4xl font-bold text-gray-900 placeholder-gray-400 border-none focus:outline-none resize-none overflow-hidden leading-tight"
+          ></textarea>
         </div>
 
         <!-- Subtitle Input -->
         <div class="mb-8">
-          <input
-            type="text"
-            placeholder="Tell your story..."
-            class="w-full text-xl text-gray-600 placeholder-gray-400 border-none focus:outline-none"
+          <textarea
             id="subtitleInput"
-          />
+            placeholder="Tell your story..."
+            rows="1"
+            class="w-full text-xl text-gray-600 placeholder-gray-400 border-none focus:outline-none leading-relaxed overflow-hidden resize-none"
+          ></textarea>
         </div>
 
         <!-- Toolbar -->
@@ -139,12 +139,6 @@
         </div>
 
         <!-- Editor Content -->
-        <div
-          class="editor-content text-lg text-gray-700 leading-relaxed focus:outline-none"
-          contenteditable="true"
-          id="editorContent"
-          data-placeholder="Tell your story..."
-        ></div>
       </div>
 
       <!-- Sidebar Actions -->
