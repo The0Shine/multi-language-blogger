@@ -1,0 +1,44 @@
+<div class="card">
+    <div class="card-title">Manage Users</div>
+    <button class="btn btn-primary" onclick="location.href='sections/user_add.html'">
+        <i class="fa fa-plus"></i> Add User
+    </button>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="user-table">
+            <tr>
+                <td>Admin</td>
+                <td>admin@blog.com</td>
+                <td>Administrator</td>
+                <td>
+                    <button class="btn btn-info" onclick="location.href='sections/user_edit.html?id=1'">
+                        <i class="fa fa-edit"></i> Edit
+                    </button>
+                    <button class="btn btn-danger" onclick="deleteUser(this)">
+                        <i class="fa fa-trash"></i> Delete
+                    </button>
+                </td>
+            </tr>
+            <tr>
+                <td>Jane</td>
+                <td>jane@blog.com</td>
+                <td>Editor</td>
+                <td>
+                    <button class="btn btn-info" onclick="location.href='sections/user_edit.html?id=2'">
+                        <i class="fa fa-edit"></i> Edit
+                    </button>
+                    <button class="btn btn-danger" onclick="deleteUser(this)">
+                        <i class="fa fa-trash"></i> Delete
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

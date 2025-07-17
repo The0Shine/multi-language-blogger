@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Category</title>
+    <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+    <div class="admin-content" style="max-width: 600px; margin: 40px auto;">
+        <div class="card">
+            <div class="card-title">Add Category</div>
+            <form id="add-category-form">
+                <label>Category Name:</label>
+                <input type="text" name="category_name" required>
+                <label>Status:</label>
+                <input type="number" name="status" required>
+                <div style="margin-top:16px;">
+                    <button type="submit" class="btn btn-success">Add Category</button>
+                    <button type="button" class="btn btn-secondary" onclick="goBackOrDefault('categories.html')">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</html>
+
+<script>
+document.getElementById('add-category-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    alert('Category added successfully (demo).');
+    goBackOrDefault('category.html');
+});
+function goBackOrDefault(fallbackUrl){
+        if(document.referrer && document.referrer !== window.location.href){
+            history.back();
+        } else {
+            location.href = fallbackUrl;
+        }
+    }
+</script>
+</body>

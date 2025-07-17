@@ -1,56 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Admin Dashboard</title>
-    <link rel="stylesheet" href="assets/css/style.css" />
+    <meta charset="UTF-8">
+    <title>Blog Admin Panel</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
-
-<header>
-    <h1>Admin Dashboard</h1>
-</header>
-
-<nav>
-    <a href="manage-users.html">Manage Users</a>
-    <a href="manage-posts.html">Manage Posts</a>
-    <a href="manage-language.html">Manage Languages</a>
-    <a href="manage-role.html">Manage Roles</a>
-    <a href="manage-categories.html">Manage Categories</a>
-</nav>
-
-<div class="content">
-    <section id="manage-users" class="section">
-        <h2>Manage Users</h2>
-        <p>View, add, update, or deactivate users in the system.</p>
-        <a href="manage-users.html" class="btn">Go to User Management</a>
-    </section>
-
-    <section id="manage-posts" class="section">
-        <h2>Manage Posts</h2>
-        <p>View, approve, edit, or delete posts created by users.</p>
-        <a href="manage-posts.html" class="btn">Go to Post Management</a>
-    </section>
-
-    <section id="manage-language" class="section">
-        <h2>Manage Languages</h2>
-        <p>View, add, update, or deactivate supported languages.</p>
-        <a href="manage-language.html" class="btn">Go to Language Management</a>
-    </section>
-
-    <section id="manage-role" class="section">
-        <h2>Manage Roles</h2>
-        <p>View, add, update, or deactivate roles for user permissions.</p>
-        <a href="manage-role.html" class="btn">Go to Role Management</a>
-    </section>
-
-    <section id="manage-categories" class="section">
-        <h2>Manage Categories</h2>
-        <p>View, add, update, or deactivate post categories.</p>
-        <a href="manage-categories.html" class="btn">Go to Category Management</a>
-    </section>
-</div>
-
+    <header class="admin-header">
+        <div class="title">~Blog Admin~</div>
+        <div class="user"><i class="fa fa-user"></i> Admin</div>
+    </header>
+    <div class="admin-container">
+        <aside class="admin-sidebar">
+            <nav>
+                <a href="#" data-section="dashboard" class="active"><i class="fa fa-home"></i> Dashboard</a>
+                <a href="#" data-section="users"><i class="fa fa-users"></i> Manage Users</a>
+                <a href="#" data-section="posts"><i class="fa fa-file-alt"></i> Manage Posts</a>
+                <a href="#" data-section="roles"><i class="fa fa-user-shield"></i> Manage Roles</a>
+                <a href="#" data-section="languages"><i class="fa fa-language"></i> Manage Languages</a>
+                <a href="#" data-section="categories"><i class="fa fa-tags"></i> Manage Categories</a>
+            </nav>
+        </aside>
+        <main class="admin-content">
+            <div id="main-content"></div>
+        </main>
+    </div>
+    <script src="js/script.js"></script>
 </body>
 </html>
