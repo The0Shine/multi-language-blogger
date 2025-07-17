@@ -89,7 +89,7 @@ th {
     background: #4f5fa3;
     color: #fff;
     border: none;
-    padding: 6px 16px;
+    padding: 8px 12px;
     border-radius: 4px;
     cursor: pointer;
     font-size: 0.95rem;
@@ -268,4 +268,125 @@ label {
 /* Modal close hover */
 .close:hover {
     color: #4f5fa3;
+}
+
+.filter-bar {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+}
+
+.filter-bar input[type="text"] {
+    flex: 1;
+    min-width: 250px;
+    padding: 8px 12px;
+}
+
+.filter-bar select {
+    padding: 8px 12px;
+}
+.section-controls {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+    margin-bottom: 16px;
+}
+
+.section-controls input[type="text"] {
+    flex: 2;
+    padding: 8px 12px;
+}
+
+.section-controls select {
+    flex: 1;
+    padding: 8px 12px;
+}
+
+.section-controls .btn {
+    flex-shrink: 0;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+/* ===========================
+   Responsive Sidebar & Layout
+   =========================== */
+
+@media (max-width: 992px) {
+    .admin-container {
+        flex-direction: column;
+    }
+    .admin-sidebar {
+        position: fixed;
+        left: -220px;
+        top: 0;
+        height: 100%;
+        z-index: 1000;
+        transition: left 0.3s ease;
+    }
+    .admin-sidebar.open {
+        left: 0;
+    }
+    .admin-header {
+        position: sticky;
+        top: 0;
+        z-index: 1100;
+        background: #fff;
+    }
+    .admin-content {
+        padding: 16px;
+    }
+}
+
+@media (max-width: 768px) {
+    .admin-header .title {
+        font-size: 1.2rem;
+    }
+    .admin-sidebar a {
+        font-size: 0.95rem;
+        padding: 10px 20px;
+    }
+    .section-controls,
+    .filter-bar {
+        flex-direction: column;
+        gap: 8px;
+    }
+    .section-controls input[type="text"],
+    .filter-bar input[type="text"],
+    .section-controls select,
+    .filter-bar select {
+        width: 100%;
+    }
+    .section-controls .btn,
+    .filter-bar .btn {
+        width: 100%;
+    }
+    table {
+        font-size: 0.95rem;
+    }
+    .modal-content {
+        width: 95%;
+    }
+}
+
+/* Hamburger Menu Button */
+.hamburger {
+    display: none;
+    cursor: pointer;
+    font-size: 1.5rem;
+    color: #4f5fa3;
+    background: none;
+    border: none;
+}
+
+@media (max-width: 992px) {
+    .hamburger {
+        display: block;
+    }
 }

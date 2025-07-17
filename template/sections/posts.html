@@ -1,8 +1,19 @@
 <div class="card">
+    <div class="section-header">
     <div class="card-title">Manage Posts</div>
     <button class="btn btn-primary" onclick="location.href='sections/post_add.html'">
         <i class="fa fa-plus"></i> Add Post
     </button>
+    </div>
+        <!-- Search & Filter -->
+    <div class="section-controls">
+        <input type="text" id="searchInput" placeholder="Search post...">
+        <select id="statusFilter">
+            <option value="">All Status</option>
+                <option value="Published">Published</option>
+                <option value="Pending Review">Pending Review</option>
+            </select>
+        </div>
     <table>
         <thead>
             <tr>
@@ -34,7 +45,7 @@
                     </a>
                 </td>
                 <td>Jane</td>
-                <td>Draft</td>
+                <td>Pending Review</td>
                 <td>
                     <button class="btn btn-danger" onclick="deletePost(this)">
                         <i class="fa fa-trash"></i> Delete
@@ -48,7 +59,7 @@
                     </a>
                 </td>
                 <td>Alex</td>
-                <td>Published</td>
+                <td>Pending Review</td>
                 <td>
                     <button class="btn btn-danger" onclick="deletePost(this)">
                         <i class="fa fa-trash"></i> Delete

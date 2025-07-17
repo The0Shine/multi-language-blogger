@@ -10,11 +10,13 @@
 </head>
 <body>
     <header class="admin-header">
+       <button class="hamburger" onclick="toggleSidebar()">&#9776;</button> 
+       <div class="sidebar-overlay" id="sidebarOverlay"></div>
         <div class="title">~Blog Admin~</div>
         <div class="user"><i class="fa fa-user"></i> Admin</div>
     </header>
     <div class="admin-container">
-        <aside class="admin-sidebar">
+        <aside class="admin-sidebar" id ="sidebar">
             <nav>
                 <a href="#" data-section="dashboard" class="active"><i class="fa fa-home"></i> Dashboard</a>
                 <a href="#" data-section="users"><i class="fa fa-users"></i> Manage Users</a>

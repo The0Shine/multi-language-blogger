@@ -1,6 +1,18 @@
 document.addEventListener("DOMContentLoaded", () => {
-    // Load dashboard by default
-    loadSection("dashboard");
+    // Nếu có hash trên URL thì load đúng section, nếu không thì load dashboard mặc định
+    const currentHash = window.location.hash.replace('#', '');
+    if (currentHash) {
+        document.querySelectorAll(".admin-sidebar a").forEach(l => l.classList.remove("active"));
+        const activeLink = document.querySelector(`[data-section="${currentHash}"]`);
+        if (activeLink) {
+            activeLink.classList.add("active");
+            loadSection(currentHash);
+        } else {
+            loadSection("dashboard");
+        }
+    } else {
+        loadSection("dashboard");
+    }
 
     // Sidebar navigation
     document.querySelectorAll("[data-section]").forEach(link => {
@@ -10,6 +22,9 @@ document.addEventListener("DOMContentLoaded", () => {
             this.classList.add("active");
             const section = this.getAttribute("data-section");
             loadSection(section);
+
+            // Cập nhật URL hash tương ứng với section
+            window.location.hash = section;
         });
     });
 });
@@ -95,3 +110,51 @@ function openPostAddForm() { document.getElementById('post-add-form').style.disp
 function closePostAddForm() { document.getElementById('post-add-form').style.display = 'none'; }
 // function openPostEditForm(btn) { document.getElementById('post-edit-form').style.display = 'flex'; /* fill form here */ }
 // function closePostEditForm() { document.getElementById('post-edit-form').style.display = 'none'; }
+document.addEventListener('DOMContentLoaded', () => {
+    const searchInput = document.getElementById('searchInput');
+    const statusFilter = document.getElementById('statusFilter');
+    const table = document.querySelector('table tbody');
+
+    if (searchInput && statusFilter && table) {
+        searchInput.addEventListener('input', () => filterTable(searchInput, statusFilter, table));
+        statusFilter.addEventListener('change', () => filterTable(searchInput, statusFilter, table));
+    }
+});
+
+function clearFilters() {
+    const searchInput = document.getElementById('searchInput');
+    const statusFilter = document.getElementById('statusFilter');
+    searchInput.value = '';
+    statusFilter.value = '';
+    const table = document.querySelector('table tbody');
+    filterTable(searchInput, statusFilter, table);
+}
+
+function filterTable(searchInput, statusFilter, table) {
+    const keyword = searchInput.value.toLowerCase();
+    const status = statusFilter.value;
+
+    const rows = table.getElementsByTagName('tr');
+    for (let row of rows) {
+        const col1 = row.cells[0]?.innerText.toLowerCase() || '';
+        const col2 = row.cells[1]?.innerText.toLowerCase() || '';
+        const rowStatus = row.cells[2]?.innerText || '';
+
+        const matchesKeyword = col1.includes(keyword) || col2.includes(keyword);
+        const matchesStatus = !status || rowStatus === status;
+
+        row.style.display = (matchesKeyword && matchesStatus) ? '' : 'none';
+    }
+}
+
+function deleteRow(button) {
+    if (confirm('Are you sure you want to delete this entry?')) {
+        const row = button.closest('tr');
+        row.remove();
+    }
+}
+function toggleSidebar() {
+    const sidebar = document.querySelector('.admin-sidebar');
+    sidebar.classList.toggle('open');
+}
+                     

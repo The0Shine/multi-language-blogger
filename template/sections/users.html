@@ -1,8 +1,19 @@
 <div class="card">
-    <div class="card-title">Manage Users</div>
-    <button class="btn btn-primary" onclick="location.href='sections/user_add.html'">
-        <i class="fa fa-plus"></i> Add User
-    </button>
+    <div class="section-header">
+        <div class="card-title">Manage Users</div>
+        <button class="btn btn-primary" onclick="location.href='sections/user_add.html'">
+            <i class="fa fa-plus"></i> Add User
+        </button>
+    </div>
+
+    <div class="section-controls">
+        <input type="text" id="searchInput" placeholder="Search user...">
+        <select id="statusFilter">
+            <option value="">All Status</option>
+                <option value="Active">Active</option>
+                <option value="Inactive">Inactive</option>
+            </select>
+        </div>
     <table>
         <thead>
             <tr>
