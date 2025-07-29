@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Category</title>
+    <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+    <div class="admin-content" style="max-width: 600px; margin: 40px auto;">
+<div class="card">
+    <div class="card-title">Edit Category</div>
+    <form id="edit-category-form">
+        <label>Category ID:</label>
+        <input type="number" name="categoryid" value="1" readonly><br>
+
+        <label>Category Name:</label>
+        <input type="text" name="category_name" value="Technology" required><br>
+
+        <label>Status:</label>
+        <input type="number" name="status" value="1" required><br>
+
+        <div style="margin-top:16px;">
+            <button type="submit" class="btn btn-success">Save Changes</button>
+            <button type="button" class="btn btn-secondary" onclick="goBackOrDefault('categories.html')">Cancel</button>
+        </div>
+    </form>
+</div>
+
+<script>
+document.getElementById('edit-category-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    alert('Category updated successfully (demo).');
+     goBackOrDefault('category.html');
+});
+function goBackOrDefault(fallbackUrl){
+        if(document.referrer && document.referrer !== window.location.href){
+            history.back();
+        } else {
+            location.href = fallbackUrl;
+        }
+    }
+</script>
+</body>

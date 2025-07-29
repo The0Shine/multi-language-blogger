@@ -1,0 +1,84 @@
+<div class="card">
+    <div class="section-header">
+    <div class="card-title">Manage Posts</div>
+    <button class="btn btn-primary" onclick="location.href='sections/post_add.html'">
+        <i class="fa fa-plus"></i> Add Post
+    </button>
+    </div>
+        <!-- Search & Filter -->
+    <div class="section-controls">
+        <input type="text" id="searchInput" placeholder="Search post...">
+        <select id="statusFilter">
+            <option value="">All Status</option>
+                <option value="Published">Published</option>
+                <option value="Pending Review">Pending Review</option>
+            </select>
+        </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="post-table">
+            <tr>
+                <td>
+                    <a href="#" onclick="showPostDetail('Welcome to the Blog', `<p>Welcome to our blog! Here you will find <strong>latest updates</strong>, tutorials, and more.</p><p>Enjoy reading and feel free to comment!</p>`, this)">
+                        Welcome to the Blog
+                    </a>
+                </td>
+                <td>Admin</td>
+                <td>Published</td>
+                <td>
+                    <button class="btn btn-danger" onclick="deletePost(this)">
+                        <i class="fa fa-trash"></i> Delete
+                    </button>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <a href="#" onclick="showPostDetail('How to Use Categories', `<p>This post explains how to use categories to organize your blog posts.</p><ul><li>Go to Categories section</li><li>Add or edit categories</li><li>Assign categories to posts</li></ul>`, this)">
+                        How to Use Categories
+                    </a>
+                </td>
+                <td>Jane</td>
+                <td>Pending Review</td>
+                <td>
+                    <button class="btn btn-danger" onclick="deletePost(this)">
+                        <i class="fa fa-trash"></i> Delete
+                    </button>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <a href="#" onclick="showPostDetail('Tips for Writing', `<h3>Tips for Writing Great Blog Posts</h3><ol><li>Choose interesting topics</li><li>Write clearly and concisely</li><li>Use images and examples</li></ol><p>Happy blogging!</p>`, this)">
+                        Tips for Writing
+                    </a>
+                </td>
+                <td>Alex</td>
+                <td>Pending Review</td>
+                <td>
+                    <button class="btn btn-danger" onclick="deletePost(this)">
+                        <i class="fa fa-trash"></i> Delete
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- Modal for post detail -->
+<div id="post-modal" class="modal" style="display:none;">
+    <div class="modal-content">
+        <span class="close" onclick="closePostModal()">&times;</span>
+        <h2 id="modal-title"></h2>
+        <div id="modal-body"></div>
+        <div style="margin-top:24px;">
+            <button class="btn btn-success" onclick="approvePostFromModal()"><i class="fa fa-check"></i> Approve</button>
+            <button class="btn btn-warning" onclick="rejectPostFromModal()"><i class="fa fa-times"></i> Reject</button>
+        </div>
+    </div>
+</div>

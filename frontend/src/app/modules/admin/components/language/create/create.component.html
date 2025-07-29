@@ -1,0 +1,65 @@
+<div class="row">
+    <div class="col-xxl-12">
+      <div class="card">
+        <div class="card-header align-items-center d-flex">
+          <h4 class="card-title mb-0 flex-grow-1">Tạo language</h4>
+
+        </div>
+        <div class="card-body">
+        <form [formGroup]="LanguageForm" (ngSubmit)="saveLanguage()">
+            <!-- Tên danh mục -->
+            <div class="form-group mb-3">
+              <label for="name">Tên Language <span class="text-danger">*</span></label>
+              <input
+                type="text"
+                id="name"
+                formControlName="name"
+                class="form-control"
+                [ngClass]="{ 'is-invalid': submitted && f['name'].errors }"
+                placeholder="Nhập tên danh mục"
+              />
+              <div *ngIf="submitted && f['name'].errors" class="invalid-feedback">
+                <div *ngIf="f['name'].errors['required']">Vui lòng nhập tên ngôn ngữ</div>
+              </div>
+            </div>
+
+
+
+                <!-- Ngôn ngữ -->
+                <div class="form-group mb-3">
+                    <label for="locale"> Ngôn Ngữ <span class="text-danger">*</span></label>
+                    <input
+                      type="text"
+                      id="locale"
+                      formControlName="locale"
+                      class="form-control"
+                      [ngClass]="{ 'is-invalid': submitted && f['locale'].errors }"
+                      placeholder="Nhập ngôn ngữ "
+                    />
+                    <div *ngIf="submitted && f['locale'].errors" class="invalid-feedback">
+                      <div *ngIf="f['locale'].errors['required']">Vui lòng ngôn ngữ </div>
+                    </div>
+                  </div>
+
+                <!-- Hình ảnh -->
+                  <div class="form-group mb-3">
+                <label for="image">Hình ảnh</label>
+                <textarea
+                  id="image"
+                  rows="3"
+                  formControlName="image"
+                  class="form-control"
+                  placeholder="Thêm hình ảnh "
+                ></textarea>
+              </div>
+
+              <!-- Nút Lưu -->
+              <div class="form-group text-end">
+                <button type="submit" class="btn btn-primary" [disabled]="LanguageForm.invalid">
+                  Lưu ngôn ngữ
+                </button>
+              </div>
+            </form>
+
+          </div>
+        </div>

@@ -1,0 +1,63 @@
+
+<div class="card">
+    <div class="section-header">
+    <div class="card-title">Manage Categories</div>
+    <button class="btn btn-primary" onclick="location.href='sections/category_add.html'">
+        <i class="fa fa-plus"></i> Add Category
+    </button>
+</div>
+
+            <div class="section-controls">
+                <input type="text" id="searchInput" placeholder="Search category...">
+                <select id="statusFilter">
+                    <option value="">All Status</option>
+                    <option value="Active">Active</option>
+                    <option value="Inactive">Inactive</option>
+                </select>
+            </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Category Name</th>
+                <th>Description</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="category-table">
+            <tr>
+                <td>Technology</td>
+                <td>Tech news and tutorials</td>
+                <td>
+                    <button class="btn btn-info" onclick="location.href='sections/category_edit.html?id=1'">
+                        <i class="fa fa-edit"></i> Edit
+                    </button>
+                    <button class="btn btn-danger" onclick="deleteCategory(this)">
+                        <i class="fa fa-trash"></i> Delete
+                    </button>
+                </td>
+            </tr>
+            <tr>
+                <td>Lifestyle</td>
+                <td>Tips and stories</td>
+                <td>
+                    <button class="btn btn-info" onclick="location.href='sections/category_edit.html?id=2'">
+                        <i class="fa fa-edit"></i> Edit
+                    </button>
+                    <button class="btn btn-danger" onclick="deleteCategory(this)">
+                        <i class="fa fa-trash"></i> Delete
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<script>
+function deleteCategory(btn) {
+    if (confirm('Are you sure you want to delete this category?')) {
+        btn.closest('tr').remove();
+        alert('Category deleted (demo).');
+    }
+}
+
+</script>

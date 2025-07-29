@@ -1,0 +1,92 @@
+<div class="card">
+  <div class="section-header d-flex justify-content-between align-items-center p-3">
+    <div class="card-title m-0">Manage Roles</div>
+    <button class="btn btn-primary" (click)="openCreateModal()">
+      <i class="fa fa-plus"></i> Add Role
+    </button>
+  </div>
+  <div class="section-controls">
+        <input type="text" [(ngModel)]="searchText" placeholder="Search role..." />
+        <select [(ngModel)]="statusFilter">
+            <option value="">All Status</option>
+            <option value="Active">Active</option>
+            <option value="Inactive">Inactive</option>
+        </select>
+    </div>
+
+  <table class="table table-striped mb-0">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Role Name</th>
+        <th>Description</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+
+      <tr *ngFor="let role of filteredRoles()">
+        <td>{{ role.roleid }}</td>
+        <td>{{ role.role_name }}</td>
+        <td>{{ role.description }}</td>
+        <td>
+          <span [ngClass]="{'text-success': role.status === 'Active', 'text-danger': role.status === 'Inactive'}">
+            {{ role.status }}
+          </span>
+        </td>
+        <td>
+          <button class="btn btn-info me-2" (click)="editRole(role)">
+            <i class="fa fa-edit"></i> Edit
+          </button>
+          <button class="btn btn-danger" (click)="deleteRole(role.roleid)">
+            <i class="fa fa-trash"></i> Delete
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Modal thêm/sửa role -->
+<div *ngIf="showModal" class="modal fade show d-block custom-modal" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content shadow-lg">
+      <div class="modal-header">
+        <h5 class="modal-title custom-title">
+          {{ editingRole ? 'Chỉnh Sửa Vai Trò' : 'Thêm Mới Vai Trò' }}
+        </h5>
+        <button type="button" class="close custom-close" (click)="closeModal()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <form>
+          <div class="form-group">
+            <label for="roleName">Role Name:</label>
+            <input type="text" class="form-control" [(ngModel)]="modalRole.role_name" name="roleName">
+          </div>
+          <div class="form-group">
+            <label for="roleDescription">Description:</label>
+            <input type="text" class="form-control" [(ngModel)]="modalRole.description" name="roleDescription">
+          </div>
+          <div class="form-group">
+            <label for="roleStatus">Status:</label>
+            <select class="form-control" [(ngModel)]="modalRole.status" name="roleStatus">
+              <option value="Active">Active</option>
+              <option value="Inactive">Inactive</option>
+            </select>
+          </div>
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeModal()">Đóng</button>
+        <button type="button" class="btn btn-success" (click)="saveRole()">
+          {{ editingRole ? 'Update' : 'Lưu' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,111 @@
+<!-- LIST USERS -->
+<div class="card">
+    <div class="section-header">
+        <div class="card-title">Manage Users</div>
+        <button class="btn btn-primary" (click)="addUser()">
+            <i class="fa fa-plus"></i> Add User
+        </button>
+    </div>
+
+    <div class="section-controls">
+        <input type="text" [(ngModel)]="searchText" placeholder="Search user..." />
+        <select [(ngModel)]="statusFilter">
+            <option value="">All Status</option>
+            <option value="Active">Active</option>
+            <option value="Inactive">Inactive</option>
+        </select>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let user of filteredUsers()">
+                <td>{{ user.userid }} </td>
+                <td>{{ user.username }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.role }}</td>
+                <td>{{ user.status }}</td>
+                <td>
+                    <button class="btn btn-info" (click)="editUser(user.userid)">
+                        <i class="fa fa-edit"></i> Edit
+                    </button>
+                    <button class="btn btn-danger" (click)="deleteUser(user.userid)">
+                        <i class="fa fa-trash"></i> Delete
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- MODAL CREATE/EDIT USER -->
+<div *ngIf="showCreateModal" class="modal fade show d-block custom-modal" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content shadow-lg">
+      <div class="modal-header">
+        <h5 class="modal-title custom-title">
+          {{ isEditMode ? 'Chỉnh Sửa Người Dùng' : 'Thêm Người Dùng Mới' }}
+        </h5>
+        <button type="button" class="close custom-close" (click)="closeModal()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <form>
+          <div class="form-group">
+            <label for="firstName">First Name:</label>
+            <input type="text" class="form-control" [(ngModel)]="newUser.firstName" name="firstName">
+          </div>
+
+          <div class="form-group">
+            <label for="lastName">Last Name:</label>
+            <input type="text" class="form-control" [(ngModel)]="newUser.lastName" name="lastName">
+          </div>
+
+          <div class="form-group">
+            <label for="username">Username:</label>
+            <input type="text" class="form-control" [(ngModel)]="newUser.username" name="username">
+          </div>
+
+          <!-- Chỉ hiển thị Password khi tạo mới -->
+          <div class="form-group" *ngIf="!isEditMode">
+            <label for="password">Password:</label>
+            <input type="password" class="form-control" [(ngModel)]="newUser.password" name="password">
+          </div>
+
+          <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" class="form-control" [(ngModel)]="newUser.email" name="email">
+          </div>
+
+          <div class="form-group">
+            <label for="role">Role:</label>
+            <select class="form-control" [(ngModel)]="newUser.role" name="role">
+              <option value="">-- Chọn Role --</option>
+              <option value="Admin">Admin</option>
+              <option value="Editor">Editor</option>
+              <option value="User">User</option>
+            </select>
+          </div>
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeModal()">Đóng</button>
+        <button type="button" class="btn btn-success" (click)="saveUser()">
+          {{ isEditMode ? 'Cập Nhật' : 'Lưu' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

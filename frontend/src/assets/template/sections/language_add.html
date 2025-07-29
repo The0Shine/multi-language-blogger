@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Role</title>
+    <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+    <div class="admin-content" style="max-width: 600px; margin: 40px auto;">
+<div class="card">
+    <div class="card-title">Add Language</div>
+    <form id="add-language-form">
+        <label>Language Name:</label>
+        <input type="text" name="language_name" required><br>
+
+        <label>Locale Code:</label>
+        <input type="text" name="locale_code" required><br>
+
+        <label>Status:</label>
+        <input type="number" name="status" required><br>
+
+        <div style="margin-top: 16px;">
+            <button type="submit" class="btn btn-success">Add Language</button>
+            <button type="button" class="btn btn-secondary" onclick="goBackOrDefault('languages.html')">Cancel</button>
+    </form>
+</div>
+
+
+<script>
+document.getElementById('add-language-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const formData = Object.fromEntries(new FormData(this).entries());
+    alert('Language added:\n' + JSON.stringify(formData, null, 2));
+     goBackOrDefault('languages.html');
+});
+function goBackOrDefault(fallbackUrl){
+        if(document.referrer && document.referrer !== window.location.href){
+            history.back();
+        } else {
+            location.href = fallbackUrl;
+        }
+    }
+</script>
+</body>

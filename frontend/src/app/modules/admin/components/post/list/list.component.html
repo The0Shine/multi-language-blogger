@@ -1,0 +1,62 @@
+<div class="card">
+  <div class="section-header">
+    <div class="card-title">Manage Posts</div>
+    <button class="btn btn-primary" routerLink="/admin/post/create">
+      <i class="fa fa-plus"></i> Add Post
+    </button>
+  </div>
+
+  <!-- Search & Filter -->
+  <div class="section-controls">
+    <input type="text" [(ngModel)]="searchText" placeholder="Search post...">
+    <select [(ngModel)]="statusFilter">
+      <option value="">All Status</option>
+      <option value="Published">Published</option>
+      <option value="Pending Review">Pending Review</option>
+    </select>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th> ID </th>
+        <th>Title</th>
+        <th>Author</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let post of filteredPosts">
+        <td> {{ post.postid }} </td>
+        <td>
+          <a href="#" (click)="showPostDetail(post)">{{ post.title }}</a>
+        </td>
+        <td>{{ post.author }}</td>
+        <td>{{ post.status }}</td>
+        <td>
+          <button class="btn btn-danger" (click)="deletePost(post)">
+            <i class="fa fa-trash"></i> Delete
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Modal for post detail -->
+<div id="post-modal" class="modal" style="display:none;">
+  <div class="modal-content">
+    <span class="close" (click)="closePostModal()">&times;</span>
+    <h2 id="modal-title">{{ selectedPost?.title }}</h2>
+    <div id="modal-body" [innerHTML]="selectedPost?.content"></div>
+    <div style="margin-top:24px;">
+      <button class="btn btn-success" (click)="approvePostFromModal()">
+        <i class="fa fa-check"></i> Approve
+      </button>
+      <button class="btn btn-warning" (click)="rejectPostFromModal()">
+        <i class="fa fa-times"></i> Reject
+      </button>
+    </div>
+  </div>
+</div>

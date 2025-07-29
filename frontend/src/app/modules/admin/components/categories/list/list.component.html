@@ -1,0 +1,83 @@
+<div class="card">
+  <div class="section-header d-flex justify-content-between align-items-center p-3">
+    <div class="card-title m-0">Manage Categories</div>
+    <button class="btn btn-primary" (click)="openCreateModal()">
+      <i class="fa fa-plus"></i> Add Category
+    </button>
+  </div>
+
+  <div class="section-controls">
+    <input type="text" [(ngModel)]="searchText" placeholder="Search category..." />
+    <select [(ngModel)]="statusFilter">
+      <option value="">All Status</option>
+      <option value="Active">Active</option>
+      <option value="Inactive">Inactive</option>
+    </select>
+  </div>
+
+  <table class="table table-striped mb-0">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Category Name</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let cat of filteredCategories()">
+        <td>{{ cat.categoryid }}</td>
+        <td>{{ cat.category_name }}</td>
+        <td>{{ cat.status }}</td>
+        <td>
+          <button class="btn btn-info me-2" (click)="editCategory(cat)">
+            <i class="fa fa-edit"></i> Edit
+          </button>
+          <button class="btn btn-danger" (click)="deleteCategory(cat.categoryid)">
+            <i class="fa fa-trash"></i> Delete
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Modal Add/Edit Category -->
+<div *ngIf="showModal" class="modal fade show d-block custom-modal" role="dialog">
+  <div class="modal-dialog " role="document">
+    <div class="modal-content shadow-lg">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          {{ editingCategory ? 'Chỉnh Sửa Danh Mục' : 'Thêm Mới Danh Mục' }}
+        </h5>
+        <button type="button" class="close custom-close" (click)="closeModal()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <form>
+          <div class="form-group">
+            <label for="categoryName">Category Name:</label>
+            <input type="text" class="form-control" [(ngModel)]="modalCategory.category_name" name="categoryName" />
+          </div>
+
+          <div class="form-group">
+            <label for="status">Status:</label>
+            <select class="form-control" [(ngModel)]="modalCategory.status" name="status">
+              <option value="Active">Active</option>
+              <option value="Inactive">Inactive</option>
+            </select>
+          </div>
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeModal()">Đóng</button>
+        <button type="button" class="btn btn-success" (click)="saveCategory()">
+          {{ editingCategory ? 'Update' : 'Lưu' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
