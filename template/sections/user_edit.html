@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Role</title>
+    <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+    <div class="admin-content" style="max-width: 600px; margin: 40px auto;">
+<div class="card">
+    <div class="card-title">Edit User</div>
+    <form id="edit-user-form">
+        <input type="hidden" name="id">
+
+        <label>First Name:</label>
+        <input type="text" name="first_name" required><br>
+
+        <label>Last Name:</label>
+        <input type="text" name="last_name" required><br>
+
+        <label>Username:</label>
+        <input type="text" name="username" required><br>
+
+        <label>Password:</label>
+        <input type="password" name="password"><br>
+
+        <label>Email:</label>
+        <input type="email" name="email" required><br>
+
+        <label>Role:</label>
+        <input type="text" name="role" required><br>
+
+        <div style="margin-top: 16px;">
+            <button type="submit" class="btn btn-success">Save Changes</button>
+            <button type="button" class="btn btn-secondary" onclick="goBackOrDefault('users.html')">Cancel</button>
+        </div>
+    </form>
+</div>
+
+
+<script>
+// Load user data from URL param for demo
+const params = new URLSearchParams(window.location.search);
+const userId = params.get('id');
+const form = document.getElementById('edit-user-form');
+
+// Fake data for demo
+const fakeUsers = {
+    1: { first_name: 'Admin', last_name: 'User', username: 'admin', email: 'admin@blog.com', role: 'Administrator' },
+    2: { first_name: 'Jane', last_name: 'Doe', username: 'jane', email: 'jane@blog.com', role: 'Editor' },
+};
+
+if (userId && fakeUsers[userId]) {
+    form.id.value = userId;
+    form.first_name.value = fakeUsers[userId].first_name;
+    form.last_name.value = fakeUsers[userId].last_name;
+    form.username.value = fakeUsers[userId].username;
+    form.email.value = fakeUsers[userId].email;
+    form.role.value = fakeUsers[userId].role;
+}
+
+form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const formData = Object.fromEntries(new FormData(this).entries());
+    alert('User updated:\n' + JSON.stringify(formData, null, 2));
+     goBackOrDefault('users.html');
+});
+function goBackOrDefault(fallbackUrl){
+        if(document.referrer && document.referrer !== window.location.href){
+            history.back();
+        } else {
+            location.href = fallbackUrl;
+        }
+    }
+</script>
+</body>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Blog Admin Panel</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+    <header class="admin-header">
+       <button class="hamburger" onclick="toggleSidebar()">&#9776;</button> 
+       <div class="sidebar-overlay" id="sidebarOverlay"></div>
+        <div class="title">~Blog Admin~</div>
+        <div class="user"><i class="fa fa-user"></i> Admin</div>
+    </header>
+    <div class="admin-container">
+        <aside class="admin-sidebar" id ="sidebar">
+            <nav>
+                <a href="#" data-section="dashboard" class="active"><i class="fa fa-home"></i> Dashboard</a>
+                <a href="#" data-section="users"><i class="fa fa-users"></i> Manage Users</a>
+                <a href="#" data-section="posts"><i class="fa fa-file-alt"></i> Manage Posts</a>
+                <a href="#" data-section="roles"><i class="fa fa-user-shield"></i> Manage Roles</a>
+                <a href="#" data-section="languages"><i class="fa fa-language"></i> Manage Languages</a>
+                <a href="#" data-section="categories"><i class="fa fa-tags"></i> Manage Categories</a>
+            </nav>
+        </aside>
+        <main class="admin-content">
+            <div id="main-content"></div>
+        </main>
+    </div>
+    <script src="js/script.js"></script>
+</body>
+</html>
