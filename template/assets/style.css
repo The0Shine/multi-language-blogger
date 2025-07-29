@@ -118,6 +118,7 @@ th {
     display: flex;
     align-items: center;
     gap: 16px;
+    cursor: pointer;
 }
 .stat-card i {
     font-size: 2em;
@@ -387,6 +388,6 @@ label {
 
 @media (max-width: 992px) {
     .hamburger {
-        display: block;
+        display: block;       
     }
 }

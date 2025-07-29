@@ -14,21 +14,27 @@ document.addEventListener("DOMContentLoaded", () => {
         loadSection("dashboard");
     }
 
-    // Sidebar navigation
+    // Handle all elements with data-section
     document.querySelectorAll("[data-section]").forEach(link => {
-        link.addEventListener("click", function(e) {
+        link.addEventListener("click", function (e) {
             e.preventDefault();
+
+            // Remove active from all sidebar links
             document.querySelectorAll(".admin-sidebar a").forEach(l => l.classList.remove("active"));
-            this.classList.add("active");
+
+            // If this is a sidebar link, add active class
+            if (this.tagName === 'A') {
+                this.classList.add("active");
+            }
+
             const section = this.getAttribute("data-section");
             loadSection(section);
 
-            // Cập nhật URL hash tương ứng với section
-            window.location.hash = section;
+            // Optional: update URL hash
+            history.pushState(null, "", `#${section}`);
         });
     });
 });
-
 function loadSection(section) {
     fetch(`sections/${section}.html`)
         .then(res => res.text())
