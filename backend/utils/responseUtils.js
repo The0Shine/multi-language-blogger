@@ -3,6 +3,8 @@ const responseUtils = {
     badRequest: (res, message) => res.status(400).json({ success: false, message }),
     unauthorized: (res, message) => res.status(401).json({ success: false, message }),
     serverError: (res, message) => res.status(500).json({ success: false, message }),
+    error: (res, message) => res.status(500).json({ success: false, message }),
+    notFound: (res, message) => res.status(404).json({ success: false, message }),
 };
 
 module.exports = responseUtils;
