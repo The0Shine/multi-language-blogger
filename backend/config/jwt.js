@@ -2,7 +2,7 @@ require("dotenv").config();
 
 const jwtConfig = {
     secret: process.env.JWT_SECRET,
-    expiresIn: "1d",
+    expiresIn: "7d",
 };
 
 module.exports = jwtConfig;
