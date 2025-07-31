@@ -1,8 +1,0 @@
-.avatar-preview img {
-  max-height: 120px;
-  max-width: 120px;
-  border-radius: 10px;
-  border: 1px solid #ddd;
-  object-fit: cover;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-}

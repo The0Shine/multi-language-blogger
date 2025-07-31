@@ -1,0 +1,68 @@
+<div class="container d-flex justify-content-center align-items-center min-vh-100" style="margin-left: 400px;">
+    <div class="card shadow-lg p-4 rounded-4" style="width: 100%; max-width: 960px;">
+
+        <h2 class="mb-4 fw-bold text-primary text-center">Tạo bài viết mới</h2>
+
+        <form [formGroup]="postForm" (ngSubmit)="onSubmit()">
+            <!-- Người đăng -->
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Người đăng bài</label>
+                <input type="text" class="form-control-plaintext ps-2 fw-bold bg-light text-dark"
+                    formControlName="author" readonly>
+            </div>
+
+            <!-- Ngôn ngữ -->
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Ngôn ngữ</label>
+                <select class="form-select" formControlName="language" required>
+                    <option value="" disabled>-- Chọn ngôn ngữ --</option>
+                    <option *ngFor="let lang of languages" [value]="lang.id">{{ lang.name }}</option>
+                </select>
+            </div>
+
+            <!-- Tiêu đề -->
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Tiêu đề</label>
+                <input type="text" class="form-control" placeholder="Nhập tiêu đề" formControlName="title" required>
+            </div>
+
+            <!-- Trạng thái -->
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Trạng thái</label>
+                <select class="form-select" formControlName="status" required>
+                    <option value="" disabled>-- Chọn trạng thái --</option>
+                    <option *ngFor="let status of statuses" [value]="status.value">{{ status.label }}</option>
+                </select>
+            </div>
+
+            <!-- Nội dung -->
+            <div class="mb-4">
+
+                <label class="form-label fw-semibold">Nội dung</label>
+
+                <ngx-editor-menu [editor]="editor" [toolbar]="toolbar"></ngx-editor-menu>
+                <ngx-editor [editor]="editor" formControlName="content" class="editor-content">
+                </ngx-editor>
+                <!-- Hiển thị lỗi nếu có -->
+                <div class="text-danger mt-1"
+                    *ngIf="postForm.get('content')?.touched && postForm.get('content')?.invalid">
+                    Nội dung là bắt buộc.
+                </div>
+
+
+
+
+            </div>
+
+
+            <!-- Nút -->
+            <div class="d-flex justify-content-end gap-2">
+                <button [routerLink]="'/admin/post/list'" class="btn btn-secondary fw-semibold">
+                    Hủy
+                </button>
+
+                <button type="submit" class="btn btn-primary fw-semibold">Tạo bài viết</button>
+            </div>
+        </form>
+    </div>
+</div>
