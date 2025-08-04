@@ -1,5 +1,6 @@
 const authService = require("modules/auth/services/authService");
 const responseUtils = require("utils/responseUtils");
+const jwtUtils = require("utils/jwtUtils");
 
 const authController = {
     register: async (req, res) => {
@@ -19,8 +20,6 @@ const authController = {
                     username: user.username,
                     roleid: user.roleid
                 },
-                accessToken,
-                refreshToken,
             });
         } catch (error) {
             console.error('Registration error:', error);
@@ -47,8 +46,6 @@ const authController = {
                     username: user.username,
                     roleid: user.roleid
                 },
-                accessToken,
-                refreshToken,
             });
         } catch (error) {
             console.error('Admin registration error:', error);
@@ -61,11 +58,29 @@ const authController = {
 
     login: async (req, res) => {
         try {
+            const authHeader = req.headers.authorization;
+
+            // Nếu có token trong Authorization header
+            if (authHeader && authHeader.startsWith("Bearer ")) {
+                const token = authHeader.split(" ")[1];
+
+                try {
+                    // Thử verify token
+                    jwtUtils.verifyToken(token);
+                    // Nếu token hợp lệ → không cho login lại
+                    return responseUtils.badRequest(res, "Already logged in.");
+                } catch (err) {
+                    // Nếu token sai hoặc hết hạn → báo lỗi
+                    return responseUtils.unauthorized(res, "Invalid or expired token.");
+                }
+            }
+
+            // Nếu không có token → cho login
             const { accessToken, refreshToken } = await authService.login(req.body);
-            return responseUtils.ok(res, { 
-                message: "Login successful.", 
+            return responseUtils.ok(res, {
+                message: "Login successful.",
                 accessToken,
-                refreshToken 
+                refreshToken,
             });
         } catch (error) {
             return responseUtils.unauthorized(res, error.message);

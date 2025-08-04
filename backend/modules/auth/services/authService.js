@@ -9,7 +9,7 @@ const authService = {
         const transaction = await require('models').sequelize.transaction();
         
         try {
-            const { first_name, last_name, email, username, password, roleid = 1 } = data;
+            const { first_name, last_name, email, username, password, roleid =1 } = data;
 
             const existingUser = await User.findOne({ 
                 where: { email },
@@ -38,11 +38,6 @@ const authService = {
                 roleid: defaultRole.roleid,
                 status: 1,
             }, { transaction });
-
-            // Generate tokens - if this fails, user creation will be rolled back
-            const payload = { userid: newUser.userid, roleid: newUser.roleid };
-            const accessToken = jwtUtils.generateToken(payload);
-            const refreshToken = jwtUtils.generateRefreshToken(payload);
 
             // Commit transaction only if everything succeeds
             await transaction.commit();
@@ -89,11 +84,6 @@ const authService = {
                 roleid: adminRole.roleid,
                 status: 1,
             }, { transaction });
-
-            // Generate tokens
-            const payload = { userid: newAdmin.userid, roleid: newAdmin.roleid };
-            const accessToken = jwtUtils.generateToken(payload);
-            const refreshToken = jwtUtils.generateRefreshToken(payload);
 
             await transaction.commit();
 
