@@ -42,7 +42,7 @@ const authService = {
             // Commit transaction only if everything succeeds
             await transaction.commit();
 
-            return { user: newUser, accessToken, refreshToken };
+            return { user: newUser};
         } catch (error) {
             // Rollback transaction if anything fails
             await transaction.rollback();
@@ -87,7 +87,7 @@ const authService = {
 
             await transaction.commit();
 
-            return { user: newAdmin, accessToken, refreshToken };
+            return { user: newAdmin};
         } catch (error) {
             await transaction.rollback();
             throw error;
