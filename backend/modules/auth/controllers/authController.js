@@ -6,7 +6,7 @@ const authController = {
     register: async (req, res) => {
         try {
             console.log('Registration request body:', req.body);
-            const { user, accessToken, refreshToken } = await authService.register(req.body);
+            const { user } = await authService.register(req.body);
             
             // Direct response for testing
             return res.status(200).json({
@@ -33,7 +33,7 @@ const authController = {
     registerAdmin: async (req, res) => {
         try {
             console.log('Admin registration request body:', req.body);
-            const { user, accessToken, refreshToken } = await authService.registerAdmin(req.body);
+            const { user} = await authService.registerAdmin(req.body);
             
             return res.status(200).json({
                 success: true,

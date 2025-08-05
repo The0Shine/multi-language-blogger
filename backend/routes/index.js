@@ -5,14 +5,14 @@ const router = express.Router();
 const authRoutes = require("routes/authRoutes");
 const userRoutes = require("routes/userRoutes");
 const categoryRoutes = require("routes/categoryRoutes");
-// const postRoutes = require("routes/postRoutes");
+const postRoutes = require("routes/postRoutes");
 // Add other routes as needed
 
 // Use module-specific routes
 router.use("/auth", authRoutes);
 router.use("/users", userRoutes);
 router.use("/categories", categoryRoutes);
-// router.use("/posts", postRoutes);
+router.use("/posts", postRoutes);
 // // Add other routes as needed
 
 module.exports = router;

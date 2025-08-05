@@ -28,7 +28,6 @@ const emailUtils = {
                 </div>
             `,
         };
-
         try {
             await transporter.sendMail(mailOptions);
             return true;

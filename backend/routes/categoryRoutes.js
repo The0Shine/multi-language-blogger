@@ -5,11 +5,9 @@ const categoryController = require('modules/category/controllers/categoryControl
 const categoryValidation = require('modules/category/validations/categoryValidation');
 const validateMiddleware = require('middlewares/validateMiddleware');
 const authMiddleware = require('middlewares/authMiddleware');
-const authorizationMiddleware = require('middlewares/authorizationMiddleware');
 
 // Require login for all routes
 router.use(authMiddleware.authenticate);
-router.use(authorizationMiddleware.requireAuth);
 
 // Accessible by both user and admin — no need to check role
 router.post('/',
@@ -30,24 +28,24 @@ router.get('/:categoryid',
 
 // Admin-only routes
 router.put('/:categoryid',
-    authorizationMiddleware.requireAdmin,
+    authMiddleware.authorizeRoles('admin'),
     categoryValidation.update,
     validateMiddleware,
     categoryController.update
 );
 
 router.delete('/:categoryid',
-    authorizationMiddleware.requireAdmin,
+    authMiddleware.authorizeRoles('admin'),
     categoryValidation.delete,
     validateMiddleware,
     categoryController.delete
 );
+
 router.delete('/permanent/:categoryid',
-    authorizationMiddleware.requireAdmin,
+    authMiddleware.authorizeRoles('admin'),
     categoryValidation.delete,
     validateMiddleware,
     categoryController.permanentDelete
 );
-
 
 module.exports = router;

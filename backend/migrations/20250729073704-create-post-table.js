@@ -47,11 +47,7 @@ module.exports = {
       status: {
         type: Sequelize.INTEGER,
         allowNull: false,
-        defaultValue: 1,
-      },
-      content: {
-        type: Sequelize.STRING,
-        allowNull: false,
+        defaultValue: 0,
       },
       created_at: {
         type: Sequelize.DATE,
@@ -68,9 +64,14 @@ module.exports = {
         allowNull: true,
       },
     });
+
+    await queryInterface.sequelize.query(`
+      ALTER TABLE post
+      ADD CONSTRAINT status_check CHECK (status IN (-1, 0, 1));
+    `);
   },
 
   async down(queryInterface, Sequelize) {
     await queryInterface.dropTable('post');
   },
-}; 
+};
