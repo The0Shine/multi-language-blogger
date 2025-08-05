@@ -15,31 +15,45 @@
     </select>
   </div>
 
-  <table class="table table-striped mb-0">
+  <table >
     <thead>
       <tr>
-        <th>ID</th>
-        <th>Language</th>
-        <th>Locale Code</th>
-        <th>Status</th>
-        <th>Actions</th>
+        <th style="width: 5%;">ID</th>
+    <th style="width: 30%;">Language</th>
+    <th style="width: 30%;">Locale Code</th>
+    <th style="width: 20%;">Status</th>
+  <th style="width: 20%; padding-right: 100px;" class="text-end">Actions</th>
+
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let lang of filteredLanguages">
 
-        <td>{{ lang.languageid }}</td>
+        <td>{{ lang.id }}</td>
         <td>{{ lang.language_name }}</td>
         <td>{{ lang.locale_code }}</td>
-        <td>{{ lang.status }}</td>
-        <td>
-          <button class="btn btn-info me-2" (click)="editLanguage(lang)">
-            <i class="fa fa-edit"></i> Edit
-          </button>
-          <button class="btn btn-danger" (click)="deleteLanguage(lang.languageid)">
-            <i class="fa fa-trash"></i> Delete
-          </button>
-        </td>
+     <td>
+  <span
+    class="badge"
+    [ngClass]="{
+      'bg-success': lang.status === 'Active',
+      'bg-danger': lang.status === 'Inactive'
+    }">
+    {{ lang.status === 'Active' ? 'Active' : 'Inactive' }}
+  </span>
+</td>
+
+       <td class="text-end">
+  <div class="d-inline-flex gap-2">
+    <button class="btn btn-info" (click)="editLanguage(lang)">
+      <i class="fa fa-edit"></i> Edit
+    </button>
+    <button class="btn btn-danger" (click)="deleteLanguage(lang.id)">
+      <i class="fa fa-trash"></i> Delete
+    </button>
+  </div>
+</td>
+
       </tr>
     </tbody>
   </table>
@@ -72,7 +86,7 @@
 
           <div class="form-group">
             <label for="status">Status:</label>
-            <select class="form-control" [(ngModel)]="modalLanguage.status" name="status">
+            <select class="form-select" [(ngModel)]="modalLanguage.status" name="status">
               <option value="Active">Active</option>
               <option value="Inactive">Inactive</option>
             </select>

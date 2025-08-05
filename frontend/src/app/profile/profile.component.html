@@ -1,0 +1,98 @@
+<main class="profile-container my-2" style="max-width: 900px; margin-top: 100px; ">
+  <div class="row">
+    <!-- LEFT: Thông tin người dùng -->
+    <div class="col-md-8 border-end pe-md-4">
+      <div class="p-4 bg-light border rounded shadow-sm mb-4">
+        <h3 class="mb-4">Thông tin người quản trị</h3>
+
+        <div class="row mb-3">
+          <div class="col-4 fw-bold">ID:</div>
+          <div class="col-8">{{ profile.id }}
+</div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-4 fw-bold">Tên người dùng:</div>
+          <div class="col-8">
+            <h5 class="mb-0">{{ profile.username }} </h5>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-4 fw-bold">Email:</div>
+          <div class="col-8">{{ profile.extra_info }}</div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-4 fw-bold">Vai trò:</div>
+          <div class="col-8">
+            <span class="badge bg-primary">{{ getRoleName(profile.role_id) }}</span>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-4 fw-bold">Ngày tạo:</div>
+          <div class="col-8">{{ profile.created_at | date:'dd/MM/yyyy' }}</div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-4 fw-bold">Trạng thái:</div>
+          <div class="col-8">
+         <span class="badge" [ngClass]="profile.status === 'active' ? 'bg-success' : 'bg-danger'">
+  {{ profile.status === 'active' ? 'Hoạt động' : 'Ngưng hoạt động' }}
+</span>
+
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- RIGHT: Avatar + Edit -->
+
+  </div>
+</main>
+
+<!-- Modal Edit -->
+<div class="modal fade" id="editProfileModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content p-4">
+      <h5 class="fw-bold text-center mb-4">Profile information</h5>
+
+
+
+      <!-- Form -->
+      <form (ngSubmit)="saveProfile()">
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Họ và tên</label>
+          <input type="text" class="form-control" [(ngModel)]="editForm.username" name="username">
+        </div>
+
+
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Email</label>
+  <input type="email" class="form-control" [(ngModel)]="editForm.extra_info" name="email">
+
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Vai trò</label>
+          <select class="form-select" [(ngModel)]="editForm.role_id" name="role_id">
+            <option *ngFor="let r of roles" [value]="r.id">{{ r.name }}</option>
+          </select>
+        </div>
+
+        <hr />
+        <p class="text-muted small"><strong>Ghi chú:</strong> Những thay đổi sẽ ảnh hưởng đến hồ sơ quản trị viên.</p>
+
+        <div class="text-end mt-4">
+          <button type="button" class="btn btn-outline-secondary rounded-pill px-4 me-2" data-bs-dismiss="modal">
+            Hủy
+          </button>
+          <button type="submit" class="btn btn-primary rounded-pill px-4">Lưu</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

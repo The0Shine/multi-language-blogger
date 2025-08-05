@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { PostService } from '../modules/admin/post.service';
-
 
 @Component({
   selector: 'app-home',
@@ -13,42 +13,72 @@ import { PostService } from '../modules/admin/post.service';
 })
 export class HomeComponent implements OnInit {
   stats = [
-    { section: 'post/list', icon: 'fa fa-file-alt', value: 12, label: 'Posts' },
-    { section: 'user/list', icon: 'fa fa-users', value: 5, label: 'Users' },
-    { section: 'category/list', icon: 'fa fa-tags', value: 4, label: 'Categories' },
-    { section: 'language/list', icon: 'fa fa-language', value: 2, label: 'Languages' }
+    { section: 'post/list', icon: 'fa fa-file-alt', value: 0, label: 'Posts' },
+    { section: 'user/list', icon: 'fa fa-users', value: 0, label: 'Users' },
+    { section: 'category/list', icon: 'fa fa-tags', value: 0, label: 'Categories' },
+    { section: 'language/list', icon: 'fa fa-language', value: 0, label: 'Languages' }
   ];
 
   recentPosts: any[] = [];
 
-  constructor(private router: Router, private postService: PostService) {}
+  constructor(
+    private router: Router,
+    private postService: PostService,
+    private http: HttpClient
+  ) {}
 
-ngOnInit() {
-  this.recentPosts = this.postService.getRecentPosts(5).map((p: any) => ({
-    title: p.title,
-    author: p.author,
-    status: p.status === 1
-      ? 'Published'
-      : p.status === 2
-        ? 'Rejected'
-        : 'Pending Review',
-    date: p.createdAt ? new Date(p.createdAt).toISOString().split('T')[0] : 'N/A'
-  }));
+  ngOnInit() {
     this.loadRecentPosts();
-}
-getStatusText(status: number) {
-  switch (status) {
-    case 1: return 'Published';
-    case 2: return 'Rejected';
-    default: return 'Pending Review';
+    this.loadCounts(); // ✅ Gọi để đếm số lượng users, categories, languages
   }
-}
-loadRecentPosts() {
-  this.recentPosts = this.postService.getRecentPosts(5);
-}
 
+  loadRecentPosts() {
+    this.postService.getPosts().subscribe((posts: any[]) => {
+      const sorted = posts
+        .sort((a, b) => new Date(b.createdAt || '').getTime() - new Date(a.createdAt || '').getTime())
+        .slice(0, 5);
+
+      this.recentPosts = sorted.map((p: any) => ({
+        title: p.title,
+        author: p.author,
+        status: this.getStatusText(Number(p.status)),
+        date: p.createdAt ? new Date(p.createdAt).toISOString().split('T')[0] : 'N/A',
+          originalPostId: p.id || p.postid // ✅ ID gốc để định danh bài viết
+      }));
+
+      this.stats[0].value = posts.length;
+    });
+  }
+
+  loadCounts() {
+    this.http.get<any[]>('http://localhost:3000/users').subscribe(users => {
+      this.stats[1].value = users.length;
+    });
+
+    this.http.get<any[]>('http://localhost:3000/categories').subscribe(cats => {
+      this.stats[2].value = cats.length;
+    });
+
+    this.http.get<any[]>('http://localhost:3000/languages').subscribe(langs => {
+      this.stats[3].value = langs.length;
+    });
+  }
+
+  getStatusText(status: number) {
+    switch (status) {
+      case 1: return 'Published';
+      case 2: return 'Rejected';
+      default: return 'Pending Review';
+    }
+  }
 
   navigateTo(section: string) {
     this.router.navigate([`/admin/${section}`]);
   }
+  openPostDetail(postId: number) {
+  this.router.navigate(['/admin/post/list'], {
+    queryParams: { view: postId }
+  });
+}
+
 }

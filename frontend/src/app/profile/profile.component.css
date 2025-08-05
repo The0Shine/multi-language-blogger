@@ -1,0 +1,52 @@
+.profile-container {
+  max-width: 1100px;
+  margin: 100px auto;
+}
+
+.profile-container .p-4 {
+  font-size: 1.05rem;
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+}
+
+.profile-container h3 {
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: #343a40;
+}
+
+.profile-container .row.mb-3 {
+  padding-top: 6px;
+  padding-bottom: 6px;
+  font-size: 1.1rem;
+}
+
+.profile-container .fw-bold {
+  color: #495057;
+}
+
+.profile-container img {
+  width: 180px !important;
+  height: 180px !important;
+  object-fit: cover;
+  border: 3px solid #dee2e6;
+}
+
+#editProfileModal .modal-content {
+  max-width: 500px;
+  margin: auto;
+}
+
+/* Đảm bảo phần trái chiếm đủ không gian */
+.profile-container .col-md-8 {
+  flex: 0 0 66.6667%;
+  max-width: 66.6667%;
+}
+
+/* Nếu muốn bên phải cân đối hơn */
+.profile-container .col-md-4 {
+  flex: 0 0 33.3333%;
+  max-width: 33.3333%;
+}

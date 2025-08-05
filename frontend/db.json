@@ -1,0 +1,173 @@
+{
+  "users": [
+    {
+      "roleid": 1,
+      "first_name": "Nguyen",
+      "last_name": "Van A",
+      "username": "nguyenvana",
+      "password": "",
+      "status": 0,
+      "extra_info": "a@example.com",
+      "id": "1"
+    },
+    {
+      "id": "2",
+      "roleid": 1,
+      "first_name": "Vũ",
+      "last_name": "Đăng",
+      "username": "Vũ Hải Đăng",
+      "password": "123456",
+      "status": 1,
+      "extra_info": "dangdepzai918@gmail.com"
+    },
+    {
+      "roleid": 1,
+      "first_name": "Trần",
+      "last_name": "Linh",
+      "username": "Trần Phương Linh",
+      "password": "123456",
+      "status": 1,
+      "extra_info": "tranphuonglinh@gmail.com",
+      "id": "3"
+    },
+    {
+      "roleid": 1,
+      "first_name": "Vũ ",
+      "last_name": "Béo",
+      "username": "Vũ Văn Béo",
+      "password": "123456",
+      "status": 1,
+      "extra_info": "vuvanbeo@gmail.com",
+      "id": "4"
+    },
+    {
+      "id": "5",
+      "roleid": 3,
+      "first_name": "Vũ ",
+      "last_name": "Toàn",
+      "username": "Vũ Văn Toàn",
+      "password": "123456",
+      "status": 1,
+      "extra_info": "vuvantoan@gmail.com"
+    },
+    {
+      "id": "6",
+      "roleid": 2,
+      "first_name": "Vũ ",
+      "last_name": "Thanh",
+      "username": "Vũ Văn Thanh",
+      "password": "123456",
+      "status": 1,
+      "extra_info": "vuvanthanh@gmail.com"
+    }
+  ],
+  "roles": [
+    {
+      "id": "1",
+      "role_name": "Administrator",
+      "description": "Full access",
+      "status": "Active"
+    },
+    {
+      "id": "2",
+      "role_name": "Editor",
+      "description": "Can edit content",
+      "status": "Active"
+    },
+    {
+      "id": "3",
+      "role_name": "User",
+      "description": "Regular user",
+      "status": "Inactive"
+    },
+    {
+      "role_name": "Admin",
+      "description": "911",
+      "status": "Active",
+      "id": "4"
+    }
+  ],
+  "languages": [
+    {
+      "id": "1",
+      "language_name": "English",
+      "locale_code": "en",
+      "status": "Active"
+    },
+    {
+      "id": "2",
+      "language_name": "Vietnamese",
+      "locale_code": "vi",
+      "status": "Inactive"
+    },
+    {
+      "language_name": "Korean",
+      "locale_code": "kr",
+      "status": "Active",
+      "id": "3"
+    },
+    {
+      "id": "4",
+      "language_name": "Japanese",
+      "locale_code": "jp",
+      "status": "Active"
+    }
+  ],
+  "categories": [
+    {
+      "id": "1",
+      "category_name": "Technology",
+      "description": "All tech-related topics",
+      "status": "Active"
+    },
+    {
+      "id": "2",
+      "category_name": "Lifestyle",
+      "description": "Lifestyle and wellness",
+      "status": "Inactive"
+    },
+    {
+      "category_name": "Sports",
+      "status": "Active",
+      "id": "3"
+    }
+  ],
+  "posts": [
+    {
+      "id": "1",
+      "title": "Welcome to the Blog",
+      "author": "Admin",
+      "status": 1,
+      "content": "<p>Welcome to our blog!</p>"
+    },
+    {
+      "id": "2",
+      "title": "How to Use Categories",
+      "author": "Jane",
+      "status": 1,
+      "content": "<p>This post explains how to use categories...</p>"
+    },
+    {
+      "id": "3",
+      "title": "Nhóm quyền lực mới ở MU",
+      "content": "<h1></h1><ul><li><p><a href=\"https://znews.vn/Duy-Lu%C3%A2n-tim-kiem.html?type=3\"><strong><span style=\"color: rgb(34, 34, 34);\"><span style=\"background-color: transparent;\">Duy Luân</span></span></strong></a></p></li><li><p><span style=\"color: rgb(136, 136, 136);\"><span style=\"background-color: transparent;\">Thứ hai, 4/8/2025 12:15 (GMT+7)</span></span></p></li></ul><p><strong><span style=\"color: rgb(51, 51, 51);\"><span style=\"background-color: transparent;\">HLV Ruben Amorim vừa tiết lộ rằng MU đã thành lập một nhóm lãnh đạo gồm 6 cầu thủ nhằm giám sát và duy trì kỷ luật tại Old Trafford.</span></span></strong></p><p><span style=\"color: rgb(51, 51, 51);\"><span style=\"background-color: rgb(241, 241, 241);\"><img src=\"https://photo.znews.vn/w1920/Uploaded/wobjcak/2025_08_04/Screenshot_2.jpg\" alt=\"\"></span></span></p><p></p><p><span style=\"color: rgb(136, 136, 136);\"><span style=\"background-color: transparent;\">Bruno Fernandes vẫn có vai trò quan trọng tại MU.</span></span></p><p><span style=\"color: rgb(51, 51, 51);\"><span style=\"background-color: transparent;\">Những gương mặt này bao gồm Bruno Fernandes, Harry Maguire, Lisandro Martinez, Diogo Dalot, Noussair Mazraoui và Tom Heaton. Nhóm này sẽ chịu trách nhiệm duy trì tiêu chuẩn tập luyện và ứng xử trong đội bóng, tương tự mô hình mà Pep Guardiola đã áp dụng tại Manchester City.</span></span></p><p><span style=\"color: rgb(51, 51, 51);\"><span style=\"background-color: transparent;\">HLV Amorim cho biết: \"Chúng tôi hiện có một nhóm lãnh đạo. Không chỉ có Bruno hay Harry, mà là 6 người. Họ sẽ chịu trách nhiệm về cả đội. Năm ngoái, tôi phải giải quyết nhiều vấn đề nhỏ. Nhưng năm nay, tôi sẽ giao cho họ. Những vấn đề nhỏ bây giờ sẽ do các bạn xử lý\".</span></span></p><p><span style=\"color: rgb(51, 51, 51);\"><span style=\"background-color: transparent;\">Về trường hợp của Mazraoui, Amorim cho biết hậu vệ người Morocco dù chỉ vừa gia nhập đội không lâu nhưng có thái độ chuyên nghiệp và cách ứng xử phù hợp. Ngoài ra, Mazraoui cũng được lòng các đồng đội và để lại dấu ấn chuyên môn ở mùa vừa qua.</span></span></p><p><span style=\"color: rgb(51, 51, 51);\"><span style=\"background-color: transparent;\">Bên cạnh việc giao quyền cho nhóm cầu thủ, Amorim cũng sẽ áp dụng dữ liệu vào việc giám sát tiêu chuẩn tập luyện, thậm chí sẵn sàng công khai những thiếu sót của cầu thủ trước mặt toàn đội.</span></span></p><p></p><p><span style=\"color: rgb(136, 136, 136);\"><span style=\"background-color: rgb(241, 241, 241);\"><img src=\"https://photo.znews.vn/w860/Uploaded/wobjcak/2025_08_04/Screenshot_3.jpg\" alt=\"MU anh 1\" width=\"1069\"></span></span></p><p><span style=\"color: rgb(136, 136, 136);\"><span style=\"background-color: transparent;\">Các tân binh được kỳ vọng sẽ mau hòa nhập.</span></span></p>",
+      "status": 2,
+      "author": "Vũ Hải Đăng",
+      "user_id": "2",
+      "language_id": 2,
+      "category_id": 3,
+      "createdAt": "2025-08-04T09:44:05.336Z"
+    },
+    {
+      "id": "4",
+      "title": "Hannah Olala bức xúc",
+      "content": "<p><strong><span style=\"color: rgb(51, 51, 51);\"><span style=\"background-color: transparent;\">Hannah Olala lên tiếng giải thích sau khi bị \"bóc phốt\" liên quan hai sản phẩm mình quảng cáo kèm tuyên bố: \"Vu khống trên mạng là vi phạm pháp luật\".</span></span></strong></p><p></p><p><span style=\"color: rgb(136, 136, 136);\"><span style=\"background-color: rgb(241, 241, 241);\"><img src=\"https://photo.znews.vn/w960/Uploaded/sotnbn/2025_08_04/Thumb_Hannah_Olala.jpg\" alt=\"\" title=\"null\"></span></span></p><p><span style=\"color: rgb(136, 136, 136);\"><span style=\"background-color: transparent;\">Hannah Olala nổi tiếng trong lĩnh vực mỹ phẩm, làm đẹp. Ảnh: </span></span><em><span style=\"color: rgb(136, 136, 136);\"><span style=\"background-color: transparent;\">HannahOlala/ Facebook</span></span></em><span style=\"color: rgb(136, 136, 136);\"><span style=\"background-color: transparent;\">.</span></span></p><p><span style=\"color: rgb(51, 51, 51);\"><span style=\"background-color: transparent;\">Ngày 3/8, Hannah Olala (tên thật Hannah Nguyễn) bức xúc trước loạt thông tin lan truyền về mình. Theo đó, KOL nổi tiếng mảng làm đẹp cho biết khi lướt Threads, cô vô tình thấy bài \"bóc phốt\" mình.</span></span></p><p><span style=\"color: rgb(51, 51, 51);\"><span style=\"background-color: transparent;\">Một tài khoản chia sẻ hình ảnh Hannah Olala giới thiệu sản phẩm xịt tóc kèm bình luận nghi vấn tại sao cô từng cấy tóc lại quảng cáo sản phẩm này. Người này cũng cho rằng một sản phẩm kem mắt nữ KOL từng nói là \"ngưng sản xuất\" hiện vẫn được rao bán bình thường.</span></span></p><p><span style=\"color: rgb(51, 51, 51);\"><span style=\"background-color: transparent;\">Bài viết nhanh chóng lan truyền với hàng trăm nghìn lượt xem, thu hút nhiều bình luận trái chiều.</span></span></p><p><span style=\"color: rgb(51, 51, 51);\"><span style=\"background-color: transparent;\">Phản hồi về thông tin liên quan đến việc cấy tóc, Hannah Olala cho biết cô chỉ thực hiện thủ thuật ở phần viền trán, không phải đỉnh đầu. Cô cũng nhấn mạnh chưa từng che giấu chuyện cấy tóc, nhưng chưa công khai vì cần thời gian theo dõi kết quả trước khi đưa ra nhận xét cụ thể.</span></span></p><p><span style=\"color: rgb(51, 51, 51);\"><span style=\"background-color: transparent;\">Về sản phẩm xịt mọc tóc đang quảng bá, nữ KOL triệu fan cho biết bản thân sử dụng thấy hiệu quả và việc này không mâu thuẫn với việc cấy tóc vùng trán.</span></span></p><p></p><p><span style=\"color: rgb(136, 136, 136);\"><span style=\"background-color: rgb(241, 241, 241);\"><img src=\"https://photo.znews.vn/w480/Uploaded/sotnbn/2025_08_04/526773021_1318882876272971_2727437023222389863_n.jpg\" alt=\"Hannah Olala moc toc anh 1\" title=\"Hannah Olala mọc tóc ảnh 1\" width=\"1179\"></span></span></p><p><span style=\"color: rgb(136, 136, 136);\"><span style=\"background-color: transparent;\">Một tài khoản \"bóc phốt\" Hannah Olala trên Threads.</span></span></p><p><span style=\"color: rgb(51, 51, 51);\"><span style=\"background-color: transparent;\">\"Không ai cấy tóc trên đỉnh đầu trừ khi bị hói. Tôi chưa từng bị hói nên không có lý do gì phải cấy ở vùng đó\", cô đáp trả.</span></span></p><p><span style=\"color: rgb(51, 51, 51);\"><span style=\"background-color: transparent;\">Về nghi vấn sản phẩm từng được nói là \"ngưng sản xuất\" nhưng vẫn có mặt trên thị trường, Hannah Olala khẳng định nhãn hàng đã dừng bán từ năm 2024 và hiện có phiên bản mới thay thế. Thông tin này, theo cô, có thể kiểm chứng qua gian hàng chính hãng hoặc từ đơn vị sở hữu thương hiệu.</span></span></p><p><span style=\"color: rgb(51, 51, 51);\"><span style=\"background-color: transparent;\">Nữ KOL cũng phản ứng mạnh mẽ trước những cáo buộc lan truyền không căn cứ, cho rằng hành vi này có thể vi phạm pháp luật. Cô nhấn mạnh \"không phải núp ở sau bàn phím là muốn nói gì thì nói, đó là vi phạm pháp luật”.</span></span></p><p><span style=\"color: rgb(51, 51, 51);\"><span style=\"background-color: transparent;\">Không chỉ đăng bài đính chính, Hannah còn trực tiếp để lại bình luận dưới bài viết gốc để làm rõ thông tin. Đến thời điểm hiện tại, người đăng bài \"bóc phốt\" đã xóa/ẩn bài viết mà không đưa ra phản hồi công khai nào.</span></span></p><p><span style=\"color: rgb(51, 51, 51);\"><span style=\"background-color: transparent;\">Trên Facebook cá nhân, Hannah cũng chia sẻ lại thông tin để tránh hiểu lầm. Nhiều người dùng thể hiện sự ủng hộ nữ KOL, cho rằng việc chỉ trích không căn cứ là độc hại và thiếu thiện chí. Với những góp ý hợp lý và cách phản ánh mang tính xây dựng, cô tỏ ra cầu thị và có phản hồi nhẹ nhàng.</span></span></p><p><span style=\"color: rgb(51, 51, 51);\"><span style=\"background-color: transparent;\">Khi một người dùng nhận xét sản phẩm cô từng giới thiệu không hiệu quả, Hannah Olala xin lỗi và cho rằng hiệu quả mỹ phẩm là yếu tố mang tính cá nhân, khó có sự bảo đảm tuyệt đối. Đồng thời, cô khẳng định sản phẩm mình giới thiệu là hàng chính hãng, có nguồn gốc rõ ràng.</span></span></p>",
+      "status": 1,
+      "author": "Vũ Hải Đăng",
+      "user_id": "2",
+      "language_id": 2,
+      "category_id": 2,
+      "createdAt": "2025-08-04T09:54:42.378Z"
+    }
+  ]
+}

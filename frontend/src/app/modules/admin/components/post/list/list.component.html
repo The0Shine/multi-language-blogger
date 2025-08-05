@@ -4,7 +4,6 @@
     <button class="btn btn-primary" (click)="goToAddPost()">
       <i class="fa fa-plus"></i> Add Post
     </button>
-
   </div>
 
   <!-- Search & Filter -->
@@ -14,36 +13,42 @@
       <option value="">All Status</option>
       <option [value]="1">Published</option>
       <option [value]="0">Pending Review</option>
-
+      <option [value]="2">Rejected</option>
     </select>
-
   </div>
 
   <table>
     <thead>
       <tr>
-        <th> ID </th>
-        <th>Title</th>
-        <th>Author</th>
-        <th>Status</th>
-        <th>Actions</th>
+        <th style="width: 5%;">ID</th>
+        <th style="width: 35%;">Title</th>
+        <th style="width: 20%;">Author</th>
+        <th style="width: 10%;">Status</th>
+        <th style="width: 20%;" class="text-end">Actions</th>
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let post of filteredPosts">
-        <td> {{ post.postid }} </td>
+        <td>{{ post.id }}</td>
         <td>
-          <span class="link" (click)="showPostDetail(post)">{{ post.title }}</span>
-
+          <span class="link" (click)="showPostDetail(post)">
+            {{ post.title }}
+          </span>
         </td>
         <td>{{ post.author }}</td>
-        <td>{{ getStatusText(post.status) }}</td> <!-- ra 'Published', 'Rejected' -->
-
-
-
         <td>
-          <button (click)="deletePost(post.postid)" class="btn btn-danger">Delete</button>
-
+          <span
+            class="badge"
+            [ngClass]="{
+              'bg-danger': post.status === 2,
+              'bg-success': post.status === 1,
+              'bg-warning': post.status === 0
+            }">
+            {{ getStatusText(post.status) }}
+          </span>
+        </td>
+        <td class="text-end">
+          <button (click)="deletePost(post.id)"  class="btn btn-danger">Delete</button>
         </td>
       </tr>
     </tbody>
@@ -51,19 +56,29 @@
 </div>
 
 <!-- Modal for post detail -->
-<div id="post-modal" class="modal" style="display:none;">
+<div class="modal" *ngIf="selectedPost">
   <div class="modal-content">
     <span class="close" (click)="closePostModal()">&times;</span>
-    <h2 id="modal-title">{{ selectedPost?.title }}</h2>
-    <div id="modal-body" class="content-html" [innerHTML]="selectedPost?.content"></div>
 
-    <div style="margin-top:24px;">
+    <!-- Tiêu đề -->
+    <label class="danger-label">Tiêu đề:</label>
+    <h2 class="modal-title">{{ selectedPost?.title }}</h2>
+
+    <!-- Nội dung -->
+    <label class="danger-label">Nội dung:</label>
+    <div class="post-detail-body">
+      <div class="content-html" [innerHTML]="selectedPost?.content"></div>
+    </div>
+
+    <!-- Nút hành động -->
+    <div class="modal-actions">
       <button class="btn btn-success" (click)="approvePostFromModal()">
         <i class="fa fa-check"></i> Approve
       </button>
-      <button class="btn btn-warning" (click)="rejectPostFromModal()">
+      <button class="btn btn-danger" (click)="rejectPostFromModal()">
         <i class="fa fa-times"></i> Reject
       </button>
     </div>
   </div>
 </div>
+

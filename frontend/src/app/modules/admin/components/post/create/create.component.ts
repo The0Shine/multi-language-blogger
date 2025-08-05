@@ -3,7 +3,10 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Editor, Toolbar, NgxEditorModule } from 'ngx-editor';
+
 import { PostService } from '../../../post.service';
+import { LanguageService } from '../../../language.service';
+import { CategoryService } from '../../../category.service';
 
 @Component({
   selector: 'app-create',
@@ -16,21 +19,16 @@ export class AdminPostCreateComponent implements OnInit, OnDestroy {
   postForm!: FormGroup;
   editor!: Editor;
 
+  currentUser: any = {};
+  languages: any[] = [];
+  categories: any[] = [];
+
   toolbar: Toolbar = [
     ['bold', 'italic'],
     ['underline', 'strike'],
     ['code', 'blockquote'],
     ['ordered_list', 'bullet_list'],
     ['link', 'image']
-  ];
-
-  currentUser = 'Hải Đăng ';
-
-  languages = [
-    { id: 1, name: 'Tiếng Việt' },
-    { id: 2, name: 'Tiếng Anh' },
-    { id: 3, name: 'Tiếng Nhật' },
-    { id: 4, name: 'Tiếng Hàn' }
   ];
 
   statuses = [
@@ -41,50 +39,73 @@ export class AdminPostCreateComponent implements OnInit, OnDestroy {
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private postService: PostService
+    private postService: PostService,
+    private languageService: LanguageService,
+    private categoryService: CategoryService
   ) {}
 
   ngOnInit(): void {
     this.editor = new Editor();
+
+    const user = localStorage.getItem('user');
+    if (user) {
+      this.currentUser = JSON.parse(user);
+    } else {
+      alert('Không tìm thấy người dùng trong localStorage');
+    }
+
+    this.initForm();
+    this.loadLanguages();
+    this.loadCategories();
+  }
+
+  initForm() {
     this.postForm = this.fb.group({
-      author: [{ value: this.currentUser, disabled: true }],
+      author: [{ value: this.currentUser.username || 'Unknown', disabled: true }],
       language: ['', Validators.required],
+      category: ['', Validators.required],
       title: ['', Validators.required],
       status: ['', Validators.required],
       content: ['', Validators.required]
     });
   }
 
-savePost() {
-  if (this.postForm.valid) {
-    const { title, content, status } = this.postForm.getRawValue();
-    this.postService.addPost({
-      title,
-      content,
-      author: this.currentUser,
-      status: Number(status) // ✅ ép kiểu về số
+  loadLanguages() {
+    this.languageService.getLanguages().subscribe(data => {
+      this.languages = data;
     });
-    this.router.navigate(['/admin/post/list']);
-  } else {
-    this.postForm.markAllAsTouched();
   }
-}
 
-
-onSubmit(): void {
-  if (this.postForm.valid) {
-    const rawData = {
-      ...this.postForm.getRawValue(),
-      author: this.currentUser,
-      status: Number(this.postForm.get('status')?.value) // ✅ ép kiểu
-    };
-    this.postService.addPost(rawData);
-    this.router.navigate(['/admin/post/list']);
-  } else {
-    this.postForm.markAllAsTouched();
+  loadCategories() {
+    this.categoryService.getCategories().subscribe(data => {
+      this.categories = data;
+    });
   }
-}
 
+  savePost(): void {
+    if (this.postForm.valid) {
+      const formData = this.postForm.getRawValue();
+      const payload = {
+        title: formData.title,
+        content: formData.content,
+        status: Number(formData.status),
+        author: this.currentUser.username,
+        user_id: this.currentUser.id,
+        language_id: Number(formData.language),
+        category_id: Number(formData.category)
+      };
+
+      this.postService.addPost(payload).subscribe(() => {
+        this.router.navigate(['/admin/post/list']);
+      });
+    } else {
+      this.postForm.markAllAsTouched();
+    }
+  }
+
+  onSubmit(): void {
+    this.savePost();
+  }
 
   ngOnDestroy(): void {
     this.editor?.destroy();

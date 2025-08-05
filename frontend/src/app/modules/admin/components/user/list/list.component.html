@@ -1,50 +1,69 @@
 <!-- LIST USERS -->
 <div class="card">
-    <div class="section-header">
-        <div class="card-title">Manage Users</div>
-        <button class="btn btn-primary" (click)="addUser()">
-            <i class="fa fa-plus"></i> Add User
-        </button>
-    </div>
+  <div class="section-header">
+    <div class="card-title">Manage Users</div>
+    <button class="btn btn-primary" (click)="addUser()">
+      <i class="fa fa-plus"></i> Add User
+    </button>
+  </div>
 
-    <div class="section-controls">
-        <input type="text" [(ngModel)]="searchText" placeholder="Search user..." />
-        <select [(ngModel)]="statusFilter">
-            <option value="">All Status</option>
-            <option value="Active">Active</option>
-            <option value="Inactive">Inactive</option>
-        </select>
-    </div>
+  <div class="section-controls">
+    <input type="text" [(ngModel)]="searchText" placeholder="Search user..." />
+    <select [(ngModel)]="statusFilter">
+      <option value="">All Status</option>
+      <option value="1">Active</option>
+      <option value="0">Inactive</option>
+    </select>
+  </div>
 
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Role</th>
-                <th>Status</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr *ngFor="let user of filteredUsers()">
-                <td>{{ user.userid }} </td>
-                <td>{{ user.username }}</td>
-                <td>{{ user.email }}</td>
-                <td>{{ user.role }}</td>
-                <td>{{ user.status }}</td>
-                <td>
-                    <button class="btn btn-info" (click)="editUser(user.userid)">
-                        <i class="fa fa-edit"></i> Edit
-                    </button>
-                    <button class="btn btn-danger" (click)="deleteUser(user.userid)">
-                        <i class="fa fa-trash"></i> Delete
-                    </button>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 5%;">ID</th>
+        <th style="width: 20%;">Name</th>
+        <th style="width: 25%;">Email</th>
+        <th style="width: 15%;">Role</th>
+        <th style="width: 10%;">Status</th>
+        <th style="width: 15%; padding-left: 130px;">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let user of paginatedUsers()">
+        <td>{{ user.userid }}</td>
+        <td>{{ user.username }}</td>
+        <td>{{ user.extra_info }}</td>
+        <td>{{ roleMap[+user.roleid] || 'Unknown' }}</td>
+        <td>
+          <span class="badge" [ngClass]="{
+            'bg-success': +user.status === 1,
+            'bg-danger': +user.status === 0
+          }">
+            {{ +user.status === 1 ? 'Active' : 'Inactive' }}
+          </span>
+        </td>
+        <td class="text-end">
+          <button class="btn btn-info me-2" (click)="editUser(user.userid)">
+            <i class="fa fa-edit"></i> Edit
+          </button>
+          <button class="btn btn-danger" (click)="deleteUser(user.userid)">
+            <i class="fa fa-trash"></i> Delete
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="pagination" *ngIf="totalPages() > 1">
+  <button (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">«</button>
+
+  <button *ngFor="let page of [].constructor(totalPages()); let i = index"
+          (click)="changePage(i + 1)"
+          [class.active]="currentPage === i + 1">
+    {{ i + 1 }}
+  </button>
+
+  <button (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages()">»</button>
 </div>
 
 <!-- MODAL CREATE/EDIT USER -->
@@ -63,13 +82,13 @@
       <div class="modal-body">
         <form>
           <div class="form-group">
-            <label for="firstName">First Name:</label>
-            <input type="text" class="form-control" [(ngModel)]="newUser.firstName" name="firstName">
+            <label for="first_name">First Name:</label>
+            <input type="text" class="form-control" [(ngModel)]="newUser.first_name" name="first_name">
           </div>
 
           <div class="form-group">
-            <label for="lastName">Last Name:</label>
-            <input type="text" class="form-control" [(ngModel)]="newUser.lastName" name="lastName">
+            <label for="last_name">Last Name:</label>
+            <input type="text" class="form-control" [(ngModel)]="newUser.last_name" name="last_name">
           </div>
 
           <div class="form-group">
@@ -85,18 +104,27 @@
 
           <div class="form-group">
             <label for="email">Email:</label>
-            <input type="email" class="form-control" [(ngModel)]="newUser.email" name="email">
+            <input type="email" class="form-control" [(ngModel)]="newUser.extra_info" name="extra_info">
           </div>
 
-          <div class="form-group">
-            <label for="role">Role:</label>
-            <select class="form-control" [(ngModel)]="newUser.role" name="role">
-              <option value="">-- Chọn Role --</option>
-              <option value="Admin">Admin</option>
-              <option value="Editor">Editor</option>
-              <option value="User">User</option>
-            </select>
-          </div>
+         <div class="form-group">
+  <label for="role">Role:</label>
+  <select class="form-select" [(ngModel)]="newUser.roleid" name="roleid">
+    <option value="">-- Chọn Role --</option>
+    <option *ngFor="let role of roles" [value]="role.id">{{ role.role_name }}</option>
+  </select>
+</div>
+
+<div class="form-group" style="margin-top: 10px;">
+  <label for="status">Status:</label>
+  <select class="form-select" [(ngModel)]="newUser.status" name="status">
+    <option value="">-- Chọn Trạng thái --</option>
+    <option [value]="1">Active</option>
+    <option [value]="0">Inactive</option>
+  </select>
+</div>
+
+
         </form>
       </div>
 

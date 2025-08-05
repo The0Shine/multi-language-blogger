@@ -12,34 +12,39 @@
             <option value="Active">Active</option>
             <option value="Inactive">Inactive</option>
         </select>
-    </div>
+  </div>
 
-  <table class="table table-striped mb-0">
+  <table >
     <thead>
       <tr>
-        <th>ID</th>
-        <th>Role Name</th>
-        <th>Description</th>
-        <th>Status</th>
-        <th>Actions</th>
+      <th style="width: 5%;">ID</th>
+    <th style="width: 25%;">Role Name</th>
+    <th style="width: 35%;">Description</th>
+    <th style="width: 15%;">Status</th>
+    <th style="width: 15%; padding-right: 90px;" class="text-end">Actions</th>
       </tr>
     </thead>
     <tbody>
 
       <tr *ngFor="let role of filteredRoles()">
-        <td>{{ role.roleid }}</td>
+        <td>{{ role.id }}</td>
         <td>{{ role.role_name }}</td>
         <td>{{ role.description }}</td>
-        <td>
-          <span [ngClass]="{'text-success': role.status === 'Active', 'text-danger': role.status === 'Inactive'}">
-            {{ role.status }}
-          </span>
-        </td>
-        <td>
+          <td>
+  <span
+    class="badge"
+    [ngClass]="{
+      'bg-success': role.status === 'Active',
+      'bg-danger': role.status === 'Inactive'
+    }">
+    {{ role.status === 'Active' ? 'Active' : 'Inactive' }}
+  </span>
+</td>
+        <td class="text-end">
           <button class="btn btn-info me-2" (click)="editRole(role)">
             <i class="fa fa-edit"></i> Edit
           </button>
-          <button class="btn btn-danger" (click)="deleteRole(role.roleid)">
+          <button class="btn btn-danger" (click)="deleteRole(role)">
             <i class="fa fa-trash"></i> Delete
           </button>
         </td>
@@ -73,7 +78,7 @@
           </div>
           <div class="form-group">
             <label for="roleStatus">Status:</label>
-            <select class="form-control" [(ngModel)]="modalRole.status" name="roleStatus">
+            <select class="form-select" [(ngModel)]="modalRole.status" name="roleStatus">
               <option value="Active">Active</option>
               <option value="Inactive">Inactive</option>
             </select>

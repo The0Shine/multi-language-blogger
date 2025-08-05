@@ -15,31 +15,44 @@
     </select>
   </div>
 
-  <table class="table table-striped mb-0">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Category Name</th>
-        <th>Status</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let cat of filteredCategories()">
-        <td>{{ cat.categoryid }}</td>
-        <td>{{ cat.category_name }}</td>
-        <td>{{ cat.status }}</td>
-        <td>
-          <button class="btn btn-info me-2" (click)="editCategory(cat)">
+  <table >
+  <thead>
+    <tr>
+      <th style="width: 5%;">ID</th>
+      <th style="width: 45%;">Category Name</th>
+      <th style="width: 20%;">Status</th>
+      <th style="width: 30%; padding-right: 100px;" class="text-end">Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let cat of filteredCategories()">
+      <td>{{ cat.id }}</td>
+      <td>{{ cat.category_name }}</td>
+      <td>
+        <span
+          class="badge"
+          [ngClass]="{
+            'bg-success': cat.status === 'Active',
+            'bg-danger': cat.status === 'Inactive'
+          }"
+        >
+          {{ cat.status === 'Active' ? 'Active' : 'Inactive' }}
+        </span>
+      </td>
+      <td class="text-end">
+        <div class="d-inline-flex gap-2">
+          <button class="btn btn-info" (click)="editCategory(cat)">
             <i class="fa fa-edit"></i> Edit
           </button>
-          <button class="btn btn-danger" (click)="deleteCategory(cat.categoryid)">
+          <button class="btn btn-danger" (click)="deleteCategory(cat.id)">
             <i class="fa fa-trash"></i> Delete
           </button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+        </div>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
 </div>
 
 <!-- Modal Add/Edit Category -->
@@ -62,13 +75,17 @@
             <input type="text" class="form-control" [(ngModel)]="modalCategory.category_name" name="categoryName" />
           </div>
 
-          <div class="form-group">
-            <label for="status">Status:</label>
-            <select class="form-control" [(ngModel)]="modalCategory.status" name="status">
-              <option value="Active">Active</option>
-              <option value="Inactive">Inactive</option>
-            </select>
-          </div>
+
+        <div class="form-group">
+  <label for="status">Status:</label>
+  <select class="form-select" [(ngModel)]="modalCategory.status" name="status">
+    <option value="Active">Active</option>
+    <option value="Inactive">Inactive</option>
+  </select>
+</div>
+
+
+
         </form>
       </div>
 

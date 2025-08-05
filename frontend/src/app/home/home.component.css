@@ -1,0 +1,59 @@
+.card-title {
+  font-size: 22px;                /* ✅ lớn hơn một chút */
+  font-weight: 700;               /* ✅ đậm hơn */
+  color: #75a6d8;                 /* ✅ màu chữ sang hơn */
+  margin-bottom: 16px;
+  border-bottom: 2px solid #e0e0e0;  /* ✅ thêm đường gạch dưới */
+  padding-bottom: 6px;
+  letter-spacing: 0.5px;          /* ✅ khoảng cách chữ nhẹ */
+}
+.card-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #608fbe;
+  margin-bottom: 16px;
+  border-left: 4px solid #3498db;  /* ✅ thanh màu xanh bên trái */
+  padding-left: 10px;
+}
+/* Style cho tiêu đề cột Title */
+
+
+/* Style cho nội dung title của bài viết */
+table td:first-child {
+  font-weight: 700;       /* ✅ đậm hơn */
+  color: #000;            /* ✅ màu đen */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 300px;
+  cursor: pointer;
+}
+/* Gạch chân nhẹ và hiệu ứng hover cho tiêu đề bài viết */
+.link {
+  color: #020008;
+  cursor: pointer;
+  text-decoration: underline;
+  font-weight: 600;
+  text-decoration-thickness: 1px;        /* gạch nhẹ */
+  text-underline-offset: 3px;            /* khoảng cách với chữ */
+  transition: color 0.2s ease;
+}
+
+.link:hover {
+  color: #e70b08;
+  text-decoration-thickness: 2px;        /* đậm hơn khi hover */
+}
+
+/* Cột Title trong bảng Recent Posts */
+table td:first-child {
+  font-weight: 600;
+  color: #000;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 300px;
+}
+
+
+
+

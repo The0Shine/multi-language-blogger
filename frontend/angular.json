@@ -19,6 +19,8 @@
             "polyfills": ["zone.js"],
             "tsConfig": "tsconfig.app.json",
             "assets": [
+              "src/assets",
+              "src/favicon.ico",
               {
                 "glob": "**/*",
                 "input": "public"
@@ -27,9 +29,17 @@
             "styles": [
               "src/styles.css",
               "src/assets/template/assets/style.css",
-               "node_modules/@fortawesome/fontawesome-free/css/all.min.css"
+
+
+              "node_modules/@fortawesome/fontawesome-free/css/all.min.css",
+              "node_modules/bootstrap/dist/css/bootstrap.min.css"
             ],
-            "scripts": ["src/assets/template/js/script.js"]
+            "scripts": [
+              "src/assets/template/js/script.js",
+
+
+              "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"
+            ]
           },
           "configurations": {
             "production": {

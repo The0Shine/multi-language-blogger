@@ -1,34 +1,41 @@
-  <div class="stats-row">
-    <div class="stat-card" *ngFor="let stat of stats" [attr.data-section]="stat.section" role="button"
-      (click)="navigateTo(stat.section)">
-      <i [class]="stat.icon"></i>
-      <div>
-        <div class="stat-value">{{ stat.value }}</div>
-        <div class="stat-label">{{ stat.label }}</div>
-      </div>
+<div class="stats-row">
+  <div class="stat-card" *ngFor="let stat of stats" [attr.data-section]="stat.section" role="button"
+    (click)="navigateTo(stat.section)">
+    <i [class]="stat.icon"></i>
+    <div>
+      <div class="stat-value">{{ stat.value }}</div>
+      <div class="stat-label">{{ stat.label }}</div>
     </div>
   </div>
+</div>
 
-  <div class="card">
-    <div class="card-title">Recent Posts</div>
-    <table>
-      <thead>
-        <tr>
-          <th>Title</th>
-          <th>Author</th>
-          <th>Status</th>
-          <th>Date</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let post of recentPosts">
-          <td>{{ post.title }}</td>
-          <td>{{ post.author }}</td>
-         <td>{{ getStatusText(post.status) }}</td>
+<div class="card">
+  <div class="card-title">Recent Posts</div>
+  <table>
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Author</th>
+        <th>Status</th>
+        <th>Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let post of recentPosts">
+        <td>
+          <span class="link" (click)="openPostDetail(post.originalPostId)">
+            {{ post.title }}
+          </span>
+        </td>
 
-          <td>{{ post.date || 'N/A' }}</td>
-        </tr>
+        <td>{{ post.author }}</td>
+        <td>{{ post.status }}</td> <!-- ✅ phải là post.status -->
 
-      </tbody>
-    </table>
-  </div>
+
+
+        <td>{{ post.date || 'N/A' }}</td>
+      </tr>
+
+    </tbody>
+  </table>
+</div>

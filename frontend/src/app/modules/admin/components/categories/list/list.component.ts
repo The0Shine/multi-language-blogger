@@ -1,26 +1,39 @@
-import { Component } from '@angular/core';
-import { NgIf, NgFor, NgClass } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
+import { NgIf, NgFor, NgClass, CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { CategoryService } from '../../../category.service'; // chỉnh lại nếu path khác
 
 @Component({
   selector: 'app-admin-category-list',
   standalone: true,
   templateUrl: './list.component.html',
   styleUrls: ['./list.component.css'],
-  imports: [NgIf, NgFor,  FormsModule],
+  imports: [NgIf, NgFor, FormsModule, CommonModule],
 })
-export class AdminCategorieListComponent {
+export class AdminCategorieListComponent implements OnInit {
   searchText: string = '';
   statusFilter: string = '';
-
-  categories = [
-    { categoryid: 1, category_name: 'Technology', status: 'Active' },
-    { categoryid: 2, category_name: 'Lifestyle', status: 'Inactive' }
-  ];
-
   showModal = false;
   editingCategory = false;
-  modalCategory = { categoryid: 0, category_name: '', status: 'Active' };
+
+  categories: any[] = [];
+  modalCategory = {
+    id: 0,
+    category_name: '',
+    status: 'Active'
+  };
+
+  constructor(private categoryService: CategoryService) {}
+
+  ngOnInit() {
+    this.loadCategories();
+  }
+
+  loadCategories() {
+    this.categoryService.getCategories().subscribe(data => {
+      this.categories = data;
+    });
+  }
 
   filteredCategories() {
     return this.categories.filter(category => {
@@ -32,7 +45,7 @@ export class AdminCategorieListComponent {
 
   openCreateModal() {
     this.editingCategory = false;
-    this.modalCategory = { categoryid: 0, category_name: '', status: 'Active' };
+    this.modalCategory = { id: 0, category_name: '', status: 'Active' };
     this.showModal = true;
   }
 
@@ -42,22 +55,49 @@ export class AdminCategorieListComponent {
     this.showModal = true;
   }
 
-  deleteCategory(id: number) {
-    this.categories = this.categories.filter(cat => cat.categoryid !== id);
+deleteCategory(id: number) {
+  if (confirm('Are you sure you want to delete this category?')) {
+    this.categoryService.deleteCategory(id).subscribe({
+      next: () => {
+        this.categories = this.categories.filter(cat => cat.id !== id);
+        console.log('Deleted category with id', id);
+      },
+      error: (err) => {
+        console.error('Xóa thất bại:', err);
+        alert('Xóa thất bại!');
+      }
+    });
   }
+}
+
 
   saveCategory() {
-    if (this.editingCategory) {
-      const index = this.categories.findIndex(c => c.categoryid === this.modalCategory.categoryid);
-      if (index > -1) this.categories[index] = { ...this.modalCategory };
-    } else {
-      const newId = Math.max(...this.categories.map(c => c.categoryid)) + 1;
-      this.categories.push({ ...this.modalCategory, categoryid: newId });
+    if (!this.modalCategory.category_name || !this.modalCategory.status) {
+      alert('Please fill in all required fields!');
+      return;
     }
-    this.closeModal();
+
+    const payload = {
+      category_name: this.modalCategory.category_name,
+      status: this.modalCategory.status
+    };
+
+    if (this.editingCategory) {
+      this.categoryService.updateCategory(this.modalCategory.id, payload).subscribe(updated => {
+        const index = this.categories.findIndex(c => c.id === this.modalCategory.id);
+        if (index > -1) this.categories[index] = updated;
+        this.closeModal();
+      });
+    } else {
+      this.categoryService.createCategory(payload).subscribe(created => {
+        this.categories.push(created);
+        this.closeModal();
+      });
+    }
   }
 
   closeModal() {
     this.showModal = false;
+    this.modalCategory = { id: 0, category_name: '', status: 'Active' };
   }
 }

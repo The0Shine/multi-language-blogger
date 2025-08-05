@@ -78,3 +78,50 @@
   margin-bottom: 16px;
   color: #5f6aca;
 }
+.section-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.section-controls input,
+.section-controls select {
+  flex: 1;
+  height: 38px;
+}
+.pagination {
+  display: flex;
+  justify-content: center; /* căn giữa */
+  align-items: center;
+  gap: 6px;
+  margin: 15px 0;
+}
+
+.pagination button {
+  border: 1px solid #ddd;
+  background: #f8f9fa;
+  color: #333;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  min-width: 35px;
+}
+
+.pagination button:hover:not(:disabled) {
+  background: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+.pagination button:disabled {
+  background: #e9ecef;
+  color: #aaa;
+  cursor: not-allowed;
+}
+
+.pagination button.active {
+  background: #007bff;
+  color: white;
+  border-color: #007bff;
+  font-weight: bold;
+}

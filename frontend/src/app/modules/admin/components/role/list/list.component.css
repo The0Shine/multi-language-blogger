@@ -78,3 +78,23 @@
   margin-bottom: 16px;
   color: #5f6aca;
 }
+.section-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.section-controls input,
+.section-controls select {
+  flex: 1;
+  height: 38px;
+}
+.section-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.section-controls input,
+.section-controls select {
+  flex: 1;
+  height: 38px;
+}
