@@ -166,7 +166,33 @@ const userService = {
             activeUsers,
             inactiveUsers
         };
-    }
+    },
+
+    // Thêm vào cuối object userService
+getDetailedUserStats: async () => {
+    const usersByRole = await User.findAll({
+        attributes: [
+            'roleid',
+            [require('sequelize').fn('COUNT', require('sequelize').col('userid')), 'count']
+        ],
+        group: ['roleid'],
+        include: [
+            {
+                model: Role,
+                as: 'Role',
+                attributes: ['name']
+            }
+        ],
+        raw: true,
+    });
+
+    return usersByRole.map(entry => ({
+        roleid: entry.roleid,
+        roleName: entry['Role.name'],
+        count: parseInt(entry.count)
+    }));
+},
+
 };
 
 module.exports = userService;

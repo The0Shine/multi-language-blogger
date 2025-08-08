@@ -1,49 +1,52 @@
 const postService = require('modules/post/services/postService');
 const responseUtils = require('utils/responseUtils');
+// const { uploadToCloudinary } = require('where/ever'); // NHỚ import đúng
 
 const postController = {
   // User tạo mới bài viết
   create: async (req, res) => {
-  try {
-    // Tạo bài viết
-    const post = await postService.create({
-      ...req.body,
-      userid: req.user.userid,
-      status: 0 // mặc định là pending
-    });
+    try {
+      const post = await postService.create({
+        ...req.body,
+        userid: req.user.userid,
+        status: 0 // pending
+      });
 
-    // Sau khi tạo xong, lấy lại đầy đủ post + contents
-    const fullPost = await postService.getById(post.postid);
+      const fullPost = await postService.getById(post.postid);
 
-    return responseUtils.ok(res, {
-      message: 'Post created successfully',
-      data: fullPost
-    });
-  } catch (error) {
-    console.error('Create post error:', error);
-    return responseUtils.serverError(res, error.message);
-  }
-},
-     upload: async (req, res) => {
-    if (!req.file) {
-      return res.status(400).json({ message: 'No file uploaded' });
+      return responseUtils.ok(res, {
+        message: 'Post created successfully',
+        data: fullPost
+      });
+    } catch (error) {
+      console.error('Create post error:', error);
+      return responseUtils.serverError(res, error.message);
     }
+  },
 
-    const { secure_url } = await uploadToCloudinary(
-      req.file.buffer,
-      req.file.mimetype
-    );
-
-    return res.json({ path: secure_url });
+  upload: async (req, res) => {
+    if (!req.file) {
+      return responseUtils.badRequest(res, 'No file uploaded');
+    }
+    try {
+      const { secure_url } = await uploadToCloudinary(
+        req.file.buffer,
+        req.file.mimetype
+      );
+      return responseUtils.ok(res, { path: secure_url });
+    } catch (e) {
+      console.error('Upload error:', e);
+      return responseUtils.serverError(res, 'Upload failed');
+    }
   },
 
   // Admin xem danh sách
   getAll: async (req, res) => {
     try {
-      const posts = await postService.getAll({
-        limit: req.query.limit || 10,
-        offset: req.query.offset || 0
-      });
+      const limit = Number.parseInt(req.query.limit, 10) || 10;
+      const offset = Number.parseInt(req.query.offset, 10) || 0;
+
+      const posts = await postService.getAll({ limit, offset });
       return responseUtils.ok(res, {
         message: 'Posts retrieved successfully',
         data: posts
@@ -69,7 +72,6 @@ const postController = {
     try {
       const { postid } = req.params;
       const updatedPost = await postService.updateStatus(postid, 1);
-
       return responseUtils.ok(res, {
         message: 'Post accepted and published',
         data: updatedPost
@@ -84,7 +86,6 @@ const postController = {
     try {
       const { postid } = req.params;
       const updatedPost = await postService.updateStatus(postid, -1);
-
       return responseUtils.ok(res, {
         message: 'Post rejected and marked as drafted',
         data: updatedPost

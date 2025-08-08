@@ -1,78 +1,76 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 
-const userController = require('modules/user/controllers/userController');
-const userValidation = require('modules/user/validations/userValidation');
-const validateMiddleware = require('middlewares/validateMiddleware');
-const authMiddleware = require('middlewares/authMiddleware');
+const userController = require("modules/user/controllers/userController");
+const userValidation = require("modules/user/validations/userValidation");
+const validate = require("middlewares/validateMiddleware");
+const authMiddleware = require("middlewares/authMiddleware");
 
-// Require authentication for all routes
+// 🔐 Require login cho toàn bộ route
 router.use(authMiddleware.authenticate);
 
-// --- Admin-only routes ---
-router.get('/admin/stats',
-    authMiddleware.authorizeRoles('admin'),
-    userController.getUserStats
+// Owner hoặc Admin: xem profile
+router.get(
+  "/users/:userid",
+  authMiddleware.requireOwnershipOrRoles((req) => req.params.userid, "admin"),
+  userController.getUserById
 );
 
-router.get('/admin/users',
-    authMiddleware.authorizeRoles('admin'),
-    userValidation.getAllUsers,
-    validateMiddleware,
-    userController.getAllUsers
+// Owner hoặc Admin: cập nhật thông tin
+router.put(
+  "/users/:userid",
+  authMiddleware.requireOwnershipOrRoles((req) => req.params.userid, "admin"),
+  userValidation.updateUser,
+  validate,
+  userController.updateUser
 );
 
-router.get('/admin/users/:userid',
-    authMiddleware.authorizeRoles('admin'),
-    userValidation.getUserById,
-    validateMiddleware,
-    userController.getUserById
+// Admin: đổi role người khác
+router.patch(
+  "/admin/users/:userid/role",
+  authMiddleware.requireRoles("admin"),
+  userController.updateUserRole
 );
 
-router.put('/admin/users/:userid',
-    authMiddleware.authorizeRoles('admin'),
-    userValidation.updateUser,
-    validateMiddleware,
-    userController.updateUser
+// Admin: danh sách user
+router.get(
+  "/admin/users",
+  authMiddleware.requireRoles("admin"),
+  userController.getAllUsers
 );
 
-router.patch('/admin/users/:userid/role',
-    authMiddleware.authorizeRoles('admin'),
-    userValidation.updateUserRole,
-    validateMiddleware,
-    userController.updateUserRole
+// Owner hoặc Admin: soft delete
+router.delete(
+  "/users/:userid",
+  authMiddleware.requireOwnershipOrRoles((req) => req.params.userid, "admin"),
+  userController.deleteUser
 );
 
-router.delete('/admin/users/:userid',
-    authMiddleware.authorizeRoles('admin'),
-    userValidation.deleteUser,
-    validateMiddleware,
-    userController.deleteUser
+// Admin: hard delete
+router.delete(
+  "/admin/users/:userid",
+  authMiddleware.requireRoles("admin"),
+  userController.hardDeleteUser
 );
 
-router.delete('/admin/users/:userid/permanent',
-    authMiddleware.authorizeRoles('admin'),
-    userValidation.hardDeleteUser,
-    validateMiddleware,
-    userController.hardDeleteUser
+// Admin: stats
+router.get(
+  "/admin/users/stats",
+  authMiddleware.requireRoles("admin"),
+  userController.getUserStats
 );
 
-// --- Authenticated User Routes (Self-only) ---
-router.get('/profile',
-    authMiddleware.requireOwnershipOrAdmin(req => req.user.userid), // tự động là chính chủ
-    userController.getUserById
+router.get(
+  "/admin/users/stats/detailed",
+  authMiddleware.requireRoles("admin"),
+  userController.getDetailedUserStats
 );
 
-router.put('/profile',
-    authMiddleware.requireOwnershipOrAdmin(req => req.user.userid),
-    userValidation.updateUser,
-    validateMiddleware,
-    userController.updateUser
-);
-
-// --- Public Authenticated Routes ---
-router.get('/stats',
-    userController.getUserStats
+// Admin: lấy danh sách role cho dropdown
+router.get(
+  "/admin/roles",
+  authMiddleware.requireRoles("admin"),
+  userController.getAllRoles
 );
 
 module.exports = router;

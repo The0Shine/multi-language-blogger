@@ -108,7 +108,7 @@ const userController = {
             if (error.message === 'Role not found') {
                 return responseUtils.badRequest(res, error.message);
             }
-            return responseUtils.internalServerError(res, error.message);
+            return responseUtils.serverError(res, error.message);
         }
     },
 
@@ -146,7 +146,7 @@ const userController = {
             if (error.message === 'User not found') {
                 return responseUtils.notFound(res, error.message);
             }
-            return responseUtils.internalServerError(res, error.message);
+            return responseUtils.serverError(res, error.message);
         }
     },
 
@@ -161,7 +161,7 @@ const userController = {
             });
         } catch (error) {
             console.error('Get user stats error:', error);
-            return responseUtils.internalServerError(res, error.message);
+            return responseUtils.serverError(res, error.message);
         }
     },
 
@@ -176,7 +176,7 @@ const userController = {
             });
         } catch (error) {
             console.error('Get detailed user stats error:', error);
-            return responseUtils.internalServerError(res, error.message);
+            return responseUtils.serverError(res, error.message);
         }
     },
 
@@ -191,7 +191,7 @@ const userController = {
             });
         } catch (error) {
             console.error('Get all roles error:', error);
-            return responseUtils.internalServerError(res, error.message);
+            return responseUtils.serverError(res, error.message);
         }
     }
 };

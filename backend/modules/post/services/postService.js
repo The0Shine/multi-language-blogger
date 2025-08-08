@@ -1,63 +1,54 @@
 const { Post, PostContent, sequelize } = require('models');
 
 const postService = {
+  // Tạo Post + nhiều PostContent => cần TX
   create: async (data) => {
-    const transaction = await sequelize.transaction();
+    const t = await sequelize.transaction();
     try {
       const { contents, ...postData } = data;
 
-      // Tạo bài post chính
-      const newPost = await Post.create(postData, { transaction });
+      // Tạo post chính
+      const newPost = await Post.create(postData, { transaction: t });
 
-      // Tạo các nội dung con (text/image/video)
-      if (Array.isArray(contents)) {
+      // Tạo nội dung con (nếu có)
+      if (Array.isArray(contents) && contents.length > 0) {
         const contentData = contents.map(item => ({
           post_id: newPost.postid,
           type: item.type,
-          content: item.content || null,
-          url: item.url || null
+          content: item.content ?? null,
+          url: item.url ?? null
         }));
 
-        await PostContent.bulkCreate(contentData, { transaction });
+        await PostContent.bulkCreate(contentData, { transaction: t });
       }
 
-      await transaction.commit();
+      await t.commit();
       return newPost;
     } catch (error) {
-      await transaction.rollback();
+      await t.rollback();
       console.error('Create post error:', error);
       throw new Error('Failed to create post');
     }
   },
+
+  // Chỉ SELECT => không cần TX
   getById: async (postid) => {
-  const post = await Post.findByPk(postid, {
-    include: [
-      {
-        model: PostContent,
-        as: 'contents'
-      }
-    ]
-  });
+    const post = await Post.findByPk(postid, {
+      include: [{ model: PostContent, as: 'contents' }]
+    });
+    if (!post) throw new Error('Post not found');
+    return post;
+  },
 
-  if (!post) {
-    throw new Error('Post not found');
-  }
-
-  return post;
-},
-
-
+  // Chỉ SELECT => không cần TX
   getAll: async ({ limit = 10, offset = 0 }) => {
+    const lim = Number.parseInt(limit, 10) || 10;
+    const off = Number.parseInt(offset, 10) || 0;
     try {
       return await Post.findAll({
-        limit,
-        offset,
-        include: [
-          {
-            model: PostContent,
-            as: 'contents'
-          }
-        ],
+        limit: lim,
+        offset: off,
+        include: [{ model: PostContent, as: 'contents' }],
         order: [['created_at', 'DESC']]
       });
     } catch (error) {
@@ -67,28 +58,24 @@ const postService = {
   },
 
   delete: async (postid) => {
-    try {
-      const post = await Post.findByPk(postid);
-      if (!post) throw new Error('Post not found');
+    const post = await Post.findByPk(postid);
+    if (!post) throw new Error('Post not found');
 
-      await post.destroy();
-      return { message: 'Post deleted successfully' };
-    } catch (error) {
-      console.error('Delete post error:', error);
-      throw error;
-    }
+    await post.destroy(); // sẽ cascade nếu FK đã cấu hình
+    return { message: 'Post deleted successfully' };
   },
 
+  // Chỉ UPDATE 1 bảng => không cần TX
   updateStatus: async (postid, newStatus) => {
     const validStatuses = [-1, 0, 1];
-    if (!validStatuses.includes(newStatus)) {
+    if (!validStatuses.includes(Number(newStatus))) {
       throw new Error('Invalid status value');
     }
 
     const post = await Post.findByPk(postid);
     if (!post) throw new Error('Post not found');
 
-    await post.update({ status: newStatus });
+    await post.update({ status: Number(newStatus) });
     return post;
   }
 };

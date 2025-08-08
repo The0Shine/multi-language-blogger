@@ -19,24 +19,24 @@ router.post('/',
 
 // Admin-only routes
 router.get('/',
-    authMiddleware.authorizeRoles('admin'),
+    authMiddleware.requireRoles('Admin'),
     postController.getAll
 );
 
 router.delete('/:postid',
-    authMiddleware.authorizeRoles('admin'),
+    authMiddleware.requireRoles('Admin'),
     validateMiddleware,
     postController.delete
 );
 
 router.patch('/:postid/accept',
-    authMiddleware.authorizeRoles('admin'),
+    authMiddleware.requireRoles('Admin'),
     validateMiddleware,
     postController.accept
 );
 
 router.patch('/:postid/reject',
-    authMiddleware.authorizeRoles('admin'),
+    authMiddleware.requireRoles('Admin'),
     validateMiddleware,
     postController.reject
 );

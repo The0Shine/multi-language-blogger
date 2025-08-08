@@ -2,35 +2,39 @@ const jwtUtils = require("utils/jwtUtils");
 const responseUtils = require("utils/responseUtils");
 const { User, Role } = require("models");
 
+const getTokenFromHeader = (req) => {
+  const authHeader = req.headers.authorization || "";
+  return authHeader.startsWith("Bearer ") ? authHeader.slice(7) : null;
+};
+
 const authMiddleware = {
-  // Xác thực token và attach thông tin user + role
   authenticate: async (req, res, next) => {
-    const token = req.headers.authorization?.split(" ")[1];
-    if (!token) {
-      return responseUtils.unauthorized(res, "Access token is missing.");
-    }
+    const token = getTokenFromHeader(req);
+    if (!token) return responseUtils.unauthorized(res, "Access token is missing.");
 
     try {
       const decoded = jwtUtils.verifyToken(token);
 
       const user = await User.findByPk(decoded.userid, {
+        attributes: ["userid", "roleid"],
         include: [
           {
             model: Role,
-            as: "Role",
-            attributes: ["roleid", "name"],
+            as: "Role",                    // 🔁 alias phải khớp association
+            attributes: ["roleid", "name", "status", "deleted_at"],
           },
         ],
       });
 
-      if (!user || !user.Role) {
+      // Chặn user/role không hợp lệ hoặc role inactive/soft-deleted
+      if (!user || !user.Role || user.Role.deleted_at || user.Role.status === 0) {
         return responseUtils.unauthorized(res, "Invalid user or role.");
       }
 
       req.user = {
         userid: user.userid,
         roleid: user.roleid,
-        roleName: user.Role.name.toLowerCase(), // e.g., 'admin', 'author'
+        roleName: String(user.Role.name || "").toLowerCase(),
       };
 
       next();
@@ -40,49 +44,39 @@ const authMiddleware = {
     }
   },
 
-  // Phân quyền theo role name (ví dụ: 'admin', 'reviewer')
-  authorizeRoles: (...allowedRoles) => {
+  requireAuth: (req, res, next) => {
+    if (!req.user) return responseUtils.unauthorized(res, "Authentication required.");
+    next();
+  },
+
+  requireRoles: (...allowedRoles) => {
+    const normalized = allowedRoles.map((r) => String(r).toLowerCase());
     return (req, res, next) => {
-      if (!req.user) {
-        return responseUtils.unauthorized(res, "Authentication required.");
-      }
-
-      const userRole = req.user.roleName;
-      if (allowedRoles.map((r) => r.toLowerCase()).includes(userRole)) {
-        return next();
-      }
-
-      return responseUtils.unauthorized(
-        res,
-        "You do not have permission to access this resource."
-      );
+      if (!req.user) return responseUtils.unauthorized(res, "Authentication required.");
+      if (normalized.includes(String(req.user.roleName))) return next();
+      // 👉 Nếu có responseUtils.forbidden thì dùng cái này thay vì unauthorized
+      return responseUtils.unauthorized(res, "You do not have permission.");
     };
   },
 
-  // Chỉ cho phép chính chủ hoặc admin truy cập
-  requireOwnershipOrAdmin: (getTargetUserId) => {
+  requireOwnershipOrRoles: (getTargetUserId, ...allowedRoles) => {
+    const normalized = allowedRoles.map((r) => String(r).toLowerCase());
     return (req, res, next) => {
-      if (!req.user) {
-        return responseUtils.unauthorized(res, "Authentication required.");
-      }
+      if (!req.user) return responseUtils.unauthorized(res, "Authentication required.");
 
-      if (req.user.roleName === "admin") {
-        return next();
-      }
-
-      const targetUserId =
+      const targetId =
         typeof getTargetUserId === "function"
           ? getTargetUserId(req)
           : req.params.userid || req.body.userid;
 
-      if (String(req.user.userid) === String(targetUserId)) {
-        return next();
-      }
+      const isOwner =
+        targetId != null && String(req.user.userid) === String(targetId);
+      const isAllowedRole = normalized.includes(String(req.user.roleName));
 
-      return responseUtils.unauthorized(
-        res,
-        "You can only access your own resources."
-      );
+      if (isOwner || isAllowedRole) return next();
+
+      // 👉 Nếu có responseUtils.forbidden thì dùng cái này thay vì unauthorized
+      return responseUtils.unauthorized(res, "Access denied: not owner or insufficient role.");
     };
   },
 };

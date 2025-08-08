@@ -17,7 +17,7 @@ router.post('/',
 );
 
 router.get('/',
-    categoryController.getAll
+    categoryController.getAll,
 );
 
 router.get('/:categoryid',
@@ -28,21 +28,21 @@ router.get('/:categoryid',
 
 // Admin-only routes
 router.put('/:categoryid',
-    authMiddleware.authorizeRoles('admin'),
+    authMiddleware.requireRoles('Admin'),
     categoryValidation.update,
     validateMiddleware,
     categoryController.update
 );
 
 router.delete('/:categoryid',
-    authMiddleware.authorizeRoles('admin'),
+    authMiddleware.requireRoles('Admin'),
     categoryValidation.delete,
     validateMiddleware,
     categoryController.delete
 );
 
 router.delete('/permanent/:categoryid',
-    authMiddleware.authorizeRoles('admin'),
+    authMiddleware.requireRoles('Admin'),
     categoryValidation.delete,
     validateMiddleware,
     categoryController.permanentDelete
