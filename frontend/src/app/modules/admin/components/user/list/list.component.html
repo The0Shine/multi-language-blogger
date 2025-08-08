@@ -1,16 +1,61 @@
 <!-- LIST USERS -->
+<!-- Alert Edit Success -->
+<div *ngIf="editSuccess"
+  class="alert alert-success alert-dismissible bg-success text-white alert-label-icon fade show material-shadow"
+  role="alert">
+  <i class="ri-checkbox-circle-line label-icon"></i>
+  <strong>Thành công!</strong> - Bạn đã sửa user thành công.
+  <button type="button" class="btn-close btn-close-white" (click)="editSuccess = null" aria-label="Close"></button>
+</div>
+
+<!-- Alert Edit Error -->
+<div *ngIf="editError"
+  class="alert alert-danger alert-dismissible bg-danger text-white alert-label-icon fade show material-shadow"
+  role="alert">
+  <i class="ri-error-warning-line label-icon"></i>
+  <strong>Thất bại!</strong> - Sửa user không thành công.
+  <button type="button" class="btn-close btn-close-white" (click)="editError = null" aria-label="Close"></button>
+</div>
+
+<div class="row mb-3">
+  <ng-container *ngIf="isSuccess === true">
+    <div class="col-xl-12">
+      <div
+        class="alert alert-success alert-dismissible bg-success text-white alert-label-icon fade show material-shadow"
+        role="alert">
+        <i class="ri-checkbox-circle-line label-icon"></i>
+        <strong>Thành công!</strong> - Bạn đã xóa user thành công.
+        <button type="button" class="btn-close btn-close-white" (click)="isSuccess = null" aria-label="Close"></button>
+      </div>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="isSuccess === false">
+    <div class="col-xl-12">
+      <div class="alert alert-danger alert-dismissible bg-danger text-white alert-label-icon fade show material-shadow"
+        role="alert">
+        <i class="ri-error-warning-line label-icon"></i>
+        <strong>Thất bại!</strong> - Xóa user không thành công.
+        <button type="button" class="btn-close btn-close-white" (click)="isSuccess = null" aria-label="Close"></button>
+      </div>
+    </div>
+  </ng-container>
+</div>
+
+
 <div class="card">
-  <div class="section-header">
-    <div class="card-title">Manage Users</div>
+  <div class="section-header d-flex justify-content-between align-items-center p-3">
+    <div class="card-title m-0">Manage Users</div>
     <button class="btn btn-primary" (click)="addUser()">
       <i class="fa fa-plus"></i> Add User
     </button>
   </div>
 
   <div class="section-controls">
-    <input type="text" [(ngModel)]="searchText" placeholder="Search user..." />
-    <select [(ngModel)]="statusFilter">
-      <option value="">All Status</option>
+    <input type="text" [(ngModel)]="searchText" (ngModelChange)="onSearchChange()"
+      placeholder="Tìm kiếm người dùng..." />
+    <select [(ngModel)]="statusFilter" (change)="onStatusFilterChange()">
+      <option value="">Tất cả</option>
       <option value="1">Active</option>
       <option value="0">Inactive</option>
     </select>
@@ -45,7 +90,7 @@
           <button class="btn btn-info me-2" (click)="editUser(user.userid)">
             <i class="fa fa-edit"></i> Edit
           </button>
-          <button class="btn btn-danger" (click)="deleteUser(user.userid)">
+          <button class="btn btn-danger" (click)="openDeleteModal(user)">
             <i class="fa fa-trash"></i> Delete
           </button>
         </td>
@@ -57,9 +102,8 @@
 <div class="pagination" *ngIf="totalPages() > 1">
   <button (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">«</button>
 
-  <button *ngFor="let page of [].constructor(totalPages()); let i = index"
-          (click)="changePage(i + 1)"
-          [class.active]="currentPage === i + 1">
+  <button *ngFor="let page of [].constructor(totalPages()); let i = index" (click)="changePage(i + 1)"
+    [class.active]="currentPage === i + 1">
     {{ i + 1 }}
   </button>
 
@@ -82,57 +126,100 @@
       <div class="modal-body">
         <form>
           <div class="form-group">
-            <label for="first_name">First Name:</label>
-            <input type="text" class="form-control" [(ngModel)]="newUser.first_name" name="first_name">
+            <label for="first_name">First Name: </label>
+            <input type="text" class="form-control" [(ngModel)]="newUser.first_name" name="first_name" required>
           </div>
 
           <div class="form-group">
-            <label for="last_name">Last Name:</label>
-            <input type="text" class="form-control" [(ngModel)]="newUser.last_name" name="last_name">
+            <label for="last_name">Last Name: </label>
+            <input type="text" class="form-control" [(ngModel)]="newUser.last_name" name="last_name" required>
           </div>
 
           <div class="form-group">
-            <label for="username">Username:</label>
-            <input type="text" class="form-control" [(ngModel)]="newUser.username" name="username">
+            <label for="username">Username: <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" [(ngModel)]="newUser.username" name="username" required
+              (blur)="validateField('username')" (input)="clearError('username')">
+            <div *ngIf="validationErrors.username" class="error-message">
+              {{ validationErrors.username }}
+            </div>
           </div>
 
-          <!-- Chỉ hiển thị Password khi tạo mới -->
           <div class="form-group" *ngIf="!isEditMode">
-            <label for="password">Password:</label>
-            <input type="password" class="form-control" [(ngModel)]="newUser.password" name="password">
+            <label for="password">Password: <span class="text-danger">*</span></label>
+            <input type="password" class="form-control" [(ngModel)]="newUser.password" name="password" required
+              (blur)="validateField('password')" (input)="clearError('password')">
+            <div *ngIf="validationErrors.password" class="error-message">
+              {{ validationErrors.password }}
+            </div>
           </div>
 
           <div class="form-group">
-            <label for="email">Email:</label>
-            <input type="email" class="form-control" [(ngModel)]="newUser.extra_info" name="extra_info">
+            <label for="email">Email: <span class="text-danger">*</span></label>
+            <input type="email" class="form-control" [(ngModel)]="newUser.extra_info" name="extra_info" required
+              (blur)="validateField('email')" (input)="clearError('email')">
+            <div *ngIf="validationErrors.email" class="error-message">
+              {{ validationErrors.email }}
+            </div>
           </div>
 
-         <div class="form-group">
-  <label for="role">Role:</label>
-  <select class="form-select" [(ngModel)]="newUser.roleid" name="roleid">
-    <option value="">-- Chọn Role --</option>
-    <option *ngFor="let role of roles" [value]="role.id">{{ role.role_name }}</option>
-  </select>
-</div>
-
-<div class="form-group" style="margin-top: 10px;">
-  <label for="status">Status:</label>
-  <select class="form-select" [(ngModel)]="newUser.status" name="status">
-    <option value="">-- Chọn Trạng thái --</option>
-    <option [value]="1">Active</option>
-    <option [value]="0">Inactive</option>
-  </select>
-</div>
+          <div class="form-group">
+            <label for="role">Role:<span class="text-danger">*</span></label>
+            <select class="form-select" [(ngModel)]="newUser.roleid" name="roleid" required
+              (blur)="validateField('roleid')" (change)="clearError('roleid')">
+              <option value="">-- Chọn Role --</option>
+              <option *ngFor="let role of roles" [value]="role.id">{{ role.role_name }}</option>
+            </select>
+            <div *ngIf="validationErrors.roleid" class="error-message">
+              {{ validationErrors.roleid }}
+            </div>
+          </div>
 
 
+
+          <div class="form-group" style="margin-top: 10px;">
+            <label for="status">Status: </label>
+            <select class="form-select" [(ngModel)]="newUser.status" name="status" required>
+              <option value="">-- Chọn Trạng thái --</option>
+              <option [value]="1">Active</option>
+              <option [value]="0">Inactive</option>
+            </select>
+          </div>
         </form>
+
       </div>
 
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" (click)="closeModal()">Đóng</button>
-        <button type="button" class="btn btn-success" (click)="saveUser()">
+        <button type="button" class="btn btn-success" (click)="saveUser()" [disabled]="!isFormValid()"
+          [ngClass]="{'disabled-btn': !isFormValid()}">
           {{ isEditMode ? 'Cập Nhật' : 'Lưu' }}
         </button>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Modal Xóa -->
+<div class="modal" [class.show]="showDeleteModal" style="display: block;" *ngIf="showDeleteModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title custom-title">Xóa User</h5>
+        <button type="button" class="btn-close" (click)="closeDeleteModal()"></button>
+      </div>
+      <div class="modal-body">
+        <p class="fw-bold">
+          Bạn có chắc chắn muốn xóa User
+          <strong>{{ selectedUser?.username || 'Không rõ' }}</strong>
+
+          không?
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="closeDeleteModal()">Hủy</button>
+        <button class="btn btn-danger" (click)="confirmDeleteUser()">Xóa</button>
       </div>
     </div>
   </div>

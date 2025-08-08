@@ -8,7 +8,7 @@ declare let bootstrap: any;
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './profile.component.html',
-  styleUrls: ['./profile.component.css']
+  styleUrls: ['./profile.component.css'],
 })
 export class ProfileComponent implements OnInit {
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
@@ -22,7 +22,7 @@ export class ProfileComponent implements OnInit {
     role_id: '',
     created_at: '',
     avatar: '',
-    status: 'inactive'
+    status: 'inactive',
   };
 
   editForm: any = {};
@@ -31,7 +31,7 @@ export class ProfileComponent implements OnInit {
   roles = [
     { id: '1', name: 'Admin' },
     { id: '2', name: 'Editor' },
-    { id: '3', name: 'User' }
+    { id: '3', name: 'User' },
   ];
 
   ngOnInit() {
@@ -46,8 +46,10 @@ export class ProfileComponent implements OnInit {
         extra_info: user.extra_info || '',
         role_id: user.roleid ? String(user.roleid) : '',
         created_at: user.created_at || new Date().toISOString(),
-        avatar: user.avatar || 'https://p9-sign-sg.tiktokcdn.com/tos-alisg-avt-0068/e3f76ab347a6a242bf87526d35162fb0~tplv-tiktokx-cropcenter:1080:1080.jpeg',
-        status: user.status === 1 ? 'active' : 'inactive'
+        avatar:
+          user.avatar ||
+          'https://p9-sign-sg.tiktokcdn.com/tos-alisg-avt-0068/e3f76ab347a6a242bf87526d35162fb0~tplv-tiktokx-cropcenter:1080:1080.jpeg',
+        status: user.status === 1 ? 'active' : 'inactive',
       };
     }
 
@@ -79,7 +81,7 @@ export class ProfileComponent implements OnInit {
       ...this.profile,
       ...this.editForm,
       avatar: this.avatarPreview || this.profile.avatar,
-      status: this.editForm.status === 'active' ? 'active' : 'inactive'
+      status: this.editForm.status === 'active' ? 'active' : 'inactive',
     };
 
     const oldUser = JSON.parse(localStorage.getItem('user') || '{}');
@@ -93,7 +95,8 @@ export class ProfileComponent implements OnInit {
       username: this.profile.username,
       extra_info: this.profile.extra_info,
       status: this.profile.status === 'active' ? 1 : 0,
-      avatar: this.profile.avatar
+      avatar: this.profile.avatar,
+      created_at: oldUser.created_at, // giữ nguyên ngày tạo gốc
     };
 
     localStorage.setItem('user', JSON.stringify(updatedUser));
@@ -102,13 +105,14 @@ export class ProfileComponent implements OnInit {
 
     const modalEl = document.getElementById('editProfileModal');
     if (modalEl) {
-      const modalInstance = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+      const modalInstance =
+        bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
       modalInstance.hide();
     }
   }
 
   getRoleName(roleId: string) {
-    return this.roles.find(r => r.id === roleId)?.name || 'Unknown';
+    return this.roles.find((r) => r.id === roleId)?.name || 'Unknown';
   }
 
   get currentUsername() {

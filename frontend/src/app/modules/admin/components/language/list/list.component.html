@@ -1,3 +1,64 @@
+<ng-container *ngIf="createSuccess">
+  <div class="alert alert-success alert-dismissible bg-success text-white fade show material-shadow" role="alert">
+    <i class="ri-checkbox-circle-line label-icon"></i>
+    <strong>Thành công!</strong> - Bạn đã thêm ngôn ngữ thành công.
+    <button type="button" class="btn-close btn-close-white" (click)="createSuccess = null" aria-label="Close"></button>
+  </div>
+</ng-container>
+<ng-container *ngIf="createError">
+  <div class="alert alert-danger alert-dismissible bg-danger text-white fade show material-shadow" role="alert">
+    <i class="ri-error-warning-line label-icon"></i>
+    <strong>Thất bại!</strong> - Thêm ngôn ngữ không thành công.
+    <button type="button" class="btn-close btn-close-white" (click)="createError = null" aria-label="Close"></button>
+  </div>
+</ng-container>
+
+<!-- Alert Sửa thành công -->
+<ng-container *ngIf="editSuccess">
+  <div class="alert alert-success alert-dismissible bg-success text-white alert-label-icon fade show material-shadow"
+    role="alert">
+    <i class="ri-checkbox-circle-line label-icon"></i>
+    <strong>Thành công!</strong> - Bạn đã sửa ngôn ngữ thành công.
+    <button type="button" class="btn-close btn-close-white" (click)="editSuccess = null" aria-label="Close"></button>
+  </div>
+</ng-container>
+
+<!-- Alert Sửa thất bại -->
+<ng-container *ngIf="editError">
+  <div class="alert alert-danger alert-dismissible bg-danger text-white alert-label-icon fade show material-shadow"
+    role="alert">
+    <i class="ri-error-warning-line label-icon"></i>
+    <strong>Thất bại!</strong> - Sửa ngôn ngữ không thành công.
+    <button type="button" class="btn-close btn-close-white" (click)="editError = null" aria-label="Close"></button>
+  </div>
+</ng-container>
+
+<div class="row mb-3">
+  <ng-container *ngIf="isSuccess === true">
+    <div class="col-xl-12">
+      <div
+        class="alert alert-success alert-dismissible bg-success text-white alert-label-icon fade show material-shadow"
+        role="alert">
+        <i class="ri-checkbox-circle-line label-icon"></i>
+        <strong>Thành công!</strong> - Bạn đã xóa Language thành công.
+        <button type="button" class="btn-close btn-close-white" (click)="isSuccess = null" aria-label="Close"></button>
+      </div>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="isSuccess === false">
+    <div class="col-xl-12">
+      <div class="alert alert-danger alert-dismissible bg-danger text-white alert-label-icon fade show material-shadow"
+        role="alert">
+        <i class="ri-error-warning-line label-icon"></i>
+        <strong>Thất bại!</strong> - Xóa Language không thành công.
+        <button type="button" class="btn-close btn-close-white" (click)="isSuccess = null" aria-label="Close"></button>
+      </div>
+    </div>
+  </ng-container>
+</div>
+
+
 <div class="card">
   <div class="section-header d-flex justify-content-between align-items-center p-3">
     <div class="card-title m-0">Manage Languages</div>
@@ -6,62 +67,83 @@
     </button>
   </div>
 
-  <div class="section-controls">
-    <input type="text" [(ngModel)]="searchText" placeholder="Search language..." />
-    <select [(ngModel)]="statusFilter">
-      <option value="">All Status</option>
-      <option value="Active">Active</option>
-      <option value="Inactive">Inactive</option>
-    </select>
-  </div>
+ <!-- Search & Filter -->
+<div class="section-controls">
+  <input
+    type="text"
+    [(ngModel)]="searchText"
+    (ngModelChange)="onSearchOrFilterChange()"
+    placeholder="Search language..."
+  >
 
-  <table >
+  <select
+    [(ngModel)]="statusFilter"
+    (ngModelChange)="onSearchOrFilterChange()">
+    <option value="">All Status</option>
+    <option [value]="1">Active</option>
+    <option [value]="0">Inactive</option>
+  </select>
+</div>
+
+  <table>
     <thead>
       <tr>
         <th style="width: 5%;">ID</th>
-    <th style="width: 30%;">Language</th>
-    <th style="width: 30%;">Locale Code</th>
-    <th style="width: 20%;">Status</th>
-  <th style="width: 20%; padding-right: 100px;" class="text-end">Actions</th>
+        <th style="width: 30%;">Language</th>
+        <th style="width: 30%;">Locale Code</th>
+        <th style="width: 20%;">Status</th>
+        <th style="width: 20%; padding-right: 100px;" class="text-end">Actions</th>
 
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let lang of filteredLanguages">
+      <tr *ngFor="let lang of paginatedLanguages()">
+
 
         <td>{{ lang.id }}</td>
         <td>{{ lang.language_name }}</td>
         <td>{{ lang.locale_code }}</td>
-     <td>
-  <span
-    class="badge"
-    [ngClass]="{
+        <td>
+          <span class="badge" [ngClass]="{
       'bg-success': lang.status === 'Active',
       'bg-danger': lang.status === 'Inactive'
     }">
-    {{ lang.status === 'Active' ? 'Active' : 'Inactive' }}
-  </span>
-</td>
+            {{ lang.status === 'Active' ? 'Active' : 'Inactive' }}
+          </span>
+        </td>
 
-       <td class="text-end">
-  <div class="d-inline-flex gap-2">
-    <button class="btn btn-info" (click)="editLanguage(lang)">
-      <i class="fa fa-edit"></i> Edit
-    </button>
-    <button class="btn btn-danger" (click)="deleteLanguage(lang.id)">
-      <i class="fa fa-trash"></i> Delete
-    </button>
-  </div>
-</td>
+        <td class="text-end">
+          <div class="d-inline-flex gap-2">
+            <button class="btn btn-info" (click)="editLanguage(lang)">
+              <i class="fa fa-edit"></i> Edit
+            </button>
+            <button class="btn btn-danger"  (click)="openDeleteModal(lang)">
+              <i class="fa fa-trash"></i> Delete
+            </button>
+          </div>
+        </td>
 
       </tr>
     </tbody>
   </table>
 </div>
 
+<div class="pagination" *ngIf="totalPages() > 1">
+  <button (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">«</button>
+
+  <button *ngFor="let page of [].constructor(totalPages()); let i = index"
+          (click)="changePage(i + 1)"
+          [class.active]="currentPage === i + 1">
+    {{ i + 1 }}
+  </button>
+
+  <button (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages()">»</button>
+</div>
+
+
 <!-- Modal Add/Edit Language -->
 <div *ngIf="showModal" class="modal fade show d-block custom-modal" role="dialog">
-  <div class="modal-dialog " role="document">
+  <div class="modal-dialog" role="document">
     <div class="modal-content shadow-lg">
       <div class="modal-header">
         <h5 class="modal-title">
@@ -74,17 +156,32 @@
 
       <div class="modal-body">
         <form>
-          <div class="form-group">
-            <label for="languageName">Language Name:</label>
-            <input type="text" class="form-control" [(ngModel)]="modalLanguage.language_name" name="languageName" />
-          </div>
+          <!-- Language Name -->
+
 
           <div class="form-group">
-            <label for="localeCode">Locale Code:</label>
-            <input type="text" class="form-control" [(ngModel)]="modalLanguage.locale_code" name="localeCode" />
+            <label for="languageName">Language Name: <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" name="languageName" [(ngModel)]="modalLanguage.language_name"
+              (blur)="validateField('language_name')" (ngModelChange)="validateField('language_name')"
+              [ngClass]="{'ng-invalid ng-touched': validationErrors.language_name}" />
+            <div class="error-message" *ngIf="validationErrors.language_name">
+              {{ validationErrors.language_name }}
+            </div>
           </div>
 
+          <!-- Locale Code -->
           <div class="form-group">
+            <label for="localeCode">Locale Code: <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" name="localeCode" [(ngModel)]="modalLanguage.locale_code"
+              (blur)="validateField('locale_code')" (ngModelChange)="validateField('locale_code')"
+              [ngClass]="{'ng-invalid ng-touched': validationErrors.locale_code}" />
+            <div class="error-message" *ngIf="validationErrors.locale_code">
+              {{ validationErrors.locale_code }}
+            </div>
+          </div>
+
+          <!-- Status -->
+          <div class="form-group mt-3">
             <label for="status">Status:</label>
             <select class="form-select" [(ngModel)]="modalLanguage.status" name="status">
               <option value="Active">Active</option>
@@ -96,9 +193,32 @@
 
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" (click)="closeModal()">Đóng</button>
-        <button type="button" class="btn btn-success" (click)="saveLanguage()">
+        <button type="button" class="btn btn-success" (click)="saveLanguage()" [disabled]="!isLanguageValid()">
           {{ editingLanguage ? 'Update' : 'Lưu' }}
         </button>
+
+
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal Xóa -->
+<div class="modal" [class.show]="showDeleteModal" style="display: block;" *ngIf="showDeleteModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Xóa Ngôn ngữ</h5>
+        <button type="button" class="btn-close" (click)="closeDeleteModal()"></button>
+      </div>
+      <div class="modal-body">
+        <p class="fw-bold">
+          Bạn có chắc chắn muốn xóa Ngôn Ngữ
+          <strong>{{ selectedLanguage?.language_name }}</strong> không?
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="closeDeleteModal()">Hủy</button>
+        <button class="btn btn-danger" (click)="confirmDeleteLanguage()">Xóa</button>
       </div>
     </div>
   </div>

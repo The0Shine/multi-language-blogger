@@ -3,6 +3,8 @@ import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { PostService } from '../modules/admin/post.service';
+import { UserService } from '../modules/admin/user.service';
+
 
 @Component({
   selector: 'app-home',
@@ -19,36 +21,53 @@ export class HomeComponent implements OnInit {
     { section: 'language/list', icon: 'fa fa-language', value: 0, label: 'Languages' }
   ];
 
+   users: any[] = [];
+
   recentPosts: any[] = [];
 
   constructor(
     private router: Router,
     private postService: PostService,
-    private http: HttpClient
+    private http: HttpClient,
+      private userService: UserService
   ) {}
 
-  ngOnInit() {
+ngOnInit() {
+  this.userService.getUsers().subscribe(users => {
+    this.users = users;
     this.loadRecentPosts();
-    this.loadCounts(); // ✅ Gọi để đếm số lượng users, categories, languages
-  }
+    this.loadCounts();
+  });
+}
+goToAllPosts() {
+  this.router.navigate(['/admin/post/list']);
+}
 
-  loadRecentPosts() {
-    this.postService.getPosts().subscribe((posts: any[]) => {
-      const sorted = posts
-        .sort((a, b) => new Date(b.createdAt || '').getTime() - new Date(a.createdAt || '').getTime())
-        .slice(0, 5);
 
-      this.recentPosts = sorted.map((p: any) => ({
-        title: p.title,
-        author: p.author,
-        status: this.getStatusText(Number(p.status)),
-        date: p.createdAt ? new Date(p.createdAt).toISOString().split('T')[0] : 'N/A',
-          originalPostId: p.id || p.postid // ✅ ID gốc để định danh bài viết
-      }));
 
-      this.stats[0].value = posts.length;
-    });
-  }
+loadRecentPosts() {
+  this.postService.getPosts().subscribe((posts: any[]) => {
+    const sorted = posts
+      .sort((a, b) => new Date(b.createdAt || '').getTime() - new Date(a.createdAt || '').getTime())
+      .slice(0, 5);
+
+this.recentPosts = sorted.map((p: any) => {
+  const user = this.users.find(u => String(u.id) === String(p.user_id));
+  return {
+    title: p.title,
+    username: user ? user.username : 'Unknown',
+    status: Number(p.status), // ✅ giữ nguyên dạng số
+    date: p.createdAt ? new Date(p.createdAt).toISOString().split('T')[0] : 'N/A',
+    originalPostId: p.id || p.postid
+  };
+});
+
+
+
+    this.stats[0].value = posts.length;
+  });
+}
+
 
   loadCounts() {
     this.http.get<any[]>('http://localhost:3000/users').subscribe(users => {
@@ -80,5 +99,11 @@ export class HomeComponent implements OnInit {
     queryParams: { view: postId }
   });
 }
-
+ truncateTitle(title: string, wordLimit: number = 15): string {
+    if (!title) return '';
+    const words = title.split(' ');
+    return words.length > wordLimit
+      ? words.slice(0, wordLimit).join(' ') + '...'
+      : title;
+  }
 }

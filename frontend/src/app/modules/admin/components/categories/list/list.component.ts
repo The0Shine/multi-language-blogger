@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { NgIf, NgFor, NgClass, CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CategoryService } from '../../../category.service'; // chỉnh lại nếu path khác
+import { ActivatedRoute, Router } from '@angular/router';
+declare var bootstrap: any;
 
 @Component({
   selector: 'app-admin-category-list',
@@ -16,6 +18,24 @@ export class AdminCategorieListComponent implements OnInit {
   showModal = false;
   editingCategory = false;
 
+
+  selectedCategory: any = null;
+  showDeleteModal = false;
+
+  currentPage: number = 1;
+pageSize: number = 5;
+
+editSuccess: boolean | null = null;
+editError: boolean | null = null;
+  createSuccess: boolean | null = null;
+  createError: boolean | null = null;
+
+  validationErrors: any = {
+    category_name: ''
+  };
+
+isSuccess: boolean | null = null;
+
   categories: any[] = [];
   modalCategory = {
     id: 0,
@@ -23,23 +43,23 @@ export class AdminCategorieListComponent implements OnInit {
     status: 'Active'
   };
 
-  constructor(private categoryService: CategoryService) {}
+  constructor(private categoryService: CategoryService,
+      private router: Router,
+    private route: ActivatedRoute
+  ) {}
 
   ngOnInit() {
     this.loadCategories();
+
+      // Lấy page từ query params khi load trang
+    this.route.queryParams.subscribe((params) => {
+      this.currentPage = +params['page'] || 1;
+    });
   }
 
   loadCategories() {
     this.categoryService.getCategories().subscribe(data => {
       this.categories = data;
-    });
-  }
-
-  filteredCategories() {
-    return this.categories.filter(category => {
-      const matchesName = category.category_name.toLowerCase().includes(this.searchText.toLowerCase());
-      const matchesStatus = this.statusFilter ? category.status === this.statusFilter : true;
-      return matchesName && matchesStatus;
     });
   }
 
@@ -55,43 +75,86 @@ export class AdminCategorieListComponent implements OnInit {
     this.showModal = true;
   }
 
-deleteCategory(id: number) {
-  if (confirm('Are you sure you want to delete this category?')) {
-    this.categoryService.deleteCategory(id).subscribe({
-      next: () => {
-        this.categories = this.categories.filter(cat => cat.id !== id);
-        console.log('Deleted category with id', id);
-      },
-      error: (err) => {
-        console.error('Xóa thất bại:', err);
-        alert('Xóa thất bại!');
+deleteCategory(categoryId: number) {
+  this.categoryService.deleteCategory(categoryId).subscribe({
+    next: () => {
+      // 1. Xóa khỏi danh sách
+      this.categories = this.categories.filter(
+        category => category.id !== categoryId
+      );
+
+      // 2. Tính lại tổng số trang từ filtered list
+      const filtered = this.filteredCategories(); // hoặc categories nếu không có lọc
+      const totalPages = Math.ceil(filtered.length / this.pageSize);
+
+      // 3. Nếu trang hiện tại > tổng trang → quay về trang cuối hợp lệ
+      if (this.currentPage > totalPages) {
+        this.changePage(totalPages || 1); // nếu không còn gì thì về trang 1
       }
-    });
-  }
+
+      // 4. Success
+      this.isSuccess = true;
+      setTimeout(() => (this.isSuccess = null), 1000);
+    },
+    error: () => {
+      this.isSuccess = false;
+      setTimeout(() => (this.isSuccess = null), 1000);
+    }
+  });
 }
 
 
-  saveCategory() {
-    if (!this.modalCategory.category_name || !this.modalCategory.status) {
-      alert('Please fill in all required fields!');
-      return;
+
+  validateField(field: string) {
+    if (field === 'category_name') {
+      this.validationErrors.category_name = this.modalCategory.category_name.trim()
+        ? ''
+        : 'Bạn chưa nhập tên danh mục';
     }
+  }
+
+  isCategoryValid(): boolean {
+    return !!this.modalCategory.category_name?.trim();
+  }
+
+saveCategory() {
+    this.validateField('category_name');
+
+    if (this.validationErrors.category_name) return;
 
     const payload = {
       category_name: this.modalCategory.category_name,
-      status: this.modalCategory.status
+      status: this.modalCategory.status || 'Active'
     };
 
     if (this.editingCategory) {
-      this.categoryService.updateCategory(this.modalCategory.id, payload).subscribe(updated => {
-        const index = this.categories.findIndex(c => c.id === this.modalCategory.id);
-        if (index > -1) this.categories[index] = updated;
-        this.closeModal();
+      if (!confirm('Bạn có chắc chắn muốn sửa danh mục này không?')) return;
+
+      this.categoryService.updateCategory(this.modalCategory.id, payload).subscribe({
+        next: updated => {
+          const index = this.categories.findIndex(c => c.id === this.modalCategory.id);
+          if (index > -1) this.categories[index] = updated;
+          this.closeModal();
+          this.editSuccess = true;
+          setTimeout(() => (this.editSuccess = null), 1500);
+        },
+        error: () => {
+          this.editError = true;
+          setTimeout(() => (this.editError = null), 1500);
+        }
       });
     } else {
-      this.categoryService.createCategory(payload).subscribe(created => {
-        this.categories.push(created);
-        this.closeModal();
+      this.categoryService.createCategory(payload).subscribe({
+        next: created => {
+          this.categories.push(created);
+          this.closeModal();
+          this.createSuccess = true;
+          setTimeout(() => (this.createSuccess = null), 1500);
+        },
+        error: () => {
+          this.createError = true;
+          setTimeout(() => (this.createError = null), 1500);
+        }
       });
     }
   }
@@ -100,4 +163,63 @@ deleteCategory(id: number) {
     this.showModal = false;
     this.modalCategory = { id: 0, category_name: '', status: 'Active' };
   }
+
+filteredCategories() {
+  return this.categories.filter((category) => {
+    const keyword = this.searchText.toLowerCase();
+    const matchesName = category.category_name.toLowerCase().includes(keyword);
+
+    const matchesStatus =
+      this.statusFilter !== ''
+  ? (this.statusFilter === '1' ? category.status === 'Active' : category.status === 'Inactive')
+  : true;
+
+    return matchesName && matchesStatus;
+  });
+}
+
+
+  totalPages(): number {
+  return Math.ceil(this.filteredCategories().length / this.pageSize);
+}
+
+paginatedCategories(): any[] {
+  const start = (this.currentPage - 1) * this.pageSize;
+  return this.filteredCategories().slice(start, start + this.pageSize);
+}
+
+  changePage(page: number) {
+    if (page >= 1 && page <= this.totalPages()) {
+      this.currentPage = page;
+      // Update chỉ param page
+      this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: { page: this.currentPage },
+        queryParamsHandling: 'merge',
+      });
+    }
+  }
+
+onSearchOrFilterChange() {
+  this.currentPage = 1; // Reset về trang 1 khi tìm kiếm hoặc filter
+}
+
+openDeleteModal(category: any) {
+  this.selectedCategory = category;
+  this.showDeleteModal = true;
+}
+
+closeDeleteModal() {
+  this.showDeleteModal = false;
+  this.selectedCategory = null;
+}
+
+confirmDelete() {
+  if (!this.selectedCategory) return;
+  // Gọi API xóa
+  this.deleteCategory(this.selectedCategory.id);
+  this.closeDeleteModal();
+}
+
+
 }

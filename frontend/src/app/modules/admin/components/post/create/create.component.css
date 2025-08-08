@@ -74,13 +74,13 @@ ngx-editor {
 }
 
 .btn-primary {
-  background-color: #0822e3;
-  border-color: #2513e9;
+  background-color: #1409e2;
+  border-color: #1409e2;
   transition: all 0.2s ease-in-out;
 }
 .btn-primary:hover {
-  background-color: #0963ea;
-  border-color: #0a64ec;
+  background-color: #1409e2;
+  border-color: #1109f0;
 }
 /* Lỗi dưới phần nội dung */
 .text-danger {
@@ -90,3 +90,12 @@ ngx-editor {
   margin-top: 6px;        /* Tạo khoảng cách nhỏ với editor */
   display: block;
 }
+.is-invalid {
+  border: 1px solid #dc3545 !important;
+}
+.editor-content.is-invalid {
+  border: 1px solid #dc3545 !important;
+  border-radius: 4px;
+  padding: 4px;
+}
+

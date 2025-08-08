@@ -1,8 +1,12 @@
 /* Link trong danh sách bài viết */
 .link {
-  color: #007bff;
+  color: #020008;
   cursor: pointer;
   text-decoration: underline;
+  font-weight: 600;
+  text-decoration-thickness: 1px;        /* gạch nhẹ */
+  text-underline-offset: 3px;            /* khoảng cách với chữ */
+  transition: color 0.2s ease;
 }
 
 /* Modal overlay */
@@ -18,6 +22,19 @@
   justify-content: center;
   align-items: center;
 }
+.post-actions .btn {
+  min-width: 80px;        /* Tăng chiều ngang một chút */
+  height: 38px;            /* Chiều cao cố định */
+
+  display: inline-flex;    /* Canh icon và text giữa */
+  align-items: center;
+  justify-content: center;
+  gap: 5px;                /* Khoảng cách icon với chữ */
+  border-radius: 6px;      /* Bo góc nhẹ hơn */
+  transition: all 0.2s ease;
+}
+
+
 
 
 /* Nội dung modal */
@@ -83,13 +100,6 @@
 }
 
 /* Tiêu đề modal */
-.modal-title {
-  font-size: 16px;           /* To hơn */
-  font-weight: 700;
-  color: #4da6ff;            /* Xanh nhạt */
-  margin-bottom: 20px;
-
-}
 /* Label đỏ trong modal chi tiết */
 .danger-label {
   font-weight: bold;
@@ -109,4 +119,111 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+.modal-xxl {
+  max-width: 90% !important;
+}
+
+/* Dịch modal sang phải một chút để căn giữa */
+.custom-modal {
+  margin-left: 25% !important;
+}
+
+.modal-title {
+  font-size: 32px !important;
+  font-weight: bold;
+  text-align: center;
+  display: block;
+  width: 100%;
+}
+
+
+.post-title {
+  font-size: 26px;
+  color: #050506;
+}
+
+.content-html {
+  word-wrap: break-word;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.modal-footer {
+  padding-top: 0;
+}
+
+.modal-footer .btn-danger {
+  margin-right: 8px;
+}
+
+
+
+
+.pagination {
+  display: flex;
+  justify-content: center; /* căn giữa */
+  align-items: center;
+  gap: 6px;
+  margin: 15px 0;
+}
+
+.pagination button {
+  border: 1px solid #ddd;
+  background: #f8f9fa;
+  color: #333;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  min-width: 35px;
+}
+
+.pagination button:hover:not(:disabled) {
+  background: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+.pagination button:disabled {
+  background: #e9ecef;
+  color: #aaa;
+  cursor: not-allowed;
+}
+
+.pagination button.active {
+  background: #007bff;
+  color: white;
+  border-color: #007bff;
+  font-weight: bold;
+}
+.form-group {
+  margin-bottom: 15px;
+  position: relative;
+}
+
+label {
+  font-weight: 600;
+  margin-bottom: 5px;
+  display: inline-block;
+}
+
+.error-message {
+  font-size: 12px;
+  color: #d9534f;
+  margin-top: 4px;
+  padding-left: 2px;
+}
+
+/* Tiêu đề modal */
+.custom-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #5026f8;
+  text-align: left; /* Căn giữa tiêu đề */
+}
+
+.modal-footer .btn {
+  min-width: 90px;
+  font-weight: 600;
 }

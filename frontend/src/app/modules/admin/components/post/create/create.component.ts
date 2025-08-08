@@ -1,19 +1,23 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Editor, Toolbar, NgxEditorModule } from 'ngx-editor';
 
 import { PostService } from '../../../post.service';
 import { LanguageService } from '../../../language.service';
-import { CategoryService } from '../../../category.service';
 
 @Component({
   selector: 'app-create',
   standalone: true,
   templateUrl: './create.component.html',
   styleUrls: ['./create.component.css'],
-  imports: [CommonModule, ReactiveFormsModule, NgxEditorModule, RouterModule]
+  imports: [CommonModule, ReactiveFormsModule, NgxEditorModule, RouterModule],
 })
 export class AdminPostCreateComponent implements OnInit, OnDestroy {
   postForm!: FormGroup;
@@ -21,93 +25,210 @@ export class AdminPostCreateComponent implements OnInit, OnDestroy {
 
   currentUser: any = {};
   languages: any[] = [];
-  categories: any[] = [];
+  currentLang: 'vi' | 'en' = 'vi';
+  translated = false;
 
   toolbar: Toolbar = [
     ['bold', 'italic'],
     ['underline', 'strike'],
     ['code', 'blockquote'],
     ['ordered_list', 'bullet_list'],
-    ['link', 'image']
+    ['link', 'image'],
   ];
 
   statuses = [
-    { value: 0, label: 'Pending Review' },
-    { value: 1, label: 'Published' }
-  ];
+  { value: 0, label: 'Pending Review' },
+  { value: 1, label: 'Published' }
+];
+
+
+  // Nội dung từng ngôn ngữ
+  contentVi = '';
+  contentEn = '';
+  titleVi = '';
+  titleEn = '';
+
+  // ID ngôn ngữ
+  viLangId!: number;
+  enLangId!: number;
+
+  originalId: number | null = null;
+
+  isVietnamese = true;
 
   constructor(
     private fb: FormBuilder,
     private router: Router,
     private postService: PostService,
-    private languageService: LanguageService,
-    private categoryService: CategoryService
+    private languageService: LanguageService
   ) {}
 
   ngOnInit(): void {
     this.editor = new Editor();
-
     const user = localStorage.getItem('user');
     if (user) {
       this.currentUser = JSON.parse(user);
-    } else {
-      alert('Không tìm thấy người dùng trong localStorage');
     }
 
     this.initForm();
     this.loadLanguages();
-    this.loadCategories();
+
+    this.postForm.get('content')?.valueChanges.subscribe((val) =>
+      this.validateContent(val)
+    );
+  }
+
+  ngOnDestroy(): void {
+    this.editor?.destroy();
   }
 
   initForm() {
     this.postForm = this.fb.group({
       author: [{ value: this.currentUser.username || 'Unknown', disabled: true }],
       language: ['', Validators.required],
-      category: ['', Validators.required],
-      title: ['', Validators.required],
+      title: ['', [Validators.required, Validators.pattern(/\S+/)]],
       status: ['', Validators.required],
-      content: ['', Validators.required]
+      content: ['', [Validators.required, this.noWhitespaceValidator]],
     });
   }
 
   loadLanguages() {
-    this.languageService.getLanguages().subscribe(data => {
+    this.languageService.getLanguages().subscribe((data) => {
       this.languages = data;
+
+      const viLang = data.find((l: any) => l.language_name.toLowerCase().includes('vi'));
+      const enLang = data.find((l: any) => l.language_name.toLowerCase().includes('en'));
+
+      if (viLang && enLang) {
+        this.viLangId = viLang.id;
+        this.enLangId = enLang.id;
+
+        this.postForm.patchValue({ language: this.viLangId }); // Mặc định tiếng Việt
+      }
     });
   }
 
-  loadCategories() {
-    this.categoryService.getCategories().subscribe(data => {
-      this.categories = data;
-    });
-  }
 
-  savePost(): void {
-    if (this.postForm.valid) {
-      const formData = this.postForm.getRawValue();
-      const payload = {
-        title: formData.title,
-        content: formData.content,
-        status: Number(formData.status),
-        author: this.currentUser.username,
-        user_id: this.currentUser.id,
-        language_id: Number(formData.language),
-        category_id: Number(formData.category)
-      };
 
-      this.postService.addPost(payload).subscribe(() => {
-        this.router.navigate(['/admin/post/list']);
-      });
-    } else {
+  onSubmit(): void {
+    if (this.postForm.invalid) {
       this.postForm.markAllAsTouched();
+      return;
+    }
+
+    // Lưu lần cuối nội dung
+    if (this.currentLang === 'vi') {
+      this.contentVi = this.postForm.get('content')?.value;
+      this.titleVi = this.postForm.get('title')?.value;
+    } else {
+      this.contentEn = this.postForm.get('content')?.value;
+      this.titleEn = this.postForm.get('title')?.value;
+    }
+
+    const status = Number(this.postForm.get('status')?.value);
+
+    const payloadVi = {
+      title: this.titleVi,
+      content: this.contentVi,
+      status,
+      user_id: String(this.currentUser.id),
+      language_id: this.viLangId,
+      original_id: null,
+    };
+
+    this.postService.addPost(payloadVi).subscribe({
+      next: (viPost) => {
+        if (this.translated && this.contentEn && this.titleEn) {
+          const payloadEn = {
+            title: this.titleEn,
+            content: this.contentEn,
+            status,
+            user_id: String(this.currentUser.id),
+            language_id: this.enLangId,
+            original_id: viPost.id,
+          };
+
+          this.postService.addPost(payloadEn).subscribe({
+            next: () => this.router.navigate(['/admin/post/list']),
+            error: () => alert('Lỗi khi tạo bản dịch tiếng Anh'),
+          });
+        } else {
+          this.router.navigate(['/admin/post/list']);
+        }
+      },
+      error: () => alert('Lỗi khi tạo bài viết'),
+    });
+  }
+
+  validateContent(value: string) {
+    const plainText = this.stripHtml(value || '');
+    const control = this.postForm.get('content');
+    if (plainText.trim().length === 0) {
+      control?.setErrors({ whitespace: true });
+    } else {
+      control?.setErrors(null);
     }
   }
 
-  onSubmit(): void {
-    this.savePost();
+  getErrorMessage(field: string): string {
+    const control = this.postForm.get(field);
+    if (control?.hasError('required')) {
+      if (field === 'language') return 'Bạn chưa chọn Ngôn ngữ';
+      if (field === 'title') return 'Bạn chưa nhập tiêu đề';
+      if (field === 'content') return 'Bạn chưa nhập nội dung';
+    }
+    if (control?.hasError('whitespace') || control?.hasError('pattern')) {
+      return 'Không được chỉ nhập khoảng trắng';
+    }
+    return '';
+  }
+//Hàm này là một validator tùy chỉnh để kiểm tra xem giá trị của trường có phải chỉ là khoảng trắng hay không:
+  noWhitespaceValidator(control: any) {
+    const isWhitespace = (control.value || '').trim().length === 0;
+    return isWhitespace ? { whitespace: true } : null;
+  }
+// hàm stripHtml sẽ loại bỏ các thẻ <p> và <strong>
+  stripHtml(html: string): string {
+    const div = document.createElement('div');
+    div.innerHTML = html;
+    return div.textContent || div.innerText || '';
   }
 
-  ngOnDestroy(): void {
-    this.editor?.destroy();
+  switchLang(lang: 'vi' | 'en') {
+    // Lưu lại trước khi chuyển
+    if (this.currentLang === 'vi') {
+      this.contentVi = this.postForm.get('content')?.value;
+      this.titleVi = this.postForm.get('title')?.value;
+    } else {
+      this.contentEn = this.postForm.get('content')?.value;
+      this.titleEn = this.postForm.get('title')?.value;
+    }
+
+    // Cập nhật form
+    this.currentLang = lang;
+    this.postForm.patchValue({
+      language: lang === 'vi' ? this.viLangId : this.enLangId,
+      title: lang === 'vi' ? this.titleVi : this.titleEn,
+      content: lang === 'vi' ? this.contentVi : this.contentEn,
+    });
   }
+
+  translateToEnglish() {
+    // Gọi khi muốn tạo bản dịch
+    this.translated = true;
+    this.switchLang('en');
+  }
+
+  switchToVietnamese() {
+  this.switchLang('vi');
+  this.isVietnamese = true;
+}
+
+switchToEnglish() {
+  this.switchLang('en');
+  this.isVietnamese = false;
+  this.translated = true; // đánh dấu đã dịch, để khi submit sẽ tạo bản tiếng Anh
+}
+
+
 }

@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { RoleService } from '../../admin/role.service';
 
 @Component({
   selector: 'app-register',
@@ -17,23 +18,20 @@ export class RegisterComponent {
   showPassword = false;
   errorMessage: string | null = null;
 
-  roles = [
-    { id: 1, name: 'Admin' },
-    { id: 2, name: 'Editor' },
-    { id: 3, name: 'User' }
-  ];
+  roles: any[] = []; // ← sẽ lấy từ API
 
   statuses = [
     { value: 1, label: 'Active' },
-    { value: 0, label: 'Inactive' }
+    { value: 0, label: 'Inactive' },
   ];
 
-  private apiUrl = 'http://localhost:3000/users'; // ✅ json-server endpoint
+  private apiUrl = 'http://localhost:3000/users';
 
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private http: HttpClient
+    private http: HttpClient,
+    private roleService: RoleService
   ) {
     this.registerForm = this.fb.group({
       firstName: ['', Validators.required],
@@ -41,7 +39,14 @@ export class RegisterComponent {
       email: ['', [Validators.required, Validators.email]],
       role_id: ['', Validators.required],
       status: ['', Validators.required],
-      username: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(30)]],
+      username: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(3),
+          Validators.maxLength(30),
+        ],
+      ],
       password: ['', [Validators.required, Validators.minLength(6)]],
       confirmPassword: ['', Validators.required],
     });
@@ -60,13 +65,30 @@ export class RegisterComponent {
     return password === confirmPassword;
   }
 
+  ngOnInit(): void {
+    this.loadRoles();
+  }
+
+  loadRoles() {
+    this.roleService.getRoles().subscribe((data) => (this.roles = data));
+  }
+
   onSubmit(): void {
     if (this.registerForm.invalid) {
       this.registerForm.markAllAsTouched();
       return;
     }
 
-    const { firstName, lastName, email, role_id, username, password, confirmPassword, status } = this.registerForm.value;
+    const {
+      firstName,
+      lastName,
+      email,
+      role_id,
+      username,
+      password,
+      confirmPassword,
+      status,
+    } = this.registerForm.value;
 
     if (!this.passwordsMatch(password, confirmPassword)) {
       this.errorMessage = 'Passwords do not match';
@@ -74,8 +96,8 @@ export class RegisterComponent {
     }
 
     // ✅ Kiểm tra username trùng
-    this.http.get<any[]>(this.apiUrl).subscribe(users => {
-      if (users.some(u => u.username === username)) {
+    this.http.get<any[]>(this.apiUrl).subscribe((users) => {
+      if (users.some((u) => u.username === username)) {
         this.errorMessage = 'Username already exists';
         return;
       }
@@ -88,7 +110,8 @@ export class RegisterComponent {
         username,
         password,
         status: Number(status),
-        extra_info: email
+        extra_info: email,
+        created_at: new Date().toISOString(), // 👈 Thêm thời gian tạo
       };
 
       // ✅ Lưu user vào db.json

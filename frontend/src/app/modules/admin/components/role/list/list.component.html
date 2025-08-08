@@ -1,3 +1,61 @@
+<!-- Alert Sửa thành công -->
+
+<ng-container *ngIf="createSuccess">
+  <div class="alert alert-success alert-dismissible bg-success text-white alert-label-icon fade show material-shadow" role="alert">
+    <i class="ri-checkbox-circle-line label-icon"></i>
+    <strong>Thành công!</strong> - Bạn đã thêm role thành công.
+    <button type="button" class="btn-close btn-close-white" (click)="createSuccess = null" aria-label="Close"></button>
+  </div>
+</ng-container>
+
+<!-- Alert Thêm thất bại -->
+<ng-container *ngIf="createError">
+  <div class="alert alert-danger alert-dismissible bg-danger text-white alert-label-icon fade show material-shadow" role="alert">
+    <i class="ri-error-warning-line label-icon"></i>
+    <strong>Thất bại!</strong> - Thêm role không thành công.
+    <button type="button" class="btn-close btn-close-white" (click)="createError = null" aria-label="Close"></button>
+  </div>
+</ng-container>
+<ng-container *ngIf="editSuccess">
+  <div class="alert alert-success alert-dismissible bg-success text-white alert-label-icon fade show material-shadow" role="alert">
+    <i class="ri-checkbox-circle-line label-icon"></i>
+    <strong>Thành công!</strong> - Bạn đã sửa role thành công.
+    <button type="button" class="btn-close btn-close-white" (click)="editSuccess = null" aria-label="Close"></button>
+  </div>
+</ng-container>
+
+<!-- Alert Sửa thất bại -->
+<ng-container *ngIf="editError">
+  <div class="alert alert-danger alert-dismissible bg-danger text-white alert-label-icon fade show material-shadow" role="alert">
+    <i class="ri-error-warning-line label-icon"></i>
+    <strong>Thất bại!</strong> - Sửa role không thành công.
+    <button type="button" class="btn-close btn-close-white" (click)="editError = null" aria-label="Close"></button>
+  </div>
+</ng-container>
+
+<div class="row mb-3">
+  <ng-container *ngIf="isSuccess === true">
+    <div class="col-xl-12">
+      <div class="alert alert-success alert-dismissible bg-success text-white alert-label-icon fade show material-shadow" role="alert">
+        <i class="ri-checkbox-circle-line label-icon"></i>
+        <strong>Thành công!</strong> - Bạn đã xóa role thành công.
+        <button type="button" class="btn-close btn-close-white" (click)="isSuccess = null" aria-label="Close"></button>
+      </div>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="isSuccess === false">
+    <div class="col-xl-12">
+      <div class="alert alert-danger alert-dismissible bg-danger text-white alert-label-icon fade show material-shadow" role="alert">
+        <i class="ri-error-warning-line label-icon"></i>
+        <strong>Thất bại!</strong> - Xóa role không thành công.
+        <button type="button" class="btn-close btn-close-white" (click)="isSuccess = null" aria-label="Close"></button>
+      </div>
+    </div>
+  </ng-container>
+</div>
+
+
 <div class="card">
   <div class="section-header d-flex justify-content-between align-items-center p-3">
     <div class="card-title m-0">Manage Roles</div>
@@ -5,14 +63,24 @@
       <i class="fa fa-plus"></i> Add Role
     </button>
   </div>
-  <div class="section-controls">
-        <input type="text" [(ngModel)]="searchText" placeholder="Search role..." />
-        <select [(ngModel)]="statusFilter">
-            <option value="">All Status</option>
-            <option value="Active">Active</option>
-            <option value="Inactive">Inactive</option>
-        </select>
-  </div>
+<!-- Search & Filter -->
+<div class="section-controls">
+  <input
+    type="text"
+    [(ngModel)]="searchText"
+    (ngModelChange)="onSearchOrFilterChange()"
+    placeholder="Search role..."
+  >
+
+  <select
+    [(ngModel)]="statusFilter"
+    (ngModelChange)="onSearchOrFilterChange()">
+    <option value="">All Status</option>
+    <option [value]="1">Active</option>
+    <option [value]="0">Inactive</option>
+  </select>
+</div>
+
 
   <table >
     <thead>
@@ -21,12 +89,13 @@
     <th style="width: 25%;">Role Name</th>
     <th style="width: 35%;">Description</th>
     <th style="width: 15%;">Status</th>
-    <th style="width: 15%; padding-right: 90px;" class="text-end">Actions</th>
+    <th style="width: 15%; padding-right: 100px;" class="text-end">Actions</th>
       </tr>
     </thead>
     <tbody>
 
-      <tr *ngFor="let role of filteredRoles()">
+     <tr *ngFor="let role of paginatedRoles()">
+
         <td>{{ role.id }}</td>
         <td>{{ role.role_name }}</td>
         <td>{{ role.description }}</td>
@@ -41,17 +110,32 @@
   </span>
 </td>
         <td class="text-end">
+           <div class="d-inline-flex gap-2">
           <button class="btn btn-info me-2" (click)="editRole(role)">
             <i class="fa fa-edit"></i> Edit
           </button>
-          <button class="btn btn-danger" (click)="deleteRole(role)">
+          <button class="btn btn-danger" (click)="openDeleteModal(role)">
             <i class="fa fa-trash"></i> Delete
           </button>
+          </div>
         </td>
       </tr>
     </tbody>
   </table>
 </div>
+
+<div class="pagination" *ngIf="totalPages() > 1">
+  <button (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">«</button>
+
+  <button *ngFor="let page of [].constructor(totalPages()); let i = index"
+          (click)="changePage(i + 1)"
+          [class.active]="currentPage === i + 1">
+    {{ i + 1 }}
+  </button>
+
+  <button (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages()">»</button>
+</div>
+
 
 <!-- Modal thêm/sửa role -->
 <div *ngIf="showModal" class="modal fade show d-block custom-modal" role="dialog">
@@ -67,18 +151,41 @@
       </div>
 
       <div class="modal-body">
-        <form>
+        <form #roleForm="ngForm">
           <div class="form-group">
-            <label for="roleName">Role Name:</label>
-            <input type="text" class="form-control" [(ngModel)]="modalRole.role_name" name="roleName">
+            <label for="roleName">Role Name: <span class="text-danger">*</span></label>
+            <input
+              type="text"
+              class="form-control"
+              name="roleName"
+              [(ngModel)]="modalRole.role_name"
+              required
+              #roleName="ngModel">
+            <div *ngIf="roleName.invalid && roleName.touched" class="error-message">
+              Bạn chưa nhập role name
+            </div>
           </div>
+
           <div class="form-group">
-            <label for="roleDescription">Description:</label>
-            <input type="text" class="form-control" [(ngModel)]="modalRole.description" name="roleDescription">
+            <label for="roleDescription">Description: <span class="text-danger">*</span></label>
+            <input
+              type="text"
+              class="form-control"
+              name="roleDescription"
+              [(ngModel)]="modalRole.description"
+              required
+              #roleDescription="ngModel">
+            <div *ngIf="roleDescription.invalid && roleDescription.touched" class="error-message">
+              Bạn chưa nhập description
+            </div>
           </div>
+
           <div class="form-group">
             <label for="roleStatus">Status:</label>
-            <select class="form-select" [(ngModel)]="modalRole.status" name="roleStatus">
+            <select
+              class="form-select"
+              name="roleStatus"
+              [(ngModel)]="modalRole.status">
               <option value="Active">Active</option>
               <option value="Inactive">Inactive</option>
             </select>
@@ -88,9 +195,35 @@
 
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" (click)="closeModal()">Đóng</button>
-        <button type="button" class="btn btn-success" (click)="saveRole()">
-          {{ editingRole ? 'Update' : 'Lưu' }}
+        <button
+          type="button"
+          class="btn btn-success"
+          (click)="saveRole()"
+          [disabled]="roleForm.invalid"
+          [ngClass]="{ 'disabled-btn': roleForm.invalid }">
+          {{ editingRole ? 'Cập Nhật' : 'Lưu' }}
         </button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal Xóa -->
+<div class="modal" [class.show]="showDeleteModal" style="display: block;" *ngIf="showDeleteModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title custom-title ">Xóa Role</h5>
+        <button type="button" class="btn-close" (click)="closeDeleteModal()"></button>
+      </div>
+      <div class="modal-body">
+        <p class="fw-bold">
+          Bạn có chắc chắn muốn xóa Role
+          <strong>{{ selectedRole?.role_name }}</strong> không?
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="closeDeleteModal()">Hủy</button>
+        <button class="btn btn-danger" (click)="confirmDeleteRole()">Xóa</button>
       </div>
     </div>
   </div>

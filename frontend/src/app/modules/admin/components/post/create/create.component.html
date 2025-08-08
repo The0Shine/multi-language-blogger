@@ -6,42 +6,33 @@
       <!-- Người đăng -->
       <div class="mb-3">
         <label class="form-label fw-semibold">Người đăng bài</label>
-        <input
-          type="text"
-          class="form-control-plaintext ps-2 fw-bold bg-light text-dark"
-          formControlName="author"
-          readonly
-        />
+        <input type="text" class="form-control-plaintext ps-2 fw-bold bg-light text-dark" formControlName="author"
+          readonly />
       </div>
 
-      <!-- Ngôn ngữ -->
-      <div class="mb-3">
-        <label class="form-label fw-semibold">Ngôn ngữ</label>
-        <select class="form-select" formControlName="language" required>
-          <option value="" disabled selected>-- Chọn ngôn ngữ --</option>
-          <option *ngFor="let lang of languages" [value]="lang.id">{{ lang.language_name }}</option>
-        </select>
-      </div>
 
-      <!-- Danh mục -->
-      <div class="mb-3">
-        <label class="form-label fw-semibold">Danh mục</label>
-        <select class="form-select" formControlName="category" required>
-          <option value="" disabled selected>-- Chọn danh mục --</option>
-          <option *ngFor="let cat of categories" [value]="cat.id">{{ cat.category_name }}</option>
-        </select>
-      </div>
+    <!-- Ngôn ngữ -->
+<div class="mb-3">
+  <label class="form-label fw-semibold">Ngôn ngữ <span class="text-danger d-inline">*</span></label>
+  <select class="form-select" formControlName="language"
+    [ngClass]="{ 'is-invalid': postForm.get('language')?.touched && postForm.get('language')?.invalid }"
+    [disabled]="true"> <!-- khóa select, vì đã điều khiển bằng nút -->
+    <option *ngFor="let lang of languages" [value]="lang.id">{{ lang.language_name }}</option>
+  </select>
+  <div class="text-danger mt-1" *ngIf="postForm.get('language')?.touched && postForm.get('language')?.invalid">
+    {{ getErrorMessage('language') }}
+  </div>
+</div>
+
 
       <!-- Tiêu đề -->
       <div class="mb-3">
-        <label class="form-label fw-semibold">Tiêu đề</label>
-        <input
-          type="text"
-          class="form-control"
-          placeholder="Nhập tiêu đề"
-          formControlName="title"
-          required
-        />
+        <label class="form-label fw-semibold">Tiêu đề <span class="text-danger d-inline">*</span></label>
+        <input type="text" class="form-control" placeholder="Nhập tiêu đề" formControlName="title"
+          [ngClass]="{ 'is-invalid': postForm.get('title')?.touched && postForm.get('title')?.invalid }" />
+        <div class="text-danger mt-1" *ngIf="postForm.get('title')?.touched && postForm.get('title')?.invalid">
+          {{ getErrorMessage('title') }}
+        </div>
       </div>
 
       <!-- Trạng thái -->
@@ -52,22 +43,46 @@
           <option *ngFor="let status of statuses" [value]="status.value">{{ status.label }}</option>
         </select>
       </div>
+      <!-- Bộ chọn ngôn ngữ + nút dịch -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div class="btn-group" role="group">
+    <button type="button"
+            class="btn btn-sm fw-semibold"
+            [ngClass]="isVietnamese ? 'btn-primary' : 'btn-outline-secondary'"
+            (click)="switchToVietnamese()">🇻🇳 Tiếng Việt</button>
+
+    <button type="button"
+            class="btn btn-sm fw-semibold"
+            [ngClass]="!isVietnamese ? 'btn-primary' : 'btn-outline-secondary'"
+            (click)="switchToEnglish()">🇺🇸 Tiếng Anh</button>
+  </div>
+</div>
 
       <!-- Nội dung -->
       <div class="mb-4">
-        <label class="form-label fw-semibold">Nội dung</label>
+        <label class="form-label fw-semibold">
+          Nội dung <span class="text-danger d-inline">*</span>
+        </label>
         <ngx-editor-menu [editor]="editor" [toolbar]="toolbar"></ngx-editor-menu>
-        <ngx-editor [editor]="editor" formControlName="content" class="editor-content"></ngx-editor>
+        <ngx-editor [editor]="editor" formControlName="content" class="editor-content" [ngClass]="{
+      'is-invalid': postForm.get('content')?.touched && postForm.get('content')?.invalid
+    }"></ngx-editor>
 
         <div class="text-danger mt-1" *ngIf="postForm.get('content')?.touched && postForm.get('content')?.invalid">
-          Nội dung là bắt buộc.
+          {{ getErrorMessage('content') }}
         </div>
       </div>
+
+
+
 
       <!-- Nút -->
       <div class="d-flex justify-content-end gap-2">
         <button [routerLink]="'/admin/post/list'" class="btn btn-secondary fw-semibold">Hủy</button>
-        <button type="submit" class="btn btn-primary fw-semibold">Tạo bài viết</button>
+        <button type="submit" class="btn btn-primary fw-semibold" [disabled]="postForm.invalid">
+          Tạo bài viết
+        </button>
+
       </div>
     </form>
   </div>

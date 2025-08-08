@@ -24,12 +24,21 @@
       <tr *ngFor="let post of recentPosts">
         <td>
           <span class="link" (click)="openPostDetail(post.originalPostId)">
-            {{ post.title }}
+           {{ truncateTitle(post.title) }}
           </span>
         </td>
 
-        <td>{{ post.author }}</td>
-        <td>{{ post.status }}</td> <!-- ✅ phải là post.status -->
+        <td>{{ post.username }}</td>
+      <td>
+  <span class="badge"
+        [ngClass]="{
+          'bg-success': post.status === 1,
+          'bg-danger': post.status === 2,
+          'bg-warning': post.status === 0
+        }">
+    {{ getStatusText(post.status) }}
+  </span>
+</td>
 
 
 
@@ -38,4 +47,11 @@
 
     </tbody>
   </table>
+  <!-- Nút View All -->
+<div class="">
+  <button class="btn btn-primary" (click)="goToAllPosts()">
+    <i class="fa fa-arrow-right"></i> View All Posts
+  </button>
+</div>
+
 </div>

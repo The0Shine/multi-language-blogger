@@ -53,6 +53,11 @@ table td:first-child {
   text-overflow: ellipsis;
   max-width: 300px;
 }
+.btn-primary {
+  font-weight: bold;
+  padding: 8px 16px;
+  font-size: 14px;
+}
 
 
 
