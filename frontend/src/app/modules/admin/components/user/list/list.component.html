@@ -52,10 +52,9 @@
   </div>
 
   <div class="section-controls">
-    <input type="text" [(ngModel)]="searchText" (ngModelChange)="onSearchChange()"
-      placeholder="Tìm kiếm người dùng..." />
+    <input type="text" [(ngModel)]="searchText" (ngModelChange)="onSearchChange()" placeholder="Search User..." />
     <select [(ngModel)]="statusFilter" (change)="onStatusFilterChange()">
-      <option value="">Tất cả</option>
+      <option value="">All Status</option>
       <option value="1">Active</option>
       <option value="0">Inactive</option>
     </select>
@@ -78,6 +77,7 @@
         <td>{{ user.username }}</td>
         <td>{{ user.extra_info }}</td>
         <td>{{ roleMap[+user.roleid] || 'Unknown' }}</td>
+
         <td>
           <span class="badge" [ngClass]="{
             'bg-success': +user.status === 1,
@@ -100,16 +100,25 @@
 </div>
 
 <div class="pagination" *ngIf="totalPages() > 1">
+  <!-- Về trang đầu -->
+  <button (click)="changePage(1)" [disabled]="currentPage === 1"> «« </button>
+
+  <!-- Về trang trước -->
   <button (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">«</button>
 
-  <button *ngFor="let page of [].constructor(totalPages()); let i = index" (click)="changePage(i + 1)"
-    [class.active]="currentPage === i + 1">
+  <!-- Các nút số trang -->
+  <button *ngFor="let page of [].constructor(totalPages()); let i = index"
+          (click)="changePage(i + 1)"
+          [class.active]="currentPage === i + 1">
     {{ i + 1 }}
   </button>
 
+  <!-- Tới trang sau -->
   <button (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages()">»</button>
-</div>
 
+  <!-- Tới trang cuối -->
+  <button (click)="changePage(totalPages())" [disabled]="currentPage === totalPages()">»»</button>
+</div>
 <!-- MODAL CREATE/EDIT USER -->
 <div *ngIf="showCreateModal" class="modal fade show d-block custom-modal" role="dialog">
   <div class="modal-dialog" role="document">

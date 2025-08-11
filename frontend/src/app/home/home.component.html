@@ -22,11 +22,13 @@
     </thead>
     <tbody>
       <tr *ngFor="let post of recentPosts">
-        <td>
-          <span class="link" (click)="openPostDetail(post.originalPostId)">
-           {{ truncateTitle(post.title) }}
-          </span>
-        </td>
+     <td>
+ <span class="link" (click)="openPostDetailFromHome(post)">
+  {{ truncateTitle(post.title) }}
+</span>
+
+</td>
+
 
         <td>{{ post.username }}</td>
       <td>

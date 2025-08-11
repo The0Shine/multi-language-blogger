@@ -12,9 +12,10 @@ export class PostService {
   constructor(private http: HttpClient) {}
 
   // Lấy danh sách bài viết
-  getPosts(): Observable<any[]> {
-    return this.http.get<any[]>(this.apiUrl);
-  }
+ // Lấy danh sách bài viết có phân trang
+getPosts(page: number = 1, limit: number = 20): Observable<any[]> {
+  return this.http.get<any[]>(`${this.apiUrl}?_page=${page}&_limit=${limit}`);
+}
 
   // Lấy bài viết mới nhất
   getRecentPosts(limit: number = 5): Observable<any[]> {
@@ -40,6 +41,9 @@ updatePost(post: any): Observable<any> {
 
 getPostById(id: number): Observable<any> {
   return this.http.get(`${this.apiUrl}/${id}`);
+}
+getAllPosts(): Observable<any[]> {
+  return this.http.get<any[]>(`${this.apiUrl}`);
 }
 
 

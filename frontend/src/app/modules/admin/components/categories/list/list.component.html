@@ -123,19 +123,26 @@
   </table>
 
 </div>
-
 <div class="pagination" *ngIf="totalPages() > 1">
+  <!-- Về trang đầu -->
+  <button (click)="changePage(1)" [disabled]="currentPage === 1"> «« </button>
+
+  <!-- Về trang trước -->
   <button (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">«</button>
 
-  <button *ngFor="let page of [].constructor(totalPages()); let i = index" (click)="changePage(i + 1)"
-    [class.active]="currentPage === i + 1">
+  <!-- Các nút số trang -->
+  <button *ngFor="let page of [].constructor(totalPages()); let i = index"
+          (click)="changePage(i + 1)"
+          [class.active]="currentPage === i + 1">
     {{ i + 1 }}
   </button>
 
+  <!-- Tới trang sau -->
   <button (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages()">»</button>
+
+  <!-- Tới trang cuối -->
+  <button (click)="changePage(totalPages())" [disabled]="currentPage === totalPages()">»»</button>
 </div>
-
-
 
 
 <!-- Modal Add/Edit Category -->

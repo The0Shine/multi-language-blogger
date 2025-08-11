@@ -31,11 +31,7 @@ export class AdminUserListComponent implements OnInit {
   editSuccess: boolean | null = null;
   editError: boolean | null = null;
 
-  roleMap: { [key: number]: string } = {
-    1: 'Admin',
-    2: 'Editor',
-    3: 'User',
-  };
+  roleMap: { [key: number]: string } = {};
 
   newUser = this.getEmptyUser();
 
@@ -69,9 +65,17 @@ export class AdminUserListComponent implements OnInit {
     };
   }
 
-  loadRoles() {
-    this.roleService.getRoles().subscribe((data) => (this.roles = data));
-  }
+loadRoles() {
+  this.roleService.getRoles().subscribe((data: any[]) => {
+    this.roles = data;
+    // Build roleMap từ dữ liệu API
+    this.roleMap = this.roles.reduce((map, role) => {
+      map[+role.id] = role.role_name;
+      return map;
+    }, {} as { [key: number]: string });
+  });
+}
+
 
   private loadUsers() {
     this.userService.getUsers().subscribe((data) => {
