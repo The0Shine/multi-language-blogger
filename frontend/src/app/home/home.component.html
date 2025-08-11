@@ -23,9 +23,10 @@
     <tbody>
       <tr *ngFor="let post of recentPosts">
      <td>
- <span class="link" (click)="openPostDetailFromHome(post)">
+<span class="link" (click)="openPostDetailFromHome(post.id)">
   {{ truncateTitle(post.title) }}
 </span>
+
 
 </td>
 

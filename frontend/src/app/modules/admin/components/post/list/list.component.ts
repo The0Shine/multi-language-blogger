@@ -37,14 +37,19 @@ export class AdminPostListComponent implements OnInit {
     private route: ActivatedRoute
   ) {}
 
-  loadPostAndShowModal(id: number) {
-    this.postService.getPostById(id).subscribe((post) => {
+loadPostAndShowModal(id: number) {
+  this.postService.getPostById(id).subscribe((post) => {
+    this.userService.getUserById(post.user_id).subscribe(user => {
       this.selectedPost = {
         ...post,
         created_at: post.createdAt ? new Date(post.createdAt) : null,
+        username: user ? user.username : 'Unknown'
       };
     });
-  }
+  });
+}
+
+
 
  ngOnInit(): void {
   this.route.queryParams.subscribe((params) => {
@@ -71,25 +76,20 @@ loadUsersLanguagesAndPosts(page: number) {
 }
 
   loadPosts(page: number = 1): void {
-    this.currentPage = page;
-    this.postService.getPosts(page).subscribe((data) => {
-      this.posts = data.map((post) => {
-        const user = this.users.find(
-          (u) => String(u.id) === String(post.user_id)
-        );
-        const lang = this.languages.find(
-          (l) => String(l.id) === String(post.language_id)
-        );
-        return {
-          ...post,
-          created_at: post.createdAt ? new Date(post.createdAt) : null,
-          username: user ? user.username : 'Unknown',
-          language_name: lang ? lang.language_name : 'Unknown',
-          original_id: post.original_id || null,
-        };
-      });
+ this.postService.getPosts().subscribe((data) => {
+    this.posts = data.map((post) => {
+      const user = this.users.find(u => String(u.id) === String(post.user_id));
+      const lang = this.languages.find(l => String(l.id) === String(post.language_id));
+      return {
+        ...post,
+        created_at: post.createdAt ? new Date(post.createdAt) : null,
+        username: user ? user.username : 'Unknown',
+        language_name: lang ? lang.language_name : 'Unknown',
+        original_id: post.original_id || null,
+      };
     });
-  }
+  });
+}
 
   get filteredPosts() {
     return this.posts.filter(

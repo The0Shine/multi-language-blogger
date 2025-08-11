@@ -13,9 +13,10 @@ export class PostService {
 
   // Lấy danh sách bài viết
  // Lấy danh sách bài viết có phân trang
-getPosts(page: number = 1, limit: number = 20): Observable<any[]> {
-  return this.http.get<any[]>(`${this.apiUrl}?_page=${page}&_limit=${limit}`);
+getPosts(): Observable<any[]> {
+  return this.http.get<any[]>(this.apiUrl);
 }
+
 
   // Lấy bài viết mới nhất
   getRecentPosts(limit: number = 5): Observable<any[]> {
