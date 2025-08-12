@@ -50,8 +50,7 @@ const userValidation = {
             .optional()
             .trim()
             .isLength({ min: 3, max: 30 })
-            .matches(/^[a-zA-Z0-9_]+$/)
-            .withMessage('Username must be 3-30 characters and contain only letters, numbers, and underscores'),
+            .withMessage('Username must be 3-30 characters long'),
         body('password')
             .optional()
             .isLength({ min: 6 })
