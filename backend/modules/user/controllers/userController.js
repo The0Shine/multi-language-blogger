@@ -180,20 +180,6 @@ const userController = {
         }
     },
 
-    // Get all roles for user role management
-    getAllRoles: async (req, res) => {
-        try {
-            const roles = await userService.getAllRoles();
-            
-            return responseUtils.ok(res, {
-                message: 'Roles retrieved successfully',
-                data: roles
-            });
-        } catch (error) {
-            console.error('Get all roles error:', error);
-            return responseUtils.serverError(res, error.message);
-        }
-    }
 };
 
 module.exports = userController;

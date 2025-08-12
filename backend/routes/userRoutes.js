@@ -66,11 +66,5 @@ router.get(
   userController.getDetailedUserStats
 );
 
-// Admin: lấy danh sách role cho dropdown
-router.get(
-  "/admin/roles",
-  authMiddleware.requireRoles("admin"),
-  userController.getAllRoles
-);
 
 module.exports = router;
