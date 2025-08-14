@@ -26,9 +26,7 @@
 <div class="card">
   <div class="section-header d-flex justify-content-between align-items-center p-3">
     <div class="card-title m-0">Manage Posts</div>
-    <button class="btn btn-primary" (click)="goToAddPost()">
-      <i class="fa fa-plus"></i> Add Post
-    </button>
+
   </div>
 
   <!-- Search & Filter -->
@@ -39,7 +37,7 @@
       <option value="">All Status</option>
       <option [value]="1">Published</option>
       <option [value]="0">Pending Review</option>
-      <option [value]="2">Rejected</option>
+      <option [value]="-1">Rejected</option>
     </select>
   </div>
 
@@ -59,7 +57,7 @@
     </thead>
     <tbody>
       <tr *ngFor="let post of paginatedPosts()">
-        <td>{{ post.id }}</td>
+        <td>{{ post.postid }}</td>
         <td>
           <span class="link" (click)="showPostDetail(post)">
             {{ truncateTitle(post.title) }}
@@ -68,11 +66,11 @@
         <td>{{ post.username }}</td>
         <td>{{ post.language_name }}</td>
 
-        <td>{{ post.original_id || 'Original' }}</td>
+        <td>{{ post.originalid || 'Original' }}</td>
 
         <td>
           <span class="badge" [ngClass]="{
-              'bg-danger': post.status === 2,
+              'bg-danger': post.status === -1,
               'bg-success': post.status === 1,
               'bg-warning': post.status === 0
             }">
@@ -81,9 +79,7 @@
         </td>
         <td class="text-end">
           <div class="d-inline-flex gap-2 post-actions">
-            <button class="btn btn-info me-2" (click)="(post.id)">
-              <i class="fa fa-edit"></i> Edit
-            </button>
+
             <button class="btn btn-danger" (click)="openDeleteModal(post)">
               <i class="fa fa-trash"></i> Delete
             </button>
@@ -102,9 +98,8 @@
   <button (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">«</button>
 
   <!-- Các nút số trang -->
-  <button *ngFor="let page of [].constructor(totalPages()); let i = index"
-          (click)="changePage(i + 1)"
-          [class.active]="currentPage === i + 1">
+  <button *ngFor="let page of [].constructor(totalPages()); let i = index" (click)="changePage(i + 1)"
+    [class.active]="currentPage === i + 1">
     {{ i + 1 }}
   </button>
 
@@ -141,7 +136,7 @@
             <span style="margin-left: 10px;" class="badge" [ngClass]="{
               'bg-warning text-dark': selectedPost?.status === 0,
               'bg-success': selectedPost?.status === 1,
-              'bg-danger': selectedPost?.status === 2
+              'bg-danger': selectedPost?.status === -1
             }">
               {{ selectedPost?.status === 0 ? 'Pending Review' : (selectedPost?.status === 1 ? 'Published' : 'Rejected')
               }}
@@ -166,7 +161,12 @@
         <div class="mt-3">
           <label class="danger-label">Nội dung:</label>
           <div class="content-html mt-2">
-            <div [innerHTML]="selectedPost?.content"></div>
+            <ng-container *ngFor="let item of selectedPost?.contents">
+              <div *ngIf="item.type === 'text'" [innerHTML]="item.content"></div>
+              <div *ngIf="item.type === 'image'">
+                <img [src]="item.url" alt="Post image" style="max-width: 100%; height: auto;" />
+              </div>
+            </ng-container>
           </div>
         </div>
       </div>
@@ -176,9 +176,7 @@
 
       <!-- Footer -->
       <div class="modal-footer border-0 justify-content-end" style="margin-top: 10px;">
-        <button class="btn btn-danger me-2"
-         style="opacity: 0.6; font-weight: normal;"
-        (click)="rejectPostFromModal()">
+        <button class="btn btn-danger me-2" style="opacity: 0.6; font-weight: normal;" (click)="rejectPostFromModal()">
           <i class="fa fa-times"></i> Reject
         </button>
         <button class="btn btn-success" (click)="approvePostFromModal()">

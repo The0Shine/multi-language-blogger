@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { NgIf, NgFor, NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RoleService } from '../../../role.service'; // sửa lại path nếu khác
+import { RoleService } from '../../../role.service';
 import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
@@ -32,7 +32,7 @@ deleteError: boolean | null = null;
   editError: boolean | null = null;
 
   roles: any[] = [];
-  modalRole = { id: 0, role_name: '', description: '', status: 'Active' };
+  modalRole = { roleid: 0, name: '', discription: '', status: 1 };
 
   constructor(
     private roleService: RoleService,
@@ -49,36 +49,41 @@ deleteError: boolean | null = null;
     });
   }
 
-  loadRoles() {
-    this.roleService.getRoles().subscribe((data) => {
-      this.roles = data;
-    });
-  }
+loadRoles() {
+  this.roleService.getRoles().subscribe(response => {
+    if (response.success && response.data && response.data.data) {
+      this.roles = response.data.data.sort((a, b) => a.roleid - b.roleid);
+    } else {
+      this.roles = [];
+    }
+  });
+}
 
   openCreateModal() {
     this.editingRole = false;
     this.modalRole = {
-      id: 0,
-      role_name: '',
-      description: '',
-      status: 'Active',
+      roleid: 0,
+      name: '',
+      discription: '',
+      status: 1,
     };
     this.showModal = true;
   }
 
-  editRole(role: any) {
-    this.editingRole = true;
-    this.modalRole = { ...role };
-    this.showModal = true;
-  }
+ editRole(role: any) {
+  this.editingRole = true;
+  this.modalRole = { ...role }; // đảm bảo role có roleid chứ không phải id
+  this.showModal = true;
+}
+
 
   deleteRole(role: any) {
-    const id = role.id;
+    const roleid = role.roleid;
 
     if (confirm('Bạn có muốn xóa role này không?')) {
-      this.roleService.deleteRole(id).subscribe({
+      this.roleService.deleteRole(roleid).subscribe({
         next: () => {
-          this.roles = this.roles.filter((r) => r.id !== id);
+          this.roles = this.roles.filter((r) => r.roleid !== roleid);
           this.isSuccess = true;
 
           setTimeout(() => {
@@ -103,87 +108,90 @@ deleteError: boolean | null = null;
 
   validateField(field: string) {
     switch (field) {
-      case 'role_name':
-        this.validationErrors.role_name = this.modalRole.role_name.trim()
+      case 'name':
+        this.validationErrors.role_name = this.modalRole.name.trim()
           ? ''
           : 'Bạn chưa nhập role name';
         break;
       case 'description':
-        this.validationErrors.description = this.modalRole.description.trim()
+        this.validationErrors.description = this.modalRole.discription.trim()
           ? ''
           : 'Bạn chưa nhập description';
         break;
     }
   }
   saveRole() {
-    if (
-      !this.modalRole.role_name?.trim() ||
-      !this.modalRole.description?.trim()
-    ) {
-      return;
-    }
-
-    const payload = {
-      role_name: this.modalRole.role_name,
-      description: this.modalRole.description,
-      status: this.modalRole.status || 'Active',
-    };
-
-    if (this.editingRole) {
-      if (!confirm('Bạn có chắc chắn muốn sửa role này không?')) return;
-
-      this.roleService.updateRole(this.modalRole.id, payload).subscribe({
-        next: (updated) => {
-          const idx = this.roles.findIndex((r) => r.id === this.modalRole.id);
-          if (idx > -1) this.roles[idx] = { ...updated };
-          this.closeModal();
-          this.editSuccess = true;
-          setTimeout(() => (this.editSuccess = null), 1500);
-        },
-        error: () => {
-          this.editError = true;
-          setTimeout(() => (this.editError = null), 1500);
-        },
-      });
-    } else {
-      this.roleService.createRole(payload).subscribe({
-        next: (created) => {
-          this.roles.push(created);
-          this.closeModal();
-          this.createSuccess = true;
-          setTimeout(() => (this.createSuccess = null), 1500);
-        },
-        error: () => {
-          this.createError = true;
-          setTimeout(() => (this.createError = null), 1500);
-        },
-      });
-    }
+  if (!this.modalRole.name?.trim() || !this.modalRole.discription?.trim()) {
+    return;
   }
+
+  const payload = {
+  name: this.modalRole.name,
+  discription: this.modalRole.discription,
+   status: this.modalRole.status, // status đã là 0 hoặc 1
+};
+
+
+  if (this.editingRole) {
+    if (!confirm('Bạn có chắc chắn muốn sửa role này không?')) return;
+
+    this.roleService.updateRole(this.modalRole.roleid, payload).subscribe({
+      next: (res) => {
+        // Lưu ý: res có thể trả về object có structure khác, hãy dùng đúng kiểu
+        const idx = this.roles.findIndex((r) => r.roleid === this.modalRole.roleid);
+        if (idx > -1) this.roles[idx] = res.data.data; // theo cấu trúc backend
+        this.closeModal();
+        this.editSuccess = true;
+        setTimeout(() => (this.editSuccess = null), 1500);
+      },
+      error: () => {
+        this.editError = true;
+        setTimeout(() => (this.editError = null), 1500);
+      },
+    });
+  } else {
+    this.roleService.createRole(payload).subscribe({
+      next: (res) => {
+        this.roles.push(res.data.data);
+        this.closeModal();
+        this.createSuccess = true;
+        setTimeout(() => (this.createSuccess = null), 1500);
+      },
+      error: () => {
+        this.createError = true;
+        setTimeout(() => (this.createError = null), 1500);
+      },
+    });
+  }
+}
+
 
   closeModal() {
     this.showModal = false;
     this.modalRole = {
-      id: 0,
-      role_name: '',
-      description: '',
-      status: 'Active',
+      roleid: 0,
+      name: '',
+      discription: '',
+      status: 1,
     };
   }
-
 filteredRoles() {
   return this.roles.filter((role) => {
     const keyword = this.searchText.toLowerCase();
-    const nameMatch = role.role_name.toLowerCase().includes(keyword);
 
- const statusMatch = this.statusFilter !== ''
-  ? (this.statusFilter === '1' ? role.status === 'Active' : role.status === 'Inactive')
-  : true;
+    const roleName = role.name || '';
+    const nameMatch = roleName.toLowerCase().includes(keyword);
 
+    const statusMatch = this.statusFilter !== ''
+      ? (this.statusFilter === '1' ? role.status === 1 : role.status === 0)
+      : true;
 
     return nameMatch && statusMatch;
   });
 }
+
+
+
 
   totalPages(): number {
     return Math.ceil(this.filteredRoles().length / this.pageSize);
@@ -216,7 +224,7 @@ filteredRoles() {
 
 
   isRoleFormValid(): boolean {
-    return this.modalRole.role_name.trim() && this.modalRole.description.trim()
+    return this.modalRole.name.trim() && this.modalRole.discription.trim()
       ? true
       : false;
   }
@@ -227,11 +235,11 @@ openDeleteModal(role: any) {
 
 confirmDeleteRole() {
   if (this.selectedRole) {
-    this.roleService.deleteRole(this.selectedRole.id).subscribe({
+    this.roleService.permanentDeleteRole(this.selectedRole.roleid).subscribe({
       next: () => {
         // Xóa role khỏi danh sách
         this.roles = this.roles.filter(
-          (r) => r.id !== this.selectedRole.id
+          (r) => r.roleid !== this.selectedRole.roleid
         );
 
         // Nếu sau khi xóa mà trang hiện tại không còn dữ liệu, thì quay về trang trước (nếu có)

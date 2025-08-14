@@ -6,7 +6,7 @@ import { AdminPostListComponent } from './components/post/list/list.component';
 import { AdminLanguageListComponent } from './components/language/list/list.component';
 
 import { HomeComponent } from '../../home/home.component';
-import { AdminPostCreateComponent } from './components/post/create/create.component';
+// import { AdminPostCreateComponent } from './components/post/create/create.component';
 
 
 export const adminRoutes: Routes = [
@@ -15,7 +15,7 @@ export const adminRoutes: Routes = [
   { path: 'category/list', component: AdminCategorieListComponent },
   { path: 'role/list', component: AdminRoleListComponent },
   { path: 'post/list', component: AdminPostListComponent},
-  { path: 'post/create', component: AdminPostCreateComponent},
+  // { path: 'post/create', component: AdminPostCreateComponent},
 
   { path: 'language/list', component: AdminLanguageListComponent },
   { path: '', redirectTo: 'home', pathMatch: 'full' }

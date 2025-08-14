@@ -8,7 +8,7 @@
         </svg>
       </div>
       <h1 class="text-3xl font-bold text-white mb-2">Welcome Back</h1>
-      <p class="text-indigo-100">Sign in to your Medium Blog account</p>
+      <p class="text-indigo-100">Sign in to your Blog account</p>
     </div>
 
     <!-- Login Form -->
@@ -98,7 +98,7 @@
             </label>
           </div>
           <div class="text-sm">
-            <a href="#" class="font-medium text-indigo-600 hover:text-indigo-500 transition duration-200">
+            <a (click)="goToForgotPassword()" class="font-medium text-indigo-600 hover:text-indigo-500 transition duration-200">
               Forgot password?
             </a>
           </div>
@@ -144,10 +144,11 @@
       <!-- Sign Up Link -->
      <!-- Sign Up Link -->
 <div class="mt-6 text-center">
-  <a [routerLink]="'/register'" class="font-medium text-indigo-600 hover:text-indigo-500 transition duration-200">
+  <a (click)="goToRegister()" class="font-medium text-indigo-600 hover:text-indigo-500 transition duration-200">
     Create your account →
   </a>
 </div>
+
 
     </div>
 

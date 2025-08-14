@@ -38,9 +38,9 @@ isSuccess: boolean | null = null;
 
   categories: any[] = [];
   modalCategory = {
-    id: 0,
+    categoryid: 0,
     category_name: '',
-    status: 'Active'
+    status: 1
   };
 
   constructor(private categoryService: CategoryService,
@@ -53,46 +53,40 @@ isSuccess: boolean | null = null;
 
       // Lấy page từ query params khi load trang
     this.route.queryParams.subscribe((params) => {
+
       this.currentPage = +params['page'] || 1;
     });
   }
 
-  loadCategories() {
-    this.categoryService.getCategories().subscribe(data => {
-      this.categories = data;
-    });
-  }
+loadCategories() {
+  this.categoryService.getCategories().subscribe(res => {
+    this.categories = (res.data?.data ?? []).sort((a, b) => a.categoryid - b.categoryid);
+  });
+}
 
-  openCreateModal() {
-    this.editingCategory = false;
-    this.modalCategory = { id: 0, category_name: '', status: 'Active' };
-    this.showModal = true;
-  }
 
-  editCategory(category: any) {
-    this.editingCategory = true;
-    this.modalCategory = { ...category };
-    this.showModal = true;
-  }
+ openCreateModal() {
+  this.editingCategory = false;
+  this.modalCategory = { categoryid: 0, category_name: '', status: 1 };
+  this.showModal = true;
+}
+
+
+ editCategory(category: any) {
+  this.editingCategory = true;
+  this.modalCategory = { ...category };
+  this.showModal = true;
+}
 
 deleteCategory(categoryId: number) {
-  this.categoryService.deleteCategory(categoryId).subscribe({
+  this.categoryService.permanentDeleteCategory(categoryId).subscribe({
     next: () => {
-      // 1. Xóa khỏi danh sách
-      this.categories = this.categories.filter(
-        category => category.id !== categoryId
-      );
-
-      // 2. Tính lại tổng số trang từ filtered list
-      const filtered = this.filteredCategories(); // hoặc categories nếu không có lọc
+      this.categories = this.categories.filter(c => c.categoryid !== categoryId);
+      const filtered = this.filteredCategories();
       const totalPages = Math.ceil(filtered.length / this.pageSize);
-
-      // 3. Nếu trang hiện tại > tổng trang → quay về trang cuối hợp lệ
       if (this.currentPage > totalPages) {
-        this.changePage(totalPages || 1); // nếu không còn gì thì về trang 1
+        this.changePage(totalPages || 1);
       }
-
-      // 4. Success
       this.isSuccess = true;
       setTimeout(() => (this.isSuccess = null), 1000);
     },
@@ -102,6 +96,7 @@ deleteCategory(categoryId: number) {
     }
   });
 }
+
 
 
 
@@ -118,65 +113,76 @@ deleteCategory(categoryId: number) {
   }
 
 saveCategory() {
-    this.validateField('category_name');
+  this.validateField('category_name');
+  if (this.validationErrors.category_name) return;
 
-    if (this.validationErrors.category_name) return;
+  const payload = {
+    category_name: this.modalCategory.category_name?.trim() || '',
+    status: this.modalCategory.status ?? 1
+  };
 
-    const payload = {
-      category_name: this.modalCategory.category_name,
-      status: this.modalCategory.status || 'Active'
-    };
+  const reloadList = () => {
+    this.loadCategories(); // đảm bảo list mới nhất từ server
+    this.closeModal();
+  };
 
-    if (this.editingCategory) {
-      if (!confirm('Bạn có chắc chắn muốn sửa danh mục này không?')) return;
+  if (this.editingCategory) {
+    if (!confirm('Bạn có chắc chắn muốn sửa danh mục này không?')) return;
 
-      this.categoryService.updateCategory(this.modalCategory.id, payload).subscribe({
-        next: updated => {
-          const index = this.categories.findIndex(c => c.id === this.modalCategory.id);
-          if (index > -1) this.categories[index] = updated;
-          this.closeModal();
+    this.categoryService.updateCategory(this.modalCategory.categoryid, payload).subscribe({
+      next: (res) => {
+        if (res?.success && res.data) {
+          reloadList();
           this.editSuccess = true;
           setTimeout(() => (this.editSuccess = null), 1500);
-        },
-        error: () => {
-          this.editError = true;
-          setTimeout(() => (this.editError = null), 1500);
         }
-      });
-    } else {
-      this.categoryService.createCategory(payload).subscribe({
-        next: created => {
-          this.categories.push(created);
-          this.closeModal();
+      },
+      error: () => {
+        this.editError = true;
+        setTimeout(() => (this.editError = null), 1500);
+      }
+    });
+
+  } else {
+    this.categoryService.createCategory(payload).subscribe({
+      next: (res) => {
+        if (res?.success && res.data) {
+          reloadList();
           this.createSuccess = true;
           setTimeout(() => (this.createSuccess = null), 1500);
-        },
-        error: () => {
-          this.createError = true;
-          setTimeout(() => (this.createError = null), 1500);
         }
-      });
-    }
+      },
+      error: () => {
+        this.createError = true;
+        setTimeout(() => (this.createError = null), 1500);
+      }
+    });
   }
+}
 
-  closeModal() {
-    this.showModal = false;
-    this.modalCategory = { id: 0, category_name: '', status: 'Active' };
-  }
+
+
+ closeModal() {
+  this.showModal = false;
+  this.modalCategory = { categoryid: 0, category_name: '', status: 1 };
+}
 
 filteredCategories() {
   return this.categories.filter((category) => {
-    const keyword = this.searchText.toLowerCase();
-    const matchesName = category.category_name.toLowerCase().includes(keyword);
+    const keyword = (this.searchText || '').toLowerCase();
+    const name = (category.category_name || '').toLowerCase();
+    const matchesName = name.includes(keyword);
 
     const matchesStatus =
       this.statusFilter !== ''
-  ? (this.statusFilter === '1' ? category.status === 'Active' : category.status === 'Inactive')
-  : true;
+        ? category.status === Number(this.statusFilter)
+        : true;
 
     return matchesName && matchesStatus;
   });
 }
+
+
 
 
   totalPages(): number {
@@ -217,7 +223,7 @@ closeDeleteModal() {
 confirmDelete() {
   if (!this.selectedCategory) return;
   // Gọi API xóa
-  this.deleteCategory(this.selectedCategory.id);
+  this.deleteCategory(this.selectedCategory.categoryid);
   this.closeDeleteModal();
 }
 

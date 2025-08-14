@@ -95,14 +95,14 @@
     <tbody>
       <tr *ngFor="let cat of paginatedCategories()">
 
-        <td>{{ cat.id }}</td>
+        <td>{{ cat.categoryid }}</td>
         <td>{{ cat.category_name }}</td>
         <td>
           <span class="badge" [ngClass]="{
-            'bg-success': cat.status === 'Active',
-            'bg-danger': cat.status === 'Inactive'
+            'bg-success': cat.status === 1,
+            'bg-danger': cat.status === 0
           }">
-            {{ cat.status === 'Active' ? 'Active' : 'Inactive' }}
+            {{ cat.status === 1 ? 'Active' : 'Inactive' }}
           </span>
         </td>
         <td class="text-end">
@@ -173,11 +173,11 @@
 
           <!-- Status -->
           <div class="form-group">
-            <label for="status">Status:</label>
-            <select class="form-select" [(ngModel)]="modalCategory.status" name="status">
-              <option value="Active">Active</option>
-              <option value="Inactive">Inactive</option>
-            </select>
+              <label for="categoryStatus">Status:</label>
+              <select class="form-select" name="category" [(ngModel)]="modalCategory.status">
+                <option [value]="1">Active</option>
+                <option [value]="0">Inactive</option>
+              </select>
           </div>
         </form>
       </div>

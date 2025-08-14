@@ -34,24 +34,49 @@ export class LoginComponent {
     this.showPassword = !this.showPassword;
   }
 
-  onSubmit(): void {
-    if (this.loginForm.invalid) {
-      this.loginForm.markAllAsTouched();
-      return;
-    }
-
-    this.isLoading = true;
-    this.errorMessage = null;
-
-    const { username, password } = this.loginForm.value;
-
-    this.authService.login(username, password).subscribe(success => {
-      if (success) {
-        this.router.navigate(['/admin/home']);
-      } else {
-        this.errorMessage = 'Invalid username or password.';
-      }
-      this.isLoading = false;
-    });
+ onSubmit(): void {
+  if (this.isLoading) return;
+  if (this.loginForm.invalid) {
+    this.loginForm.markAllAsTouched();
+    return;
   }
+
+  this.isLoading = true;
+  this.errorMessage = null;
+
+  const { username, password } = this.loginForm.value;
+
+this.authService.login(username, password).subscribe({
+  next: (res) => {
+    if (res && res.success) {
+      this.router.navigate(['/admin/home']);
+    } else {
+      this.errorMessage = 'Invalid username or password.';
+    }
+    this.isLoading = false;
+  },
+  error: (err) => {
+    this.errorMessage = err.error?.message || 'Login failed. Please try again.';
+    this.isLoading = false;
+  }
+});
+
+}
+  goToRegister() {
+    this.router.navigate(['/register']);
+  }
+    goToForgotPassword() {
+    this.router.navigate(['/forgot-password']);
+  }
+
+
+
+ngOnInit() {
+  // Khi vào trang login thì xóa token và user info để logout
+  localStorage.removeItem('accessToken');
+  localStorage.removeItem('refreshToken');
+  localStorage.removeItem('user');
+}
+
+
 }

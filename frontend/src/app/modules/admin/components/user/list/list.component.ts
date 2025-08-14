@@ -61,37 +61,60 @@ export class AdminUserListComponent implements OnInit {
       username: '',
       password: '',
       status: 1,
-      extra_info: '',
+
+      email: ''
     };
   }
 
 loadRoles() {
-  this.roleService.getRoles().subscribe((data: any[]) => {
-    this.roles = data;
-    // Build roleMap từ dữ liệu API
-    this.roleMap = this.roles.reduce((map, role) => {
-      map[+role.id] = role.role_name;
-      return map;
-    }, {} as { [key: number]: string });
+  this.roleService.getRoles().subscribe({
+    next: (response) => {
+      const rolesData = response?.data?.data || response?.data || [];
+      if (response?.success && Array.isArray(rolesData)) {
+        this.roles = rolesData;
+        this.roleMap = this.roles.reduce((map, role) => {
+          map[+role.roleid] = role.name; // dùng roleid
+          return map;
+        }, {} as { [key: number]: string });
+
+        // Nếu users đã load trước đó thì cập nhật lại roleName
+        if (this.users.length) {
+          this.users = this.users.map(u => ({
+            ...u,
+            roleName: this.getRoleNameById(u.roleid)
+          }));
+        }
+      } else {
+        this.roles = [];
+        this.roleMap = {};
+      }
+    },
+    error: (err) => {
+      console.error('Load roles failed:', err);
+      this.roles = [];
+      this.roleMap = {};
+    }
   });
 }
 
 
-  private loadUsers() {
-    this.userService.getUsers().subscribe((data) => {
-      this.users = data.map((u: any) => ({
-        userid: u.id,
-        id: u.id, // 👈 cần cho delete đúng id backend
+private loadUsers() {
+  this.userService.getAllUsers().subscribe((list) => {
+    this.users = list
+      .map((u: any) => ({
+        userid: u.userid ?? u.id,
         roleid: u.roleid,
+        roleName: this.getRoleNameById(u.roleid), // luôn gọi hàm này
         first_name: u.first_name || '',
         last_name: u.last_name || '',
         username: u.username || '',
         password: '',
+        email: u.email || '',
         status: typeof u.status === 'number' ? u.status : 1,
-        extra_info: u.extra_info || '',
-      }));
-    });
-  }
+      }))
+      .sort((a, b) => a.userid - b.userid);
+  });
+}
 
   addUser() {
     this.newUser = this.getEmptyUser();
@@ -146,10 +169,10 @@ loadRoles() {
         break;
 
       case 'email':
-        if (!this.newUser.extra_info?.trim()) {
+        if (!this.newUser.email?.trim()) {
           this.validationErrors.email = 'Bạn chưa nhập email';
         } else if (
-          !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.newUser.extra_info)
+          !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.newUser.email)
         ) {
           this.validationErrors.email = 'Email không hợp lệ';
         } else {
@@ -179,7 +202,7 @@ loadRoles() {
         }
         break;
       case 'email':
-        if (this.newUser.extra_info?.trim()) {
+        if (this.newUser.email?.trim()) {
           this.validationErrors.email = '';
         }
         break;
@@ -190,76 +213,101 @@ loadRoles() {
         break;
     }
   }
-
-  saveUser() {
-    this.validateField('username');
+saveUser() {
+  this.validateField('username');
+  if (!this.isEditMode) {
     this.validateField('password');
-    this.validateField('email');
-    this.validateField('roleid');
-
-    if (
-      this.validationErrors.username ||
-      this.validationErrors.password ||
-      this.validationErrors.email ||
-      this.validationErrors.roleid
-    ) {
-      return;
-    }
-
-    if (
-      this.isEditMode &&
-      !confirm('Bạn có chắc chắn muốn sửa user này không?')
-    )
-      return;
-
-    const payload: any = {
-      roleid: +this.newUser.roleid,
-      first_name: this.newUser.first_name,
-      last_name: this.newUser.last_name,
-      username: this.newUser.username,
-      status: +this.newUser.status,
-      extra_info: this.newUser.extra_info,
-    };
-
-    // Chỉ thêm password khi tạo mới hoặc edit có nhập password
-    if (!this.isEditMode || this.newUser.password.trim()) {
-      payload.password = this.newUser.password;
-      payload.created_at = new Date().toISOString(); // 👈 Thêm dòng này
-    }
-
-    const request = this.isEditMode
-      ? this.userService.updateUser(this.newUser.userid, payload)
-      : this.userService.createUser(payload);
-
-    request.subscribe({
-      next: (user) => {
-        if (this.isEditMode) {
-          const idx = this.users.findIndex(
-            (u) => u.userid === this.newUser.userid
-          );
-          if (idx !== -1)
-            this.users[idx] = {
-              ...this.users[idx],
-              ...this.newUser,
-              password: '',
-            };
-          this.editSuccess = true;
-          setTimeout(() => (this.editSuccess = null), 1500);
-        } else {
-          this.users.push({ ...user, userid: user.id, password: '' });
-        }
-        this.closeModal();
-      },
-      error: (err) => {
-        if (this.isEditMode) {
-          this.editError = true;
-          setTimeout(() => (this.editError = null), 1500);
-        }
-        alert(`${this.isEditMode ? 'Cập nhật' : 'Tạo'} thất bại!`);
-        console.error(err);
-      },
-    });
   }
+  this.validateField('email');
+  this.validateField('roleid');
+
+  if (Object.values(this.validationErrors).some(v => v)) return;
+  if (this.isEditMode && !confirm('Bạn có chắc chắn muốn sửa user này không?')) return;
+
+  const payload: any = {
+    roleid: Number(this.newUser.roleid),
+    first_name: this.newUser.first_name,
+    last_name: this.newUser.last_name,
+    username: this.newUser.username,
+    status: Number(this.newUser.status),
+    email: this.newUser.email,
+  };
+
+  if (!this.isEditMode || (this.newUser.password && this.newUser.password.trim())) {
+    payload.password = this.newUser.password;
+  }
+
+  const request = this.isEditMode
+    ? this.userService.updateUser(Number(this.newUser.userid), payload)
+    : this.userService.createUser(payload);
+
+  request.subscribe({
+    next: (res) => {
+      const userFromApi = res.data ?? res;
+
+      // fallback id nếu API không trả về
+      const returnedId = userFromApi?.userid ?? userFromApi?.id ?? Number(this.newUser.userid);
+
+      // đảm bảo roleid lấy từ response nếu có, ngược lại dùng form
+      const returnedRoleId = userFromApi?.roleid ?? Number(this.newUser.roleid);
+
+      const formattedUser = {
+        userid: returnedId,
+        roleid: returnedRoleId,
+        roleName: this.getRoleNameById(returnedRoleId),
+        first_name: userFromApi?.first_name ?? this.newUser.first_name ?? '',
+        last_name: userFromApi?.last_name ?? this.newUser.last_name ?? '',
+        username: userFromApi?.username ?? this.newUser.username ?? '',
+        password: '',
+        email: userFromApi?.email ?? this.newUser.email ?? '',
+        status: typeof userFromApi?.status === 'number' ? userFromApi.status : Number(this.newUser.status) ?? 1,
+      };
+
+      if (this.isEditMode) {
+        const idx = this.users.findIndex(u => u.userid === Number(this.newUser.userid));
+        console.log('Update user idx:', idx, 'newUser.userid:', this.newUser.userid, 'formattedUser.userid:', formattedUser.userid, 'api:', userFromApi);
+
+        if (idx !== -1) {
+          // Merge để giữ lại các field cũ nếu API không trả
+          const merged = { ...this.users[idx], ...formattedUser, userid: this.users[idx].userid ?? formattedUser.userid };
+          this.users = [
+            ...this.users.slice(0, idx),
+            merged,
+            ...this.users.slice(idx + 1)
+          ];
+        } else {
+          console.warn('Không tìm thấy user để update trong danh sách, thêm tạm formattedUser');
+          this.users = [...this.users, formattedUser];
+        }
+
+        // nếu bạn muốn form hiện giá trị mới (trong modal) thì set, nhưng closeModal() sẽ reset newUser anyway
+        this.newUser = { ...formattedUser };
+        this.editSuccess = true;
+        setTimeout(() => this.editSuccess = null, 1500);
+      } else {
+        this.users = [...this.users, formattedUser];
+      }
+
+      this.closeModal();
+    },
+    error: (err) => {
+      if (this.isEditMode) {
+        this.editError = true;
+        setTimeout(() => this.editError = null, 1500);
+      }
+      alert(`${this.isEditMode ? 'Cập nhật' : 'Tạo'} thất bại!`);
+      console.error(err);
+    }
+  });
+}
+
+
+
+// Hàm phụ để lấy tên role từ roleid
+private getRoleNameById(roleid: number): string {
+  const role = this.roles?.find(r => r.id === roleid);
+  return role ? role.name : 'Unknown';
+}
 
   deleteUser(userid: number) {
     if (!confirm('Bạn có muốn xóa user này không?')) return;
@@ -339,12 +387,15 @@ loadRoles() {
     this.showCreateModal = false;
     this.newUser = this.getEmptyUser();
   }
+
+
+
   //hàm kiểm tra điều kiện để nút Save sáng
   isFormValid(): boolean {
     return this.newUser.username?.trim() &&
       (this.isEditMode || this.newUser.password?.trim()) && // password chỉ check khi tạo mới
-      this.newUser.extra_info?.trim() &&
-      /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.newUser.extra_info) &&
+      this.newUser.email?.trim() &&
+      /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.newUser.email) &&
       this.newUser.roleid
       ? true
       : false;

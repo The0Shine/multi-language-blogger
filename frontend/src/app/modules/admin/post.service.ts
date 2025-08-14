@@ -3,49 +3,51 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class PostService {
-
-  private apiUrl = 'http://localhost:3000/posts'; // API backend giả
+  private apiUrl = 'http://localhost:4000/api/posts';
 
   constructor(private http: HttpClient) {}
 
-  // Lấy danh sách bài viết
- // Lấy danh sách bài viết có phân trang
-getPosts(): Observable<any[]> {
-  return this.http.get<any[]>(this.apiUrl);
-}
-
-
-  // Lấy bài viết mới nhất
-  getRecentPosts(limit: number = 5): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}?_sort=postid&_order=desc&_limit=${limit}`);
+  // Lấy tất cả bài post (Admin)
+  getAllPosts(): Observable<any> {
+    return this.http.get(this.apiUrl);
   }
 
-  // Thêm bài viết mới
-  addPost(post: any): Observable<any> {
-    if (post.status === undefined || post.status === null) {
-      post.status = 0; // Pending review
-    }
-    post.createdAt = new Date().toISOString();
-    return this.http.post(this.apiUrl, post);
+  // Lấy bài post theo ID
+  getPostById(postId: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/${postId}`);
   }
 
- deletePost(id: number): Observable<any> {
-  return this.http.delete(`http://localhost:3000/posts/${id}`);
-}
+  // Tạo bài post (User)
+  create(postData: any): Observable<any> {
+    return this.http.post(this.apiUrl, postData);
+  }
 
-updatePost(post: any): Observable<any> {
-  return this.http.put(`http://localhost:3000/posts/${post.id}`, post);
-}
+  // Duyệt bài post (Admin)
+  acceptPost(postId: number): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/${postId}/accept`, {});
+  }
 
-getPostById(id: number): Observable<any> {
-  return this.http.get(`${this.apiUrl}/${id}`);
-}
-getAllPosts(): Observable<any[]> {
-  return this.http.get<any[]>(`${this.apiUrl}`);
-}
+  // Từ chối bài post (Admin)
+  rejectPost(postId: number): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/${postId}/reject`, {});
+  }
 
+  // Xóa bài post (Admin)
+  deletePost(postId: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${postId}`);
+  }
+
+  // Upload file cho bài post (User/Admin)
+  upload(file: File): Observable<any> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post(`${this.apiUrl}/upload`, formData);
+  }
+  addPost(postData: any) {
+  return this.http.post<{ data: any }>(`${this.apiUrl}/posts`, postData);
+}
 
 }

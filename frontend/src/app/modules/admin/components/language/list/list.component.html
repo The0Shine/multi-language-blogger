@@ -100,15 +100,15 @@
       <tr *ngFor="let lang of paginatedLanguages()">
 
 
-        <td>{{ lang.id }}</td>
+        <td>{{ lang.languageid }}</td>
         <td>{{ lang.language_name }}</td>
         <td>{{ lang.locale_code }}</td>
         <td>
           <span class="badge" [ngClass]="{
-      'bg-success': lang.status === 'Active',
-      'bg-danger': lang.status === 'Inactive'
+      'bg-success': lang.status === 1,
+      'bg-danger': lang.status === 0
     }">
-            {{ lang.status === 'Active' ? 'Active' : 'Inactive' }}
+            {{ lang.status === 1 ? 'Active' : 'Inactive' }}
           </span>
         </td>
 
@@ -190,11 +190,11 @@
 
           <!-- Status -->
           <div class="form-group mt-3">
-            <label for="status">Status:</label>
-            <select class="form-select" [(ngModel)]="modalLanguage.status" name="status">
-              <option value="Active">Active</option>
-              <option value="Inactive">Inactive</option>
-            </select>
+           <label for="languageStatus">Status:</label>
+              <select class="form-select" name="language" [(ngModel)]="modalLanguage.status">
+                <option [value]="1">Active</option>
+                <option [value]="0">Inactive</option>
+              </select>
           </div>
         </form>
       </div>

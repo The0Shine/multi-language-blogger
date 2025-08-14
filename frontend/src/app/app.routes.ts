@@ -9,17 +9,20 @@ import { AdminRoleListComponent } from './modules/admin/components/role/list/lis
 import { AdminLanguageListComponent } from './modules/admin/components/language/list/list.component';
 import { AdminCategorieListComponent } from './modules/admin/components/categories/list/list.component';
 import { AdminPostListComponent } from './modules/admin/components/post/list/list.component';
-import { AdminPostCreateComponent } from './modules/admin/components/post/create/create.component';
+// import { AdminPostCreateComponent } from './modules/admin/components/post/create/create.component';
 import { LoginComponent } from './modules/auth/login/login.component';
 import { RegisterComponent } from './modules/auth/register/register.component';
-import { ProfileComponent } from './profile/profile.component';
 
+import { ProfileComponent } from './profile/profile.component';
+import { ForgotPasswordComponent } from './modules/auth/forgot-password/forgot-password.component';
+import { ResetPasswordComponent } from './modules/auth/reset-password/reset-password.component';
 
 export const routes: Routes = [
   // Route login
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
-
+  { path: 'forgot-password', component: ForgotPasswordComponent },
+  { path: 'reset-password', component: ResetPasswordComponent },
 
   // Route admin
   {
@@ -33,7 +36,7 @@ export const routes: Routes = [
       { path: 'language/list', component: AdminLanguageListComponent },
       { path: 'category/list', component: AdminCategorieListComponent },
       { path: 'post/list', component: AdminPostListComponent },
-      { path: 'post/create', component: AdminPostCreateComponent },
+      // { path: 'post/create', component: AdminPostCreateComponent },
           { path: 'profile', component: ProfileComponent }, // ✅ thêm dòng này
       { path: '', redirectTo: 'home', pathMatch: 'full' }
     ]

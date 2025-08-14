@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { PostService } from '../../../post.service';
 import { UserService } from '../../../user.service';
 import { LanguageService } from '../../../language.service'; // ✅ Thêm service
-
+import { forkJoin } from 'rxjs';
 @Component({
   selector: 'app-list-post',
   standalone: true,
@@ -28,6 +28,7 @@ export class AdminPostListComponent implements OnInit {
   showDeleteModal: boolean = false;
   postToDelete: any = null;
   totalPosts: number = 0;
+    viewId: number | null = null;
 
   constructor(
     private router: Router,
@@ -38,58 +39,84 @@ export class AdminPostListComponent implements OnInit {
   ) {}
 
 loadPostAndShowModal(id: number) {
-  this.postService.getPostById(id).subscribe((post) => {
-    this.userService.getUserById(post.user_id).subscribe(user => {
-      this.selectedPost = {
-        ...post,
-        created_at: post.createdAt ? new Date(post.createdAt) : null,
-        username: user ? user.username : 'Unknown'
-      };
-    });
-  });
-}
+  // Backend chưa có getPostById => tạm thời lấy tất cả rồi tìm theo id
+  this.postService.getAllPosts().subscribe((res) => {
+    const allPosts = res?.data?.data || [];
+    const post = allPosts.find((p: any) => p.postid === id);
 
-
-
- ngOnInit(): void {
-  this.route.queryParams.subscribe((params) => {
-    const postId = params['view'];
-    if (postId) {
-      this.loadPostAndShowModal(Number(postId));
+    if (post) {
+      this.userService.getUserById(post.userid).subscribe(user => {
+        this.selectedPost = {
+          ...post,
+          created_at: post.createdAt ? new Date(post.createdAt) : null,
+          username: user ? user.username : 'Unknown'
+        };
+      });
     }
-
-    this.currentPage = +params['page'] || 1;
-    this.loadUsersLanguagesAndPosts(this.currentPage); // truyền page
   });
 }
 
-loadUsersLanguagesAndPosts(page: number) {
-  this.userService.getUsers().subscribe((users) => {
-    this.users = users;
 
-    this.languageService.getLanguages().subscribe((langs) => {
-      this.languages = langs;
+  ngOnInit(): void {
+    this.route.queryParams.subscribe((params) => {
+      this.currentPage = +params['page'] || 1;
+      this.viewId = params['view'] ? Number(params['view']) : null;
 
-      this.loadPosts(page); // thay vì loadPosts(1)
+      this.loadUsersLanguagesAndPosts(this.currentPage);
     });
-  });
-}
+  }
+
+  loadUsersLanguagesAndPosts(page: number) {
+    forkJoin({
+      users: this.userService.getAllUsers(),
+      languages: this.languageService.getLanguages()
+    }).subscribe(({ users, languages }: any) => {
+      this.users = Array.isArray(users) ? users : (users?.data || []);
+      this.languages = Array.isArray(languages?.data?.data) ? languages.data.data : [];
+
+      this.loadPosts(page);
+    });
+  }
 
   loadPosts(page: number = 1): void {
- this.postService.getPosts().subscribe((data) => {
-    this.posts = data.map((post) => {
-      const user = this.users.find(u => String(u.id) === String(post.user_id));
-      const lang = this.languages.find(l => String(l.id) === String(post.language_id));
-      return {
-        ...post,
-        created_at: post.createdAt ? new Date(post.createdAt) : null,
-        username: user ? user.username : 'Unknown',
-        language_name: lang ? lang.language_name : 'Unknown',
-        original_id: post.original_id || null,
-      };
+    this.postService.getAllPosts().subscribe((res: any) => {
+      const postsData = res?.data?.data || [];
+
+      this.posts = postsData
+        .map((post: any) => {
+          const user = this.users.find((u: any) => String(u.userid) === String(post.userid));
+          const lang = this.languages.find((l: any) => String(l.languageid) === String(post.languageid));
+
+          return {
+            ...post,
+            status: Number(post.status),
+            created_at: post.createdAt ? new Date(post.createdAt) : null,
+            username: user?.username || 'Unknown',
+            language_name: lang?.language_name || 'Unknown',
+            original_id: post.originalid || null,
+          };
+        })
+        .sort((a: any, b: any) => a.postid - b.postid);
+
+      // ✅ Sau khi load xong posts, nếu có viewId thì mở modal
+      if (this.viewId) {
+        this.openPostDetail(this.viewId);
+        this.viewId = null; // reset tránh mở lại khi phân trang
+      }
     });
-  });
-}
+  }
+ openPostDetail(postId: number) {
+    const post = this.posts.find(p => p.postid === postId);
+    if (post) {
+      this.selectedPost = post;
+      // ⚡ Gọi logic mở modal (tùy HTML, ví dụ dùng Bootstrap modal)
+      const modalElement = document.getElementById('postDetailModal');
+      if (modalElement) {
+        (modalElement as any).style.display = 'block';
+      }
+    }
+  }
+
 
   get filteredPosts() {
     return this.posts.filter(
@@ -114,39 +141,37 @@ loadUsersLanguagesAndPosts(page: number) {
     });
   }
 
-  approvePostFromModal() {
-    if (this.selectedPost) {
-      this.selectedPost.status = 1;
-      this.postService.updatePost(this.selectedPost).subscribe(() => {
-        this.loadPosts();
-        this.closePostModal();
-      });
-    }
+approvePostFromModal() {
+  if (this.selectedPost) {
+    this.postService.acceptPost(this.selectedPost.postid).subscribe(() => {
+      this.loadPosts();
+      this.closePostModal();
+    });
   }
+}
 
-  rejectPostFromModal() {
-    if (this.selectedPost) {
-      this.selectedPost.status = 2;
-      this.postService.updatePost(this.selectedPost).subscribe(() => {
-        this.loadPosts();
-        this.closePostModal();
-      });
-    }
+rejectPostFromModal() {
+  if (this.selectedPost) {
+    this.postService.rejectPost(this.selectedPost.postid).subscribe((updatedPost) => {
+      this.selectedPost = updatedPost; // cập nhật toàn bộ
+      this.loadPosts();
+      this.closePostModal();
+    });
   }
-
-  goToAddPost(): void {
-    this.router.navigate(['/admin/post/create']);
-  }
+}
 
   editPost(id: number): void {
     this.router.navigate(['/admin/post/update', id]);
+  }
+  openCreateModal(): void {
+    this.router.navigate(['/admin/post/create']);
   }
 
   getStatusText(status: number): string {
     switch (status) {
       case 1:
         return 'Published';
-      case 2:
+      case -1:
         return 'Rejected';
       default:
         return 'Pending Review';
@@ -226,16 +251,16 @@ deletePost(id: number) {
   }
 
 confirmDeletePost() {
-  if (!this.postToDelete?.id) {
+  if (!this.postToDelete?.postid) {
     console.error('Không có ID bài viết để xóa!');
     return;
   }
 
-  const idToDelete = this.postToDelete.id;
+  const idToDelete = this.postToDelete.postid;
 
   this.postService.deletePost(idToDelete).subscribe({
     next: () => {
-      this.posts = this.posts.filter((p) => String(p.id) !== String(idToDelete));
+      this.posts = this.posts.filter((p) => String(p.postid) !== String(idToDelete));
 
       this.totalPosts = Math.max(0, (this.totalPosts || 0) - 1);
 
@@ -249,9 +274,6 @@ confirmDeletePost() {
           queryParamsHandling: 'merge',
           replaceUrl: true,
         });
-
-      } else {
-
       }
 
       this.isSuccess = true;

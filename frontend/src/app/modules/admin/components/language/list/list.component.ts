@@ -32,10 +32,10 @@ export class AdminLanguageListComponent implements OnInit {
   showModal = false;
   editingLanguage = false;
   modalLanguage = {
-    id: 0,
+    languageid: 0,
     language_name: '',
     locale_code: '',
-    status: 'Active',
+    status: 1,
   };
 
   constructor(
@@ -57,10 +57,10 @@ export class AdminLanguageListComponent implements OnInit {
   openCreateModal() {
     this.editingLanguage = false;
     this.modalLanguage = {
-      id: 0,
+      languageid: 0,
       language_name: '',
       locale_code: '',
-      status: 'Active',
+      status: 1,
     };
     this.showModal = true;
   }
@@ -100,104 +100,114 @@ export class AdminLanguageListComponent implements OnInit {
     );
   }
 
-  saveLanguage() {
-    this.validateField('language_name');
-    this.validateField('locale_code');
+saveLanguage() {
+  this.validateField('language_name');
+  this.validateField('locale_code');
 
-    if (
-      this.validationErrors.language_name ||
-      this.validationErrors.locale_code
-    ) {
-      return; // Đừng lưu nếu còn lỗi
-    }
-
-    const payload = {
-      language_name: this.modalLanguage.language_name,
-      locale_code: this.modalLanguage.locale_code,
-      status: this.modalLanguage.status || 'Active',
-    };
-
-    if (this.editingLanguage) {
-      if (!confirm('Bạn có chắc chắn muốn sửa ngôn ngữ này không?')) return;
-
-      this.languageService
-        .updateLanguage(this.modalLanguage.id, payload)
-        .subscribe({
-          next: () => {
-            const idx = this.languages.findIndex(
-              (l) => l.id === this.modalLanguage.id
-            );
-            if (idx !== -1) {
-              this.languages[idx] = { id: this.modalLanguage.id, ...payload };
-            }
-            this.closeModal();
-            this.editSuccess = true;
-            setTimeout(() => (this.editSuccess = null), 1500);
-          },
-          error: () => {
-            this.editError = true;
-            setTimeout(() => (this.editError = null), 1500);
-          },
-        });
-    } else {
-      this.languageService.createLanguage(payload).subscribe({
-        next: (created) => {
-          this.languages.push(created);
-          this.closeModal();
-          this.createSuccess = true;
-          setTimeout(() => (this.createSuccess = null), 1500);
-        },
-        error: () => {
-          this.createError = true;
-          setTimeout(() => (this.createError = null), 1500);
-        },
-      });
-    }
+  if (this.validationErrors.language_name || this.validationErrors.locale_code) {
+    return; // Dừng nếu còn lỗi
   }
+
+  const statusValue = Number(this.modalLanguage.status);
+  const payload = {
+    language_name: this.modalLanguage.language_name?.trim(),
+    locale_code: this.modalLanguage.locale_code?.trim(),
+    status: isNaN(statusValue) ? 1 : statusValue,
+  };
+
+
+
+  if (this.editingLanguage) {
+    const id = this.modalLanguage.languageid;
+
+
+    if (!id) {
+      console.error('Không có languageid để update');
+      return;
+    }
+
+    if (!confirm('Bạn có chắc chắn muốn sửa ngôn ngữ này không?')) return;
+
+    this.languageService.updateLanguage(id, payload).subscribe({
+      next: (res) => {
+
+        const updatedLang = res?.data?.data;
+        if (res.success && updatedLang) {
+          const idx = this.languages.findIndex(l => l.languageid === id);
+          if (idx !== -1) {
+            this.languages[idx] = updatedLang;
+          }
+        }
+        this.closeModal();
+        this.editSuccess = true;
+        setTimeout(() => (this.editSuccess = null), 1500);
+      },
+      error: (err) => {
+        console.error('Update language error:', err);
+        console.error('BE message:', err.error); // log chi tiết từ BE
+        this.editError = true;
+        setTimeout(() => (this.editError = null), 1500);
+      },
+    });
+  } else {
+    this.languageService.createLanguage(payload).subscribe({
+      next: (res) => {
+        console.log('Create response:', res);
+        if (res.success && res.data?.data) {
+          this.languages.push(res.data.data);
+        }
+        this.closeModal();
+        this.createSuccess = true;
+        setTimeout(() => (this.createSuccess = null), 1500);
+      },
+      error: (err) => {
+        console.error('Create language error:', err);
+        console.error('BE message:', err.error); // log chi tiết từ BE
+        this.createError = true;
+        setTimeout(() => (this.createError = null), 1500);
+      },
+    });
+  }
+}
+
+
 
   closeModal() {
     this.showModal = false;
     this.modalLanguage = {
-      id: 0,
+      languageid: 0,
       language_name: '',
       locale_code: '',
-      status: 'Active',
+      status: 1,
     };
   }
 
-  filteredLanguages() {
-    return this.languages.filter((lang) => {
-      const keyword = this.searchText.toLowerCase();
-      const nameMatch = lang.language_name.toLowerCase().includes(keyword);
+filteredLanguages() {
+  const keyword = (this.searchText || '').toLowerCase();
+  const statusFilter = this.statusFilter || '';
 
-      const statusMatch =
-        this.statusFilter !== ''
-          ? this.statusFilter === '1'
-            ? lang.status === 'Active'
-            : lang.status === 'Inactive'
-          : true;
+  return (this.languages || []).filter((lang) => {
+    const name = (lang.language_name || '').toLowerCase();
+    const status = lang.status;
 
-      return nameMatch && statusMatch;
-    });
-  }
-deleteLanguage(languageid: number) {
-  const confirmed = confirm('Bạn có muốn xóa Language này không?');
-  if (confirmed) {
-    this.languageService.deleteLanguage(languageid).subscribe({
+    const nameMatch = name.includes(keyword);
+    const statusMatch =
+      statusFilter !== ''
+        ? statusFilter === '1'
+          ? status === 1
+          : status === 0
+        : true;
+
+    return nameMatch && statusMatch;
+  });
+}
+
+
+deleteLanguage(languageId: number) {
+  if (confirm('Bạn có muốn xóa Language này không?')) {
+    this.languageService.deleteLanguage(languageId).subscribe({
       next: () => {
-        // Gọi lại API để load dữ liệu mới
-        this.languageService.getLanguages().subscribe((data) => {
-          this.languages = data;
-
-          // Nếu currentPage không còn dữ liệu, thì quay về trang trước hoặc trang 1
-          const totalPages = this.totalPages();
-          if (this.currentPage > totalPages) {
-            this.changePage(totalPages || 1); // Nếu totalPages = 0 thì về trang 1
-          }
-
-          this.isSuccess = true;
-          setTimeout(() => (this.isSuccess = null), 1000);
-        });
+        this.loadLanguages(true); // truyền flag để hiển thị success
       },
       error: () => {
         this.isSuccess = false;
@@ -206,13 +216,24 @@ deleteLanguage(languageid: number) {
     });
   }
 }
- loadLanguages() {
-    this.languageService.getLanguages().subscribe((data) => {
-      this.languages = data;
-    });
-  }
 
+loadLanguages(showSuccess = false) {
+  this.languageService.getLanguages().subscribe((res) => {
+    // Lấy mảng đúng chỗ
+    const langs = res.data?.data ?? [];
+    this.languages = langs.sort((a: any, b: any) => a.languageid - b.languageid);
 
+    const totalPages = this.totalPages();
+    if (this.currentPage > totalPages) {
+      this.changePage(totalPages || 1);
+    }
+
+    if (showSuccess) {
+      this.isSuccess = true;
+      setTimeout(() => (this.isSuccess = null), 1000);
+    }
+  });
+}
 
 
   totalPages(): number {
@@ -251,23 +272,25 @@ deleteLanguage(languageid: number) {
 
 confirmDeleteLanguage() {
   if (this.selectedLanguage) {
-    this.languageService.deleteLanguage(this.selectedLanguage.id).subscribe({
+    this.languageService.permanentDeleteLanguage(this.selectedLanguage.languageid).subscribe({
       next: () => {
-        // 1. Xóa phần tử khỏi mảng
+        // Xóa khỏi danh sách tạm
         this.languages = this.languages.filter(
-          (lang) => lang.id !== this.selectedLanguage.id
+          (lang) => lang.languageid !== this.selectedLanguage.languageid
         );
 
-        // 2. Tính lại dữ liệu của trang hiện tại
-        const filtered = this.filteredLanguages();
-        const totalPages = Math.ceil(filtered.length / this.pageSize);
+        // Nếu trang hiện tại trống sau khi xóa thì lùi về trang trước
+        const startIndex = (this.currentPage - 1) * this.pageSize;
+        const endIndex = startIndex + this.pageSize;
+        const currentPageData = this.filteredLanguages().slice(startIndex, endIndex);
 
-        // 3. Nếu trang hiện tại vượt quá số trang, quay về trang trước
-        if (this.currentPage > totalPages) {
-          this.changePage(totalPages || 1); // về trang 1 nếu không còn gì
+        if (currentPageData.length === 0 && this.currentPage > 1) {
+          this.currentPage--;
         }
 
-        // 4. Đóng modal và thông báo
+        // Load lại từ DB để chắc chắn
+        this.loadLanguages();
+
         this.showDeleteModal = false;
         this.isSuccess = true;
         setTimeout(() => (this.isSuccess = null), 1500);
@@ -281,8 +304,9 @@ confirmDeleteLanguage() {
 }
 
 
-  closeDeleteModal() {
-    this.showDeleteModal = false;
-    this.selectedLanguage = null;
-  }
+closeDeleteModal() {
+  this.showDeleteModal = false;
+  this.selectedLanguage = null;
+}
+
 }

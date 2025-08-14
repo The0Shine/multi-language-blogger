@@ -23,7 +23,7 @@
     <tbody>
       <tr *ngFor="let post of recentPosts">
      <td>
-<span class="link" (click)="openPostDetailFromHome(post.id)">
+<span class="link" (click)="openPostDetailFromHome(post.postid)">
   {{ truncateTitle(post.title) }}
 </span>
 
@@ -36,7 +36,7 @@
   <span class="badge"
         [ngClass]="{
           'bg-success': post.status === 1,
-          'bg-danger': post.status === 2,
+          'bg-danger': post.status === -1,
           'bg-warning': post.status === 0
         }">
     {{ getStatusText(post.status) }}

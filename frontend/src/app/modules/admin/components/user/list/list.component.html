@@ -44,15 +44,14 @@
 
 
 <div class="card">
-  <div class="section-header d-flex justify-content-between align-items-center p-3">
+   <div class="section-header d-flex justify-content-between align-items-center p-3">
     <div class="card-title m-0">Manage Users</div>
-    <button class="btn btn-primary" (click)="addUser()">
-      <i class="fa fa-plus"></i> Add User
-    </button>
-  </div>
+
+   </div>
 
   <div class="section-controls">
     <input type="text" [(ngModel)]="searchText" (ngModelChange)="onSearchChange()" placeholder="Search User..." />
+
     <select [(ngModel)]="statusFilter" (change)="onStatusFilterChange()">
       <option value="">All Status</option>
       <option value="1">Active</option>
@@ -75,7 +74,7 @@
       <tr *ngFor="let user of paginatedUsers()">
         <td>{{ user.userid }}</td>
         <td>{{ user.username }}</td>
-        <td>{{ user.extra_info }}</td>
+        <td>{{ user.email }}</td>
         <td>{{ roleMap[+user.roleid] || 'Unknown' }}</td>
 
         <td>
@@ -164,7 +163,7 @@
 
           <div class="form-group">
             <label for="email">Email: <span class="text-danger">*</span></label>
-            <input type="email" class="form-control" [(ngModel)]="newUser.extra_info" name="extra_info" required
+            <input type="email" class="form-control" [(ngModel)]="newUser.email" name="extra_info" required
               (blur)="validateField('email')" (input)="clearError('email')">
             <div *ngIf="validationErrors.email" class="error-message">
               {{ validationErrors.email }}
@@ -176,7 +175,8 @@
             <select class="form-select" [(ngModel)]="newUser.roleid" name="roleid" required
               (blur)="validateField('roleid')" (change)="clearError('roleid')">
               <option value="">-- Chọn Role --</option>
-              <option *ngFor="let role of roles" [value]="role.id">{{ role.role_name }}</option>
+             <option *ngFor="let role of roles" [value]="role.roleid">{{ role.name }}</option>
+
             </select>
             <div *ngIf="validationErrors.roleid" class="error-message">
               {{ validationErrors.roleid }}

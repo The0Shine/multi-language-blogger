@@ -17,7 +17,11 @@
   <select class="form-select" formControlName="language"
     [ngClass]="{ 'is-invalid': postForm.get('language')?.touched && postForm.get('language')?.invalid }"
     [disabled]="true"> <!-- khóa select, vì đã điều khiển bằng nút -->
-    <option *ngFor="let lang of languages" [value]="lang.id">{{ lang.language_name }}</option>
+<option *ngFor="let lang of languages" [value]="lang.languageid">
+  {{ lang.language_name }}
+</option>
+
+
   </select>
   <div class="text-danger mt-1" *ngIf="postForm.get('language')?.touched && postForm.get('language')?.invalid">
     {{ getErrorMessage('language') }}
