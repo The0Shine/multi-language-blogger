@@ -40,12 +40,21 @@ const postService = {
     return post;
   },
 
-  // Chỉ SELECT => không cần TX
-  getAll: async ({ limit = 10, offset = 0 }) => {
+getAll: async ({ limit = 10, offset = 0, viewer }) => {
     const lim = Number.parseInt(limit, 10) || 10;
     const off = Number.parseInt(offset, 10) || 0;
+
     try {
+      if (!viewer) throw new Error('viewer context is required');
+
+      // viewer = req.user được gắn trong authenticate
+      const canModerate = Array.isArray(viewer.permissions)
+        && viewer.permissions.map(p => String(p).toLowerCase()).includes('moderate_posts');
+
+      const whereCondition = canModerate ? {} : { userid: viewer.userid };
+
       return await Post.findAll({
+        where: whereCondition,
         limit: lim,
         offset: off,
         include: [{ model: PostContent, as: 'contents' }],
@@ -56,6 +65,7 @@ const postService = {
       throw new Error('Failed to retrieve posts');
     }
   },
+
 
   delete: async (postid) => {
     const post = await Post.findByPk(postid);

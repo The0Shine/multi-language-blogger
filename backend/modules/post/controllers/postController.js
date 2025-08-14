@@ -42,21 +42,24 @@ const postController = {
   },
 
   // Admin xem danh sách
-  getAll: async (req, res) => {
-    try {
-      const limit = Number.parseInt(req.query.limit, 10) || 10;
-      const offset = Number.parseInt(req.query.offset, 10) || 0;
+ getAll : async (req, res) => {
+  try {
+    const posts = await postService.getAll({
+      limit: req.query.limit,
+      offset: req.query.offset,
+      viewer: req.user, // ✅ truyền context đã có permissions
+    });
 
-      const posts = await postService.getAll({ limit, offset });
-      return responseUtils.ok(res, {
-        message: 'Posts retrieved successfully',
-        data: posts
-      });
-    } catch (error) {
-      console.error('Get all posts error:', error);
-      return responseUtils.serverError(res, error.message);
-    }
-  },
+    return responseUtils.ok(res, {
+      message: 'Posts retrieved successfully',
+      data: posts
+    });
+  } catch (error) {
+    console.error('Get all posts error:', error);
+    return responseUtils.serverError(res, error.message);
+  }
+},
+
 
   delete: async (req, res) => {
     try {
