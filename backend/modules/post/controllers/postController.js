@@ -100,18 +100,17 @@ const postController = {
   getById: async (req, res) => {
     try {
       const { postid } = req.params;
-
-      // Fetch the post by ID
-      const post = await Post.findOne({ where: { postid } });
-
-      if (!post) {
-        return responseUtils.notFound(res, 'Post not found.');
-      }
-
-      return responseUtils.ok(res, post);
+      const post = await postService.getById(postid);
+      return responseUtils.ok(res, {
+        message: 'Post retrieved successfully',
+        data: post
+      });
     } catch (error) {
-      console.error('Error fetching post by ID:', error);
-      return responseUtils.serverError(res, 'An error occurred while fetching the post.');
+      if (error.message === 'Post not found') {
+        return responseUtils.notFound(res, 'Post not found');
+      }
+      console.error('Get post by id error:', error);
+      return responseUtils.serverError(res, error.message);
     }
   },
 };
