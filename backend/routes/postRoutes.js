@@ -23,6 +23,7 @@ router.get('/',
     postController.getAll
 );
 
+
 router.delete('/:postid',
     authMiddleware.requireRoles('Admin'),
     validateMiddleware,
@@ -46,6 +47,13 @@ router.post(
     '/upload',
     uploadMiddleware.single('file'),
     postController.upload
+);
+
+// Get a post by ID (accessible to authenticated users)
+router.get('/:postid',
+    authMiddleware.authenticate, 
+    validateMiddleware,          
+    postController.getById       
 );
 
 module.exports = router;

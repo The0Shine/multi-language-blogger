@@ -1,5 +1,6 @@
-const postService = require('modules/post/services/postService');
+const { Post } = require('models'); // Assuming Post is your Sequelize model
 const responseUtils = require('utils/responseUtils');
+const postService = require('modules/post/services/postService');
 // const { uploadToCloudinary } = require('where/ever'); // NHỚ import đúng
 
 const postController = {
@@ -94,7 +95,25 @@ const postController = {
       console.error('Reject post error:', error);
       return responseUtils.serverError(res, error.message);
     }
-  }
+  },
+
+  getById: async (req, res) => {
+    try {
+      const { postid } = req.params;
+
+      // Fetch the post by ID
+      const post = await Post.findOne({ where: { postid } });
+
+      if (!post) {
+        return responseUtils.notFound(res, 'Post not found.');
+      }
+
+      return responseUtils.ok(res, post);
+    } catch (error) {
+      console.error('Error fetching post by ID:', error);
+      return responseUtils.serverError(res, 'An error occurred while fetching the post.');
+    }
+  },
 };
 
 module.exports = postController;
