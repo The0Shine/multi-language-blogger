@@ -1,0 +1,63 @@
+<div class="space-y-8">
+  <article
+    *ngFor="let post of posts"
+    class="flex items-start space-x-4 pb-8 border-b border-gray-100"
+  >
+    <div class="flex-1">
+      <div class="flex items-center mb-2">
+        <div
+          class="w-6 h-6 bg-red-500 rounded-sm flex items-center justify-center mr-2"
+        >
+          <span class="text-white text-xs font-bold">
+            {{ getPublicationInitials("Medium") }}
+          </span>
+        </div>
+        <span class="text-sm text-gray-600"> in Medium </span>
+        <span class="text-sm text-gray-400 mx-1">by</span>
+        <span class="text-sm text-gray-600">{{ post.author.name }}</span>
+        <span
+          class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full ml-2"
+        >
+          {{ post.language.name || "English" }}
+        </span>
+      </div>
+
+      <h2
+        class="text-xl font-bold text-gray-900 mb-2 hover:underline cursor-pointer"
+        (click)="onPostClick(post.postid)"
+      >
+        {{ post.title }}
+      </h2>
+
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-4 text-sm text-gray-500">
+          <div class="flex items-center">
+            <i class="fas fa-star text-yellow-500 mr-1"></i>
+            <span>{{ formatDate(post.created_at) }}</span>
+          </div>
+
+          <div class="flex items-center">
+            <i class="fas fa-comment mr-1"></i>
+            <span>{{ post.comments }}</span>
+          </div>
+        </div>
+        <div class="flex items-center space-x-2">
+          <button class="text-gray-400 hover:text-gray-600">
+            <i class="fas fa-ellipsis-h"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Image placeholder - removed since Post interface doesn't have imageUrl -->
+    <!-- <div
+      class="w-32 h-32 bg-gray-200 rounded flex-shrink-0"
+    >
+      <img
+        [src]="''"
+        [alt]="post.title"
+        class="w-full h-full object-cover rounded"
+      />
+    </div> -->
+  </article>
+</div>

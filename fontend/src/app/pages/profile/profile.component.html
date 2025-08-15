@@ -1,0 +1,316 @@
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+    <h1 class="text-3xl font-bold text-gray-900 mb-8">
+      {{ languageService.translate("profile.title") }}
+    </h1>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="flex justify-center py-8">
+      <div
+        class="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"
+      ></div>
+    </div>
+
+    <div *ngIf="!isLoading && currentUser">
+      <!-- Profile Photo -->
+      <div class="form-group mb-8">
+        <div class="flex items-center space-x-6">
+          <div
+            class="w-24 h-24 bg-green-600 rounded-full flex items-center justify-center"
+          >
+            <span class="text-white font-bold text-2xl">{{
+              getUserInitials()
+            }}</span>
+          </div>
+          <div>
+            <h3 class="text-lg font-medium text-gray-900">
+              {{ currentUser.first_name }} {{ currentUser.last_name }}
+            </h3>
+            <p class="text-gray-500">{{ "@" + currentUser.username }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Profile Form -->
+      <form (ngSubmit)="updateProfile()" #profileForm="ngForm">
+        <!-- First Name & Last Name -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <div class="form-group">
+            <label
+              for="firstName"
+              class="block text-sm font-medium text-gray-700 mb-2"
+            >
+              {{ languageService.translate("profile.first_name") }} *
+            </label>
+            <input
+              type="text"
+              id="firstName"
+              name="firstName"
+              [(ngModel)]="profileData.first_name"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+              maxlength="25"
+              required
+            />
+            <p class="text-sm text-gray-500 mt-1">
+              {{
+                languageService.translate("profile.char_limit", { max: "25" })
+              }}
+            </p>
+          </div>
+          <div class="form-group">
+            <label
+              for="lastName"
+              class="block text-sm font-medium text-gray-700 mb-2"
+            >
+              {{ languageService.translate("profile.last_name") }} *
+            </label>
+            <input
+              type="text"
+              id="lastName"
+              name="lastName"
+              [(ngModel)]="profileData.last_name"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+              maxlength="25"
+              required
+            />
+            <p class="text-sm text-gray-500 mt-1">
+              {{
+                languageService.translate("profile.char_limit", { max: "25" })
+              }}
+            </p>
+          </div>
+        </div>
+
+        <!-- Username -->
+        <div class="form-group mb-6">
+          <label
+            for="username"
+            class="block text-sm font-medium text-gray-700 mb-2"
+          >
+            {{ languageService.translate("profile.username") }} *
+          </label>
+          <input
+            type="text"
+            id="username"
+            name="username"
+            [(ngModel)]="profileData.username"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+            required
+          />
+        </div>
+
+        <!-- Save Profile Button -->
+        <div class="mb-8">
+          <button
+            type="submit"
+            [disabled]="isSaving || !profileForm.valid"
+            class="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-black disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            <span *ngIf="!isSaving">
+              {{ languageService.translate("profile.update") }}
+            </span>
+            <span *ngIf="isSaving">
+              {{ languageService.translate("common.saving") }}
+            </span>
+          </button>
+        </div>
+      </form>
+
+      <!-- Password Change Section -->
+      <div class="border-t border-gray-200 pt-8 mt-8">
+        <h2 class="text-xl font-semibold text-gray-900 mb-6">
+          {{ languageService.translate("profile.change_password") }}
+        </h2>
+
+        <form (ngSubmit)="changePassword()" #passwordForm="ngForm">
+          <div class="space-y-4">
+            <div class="form-group">
+              <label
+                for="currentPassword"
+                class="block text-sm font-medium text-gray-700 mb-2"
+              >
+                {{ languageService.translate("profile.current_password") }} *
+              </label>
+              <div class="relative">
+                <input
+                  [type]="showCurrentPassword ? 'text' : 'password'"
+                  id="currentPassword"
+                  name="currentPassword"
+                  [(ngModel)]="passwordData.current_password"
+                  class="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                  required
+                />
+                <button
+                  type="button"
+                  (click)="togglePasswordVisibility('current')"
+                  class="absolute inset-y-0 right-0 pr-3 flex items-center"
+                >
+                  <i
+                    [class]="
+                      showCurrentPassword ? 'fas fa-eye-slash' : 'fas fa-eye'
+                    "
+                    class="text-gray-400 hover:text-gray-600"
+                  ></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label
+                for="newPassword"
+                class="block text-sm font-medium text-gray-700 mb-2"
+              >
+                {{ languageService.translate("profile.new_password") }} *
+              </label>
+              <div class="relative">
+                <input
+                  [type]="showNewPassword ? 'text' : 'password'"
+                  id="newPassword"
+                  name="newPassword"
+                  [(ngModel)]="passwordData.new_password"
+                  (input)="onPasswordInput()"
+                  class="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                  required
+                />
+                <button
+                  type="button"
+                  (click)="togglePasswordVisibility('new')"
+                  class="absolute inset-y-0 right-0 pr-3 flex items-center"
+                >
+                  <i
+                    [class]="
+                      showNewPassword ? 'fas fa-eye-slash' : 'fas fa-eye'
+                    "
+                    class="text-gray-400 hover:text-gray-600"
+                  ></i>
+                </button>
+              </div>
+              <div *ngIf="passwordStrength" class="mt-2">
+                <span class="text-sm font-medium">
+                  {{ languageService.translate("profile.password_strength") }}:
+                </span>
+                <span
+                  class="text-sm"
+                  [class.text-red-600]="
+                    passwordStrength === 'Very Weak' ||
+                    passwordStrength === 'Weak'
+                  "
+                  [class.text-yellow-600]="passwordStrength === 'Fair'"
+                  [class.text-blue-600]="passwordStrength === 'Good'"
+                  [class.text-green-600]="passwordStrength === 'Strong'"
+                >
+                  {{ passwordStrength }}
+                </span>
+              </div>
+              <p class="text-sm text-gray-500 mt-2">
+                {{ languageService.translate("profile.password_hint") }}
+              </p>
+            </div>
+
+            <div class="form-group">
+              <label
+                for="confirmPassword"
+                class="block text-sm font-medium text-gray-700 mb-2"
+              >
+                {{ languageService.translate("profile.confirm_password") }} *
+              </label>
+              <div class="relative">
+                <input
+                  [type]="showConfirmPassword ? 'text' : 'password'"
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  [(ngModel)]="passwordData.confirm_password"
+                  (input)="onPasswordInput()"
+                  class="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                  required
+                />
+                <button
+                  type="button"
+                  (click)="togglePasswordVisibility('confirm')"
+                  class="absolute inset-y-0 right-0 pr-3 flex items-center"
+                >
+                  <i
+                    [class]="
+                      showConfirmPassword ? 'fas fa-eye-slash' : 'fas fa-eye'
+                    "
+                    class="text-gray-400 hover:text-gray-600"
+                  ></i>
+                </button>
+              </div>
+              <p
+                *ngIf="passwordMatch"
+                class="text-sm mt-1"
+                [class.text-green-600]="passwordMatch === 'Passwords match'"
+                [class.text-red-600]="
+                  passwordMatch === 'Passwords do not match'
+                "
+              >
+                {{ passwordMatch }}
+              </p>
+            </div>
+
+            <!-- Change Password Button -->
+            <div class="mt-6">
+              <button
+                type="submit"
+                [disabled]="isSaving || !passwordForm.valid"
+                class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                <span *ngIf="!isSaving">
+                  {{ languageService.translate("profile.change_password") }}
+                </span>
+                <span *ngIf="isSaving">
+                  {{ languageService.translate("common.saving") }}
+                </span>
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- Danger Zone -->
+      <div class="border-t-2 border-red-200 pt-8 mt-8">
+        <div class="flex items-center mb-6">
+          <i class="fas fa-skull-crossbones text-red-600 text-xl mr-3"></i>
+          <h2 class="text-xl font-bold text-red-600">
+            {{ languageService.translate("profile.danger_zone") }}
+          </h2>
+        </div>
+
+        <div
+          class="bg-gradient-to-r from-red-50 to-red-100 border-2 border-red-200 rounded-xl p-6 shadow-lg"
+        >
+          <div class="flex items-start mb-4">
+            <div>
+              <h3 class="font-bold text-red-800 mb-2 text-lg">
+                {{ languageService.translate("profile.delete_account") }}
+              </h3>
+            </div>
+          </div>
+          <button
+            type="button"
+            (click)="deleteAccount()"
+            [disabled]="isDeleting"
+            class="px-6 py-3 bg-red-600/90 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center font-medium shadow-lg hover:shadow-xl"
+          >
+            <i *ngIf="isDeleting" class="fas fa-spinner fa-spin mr-2"></i>
+            <i *ngIf="!isDeleting" class="fas fa-exclamation-triangle mr-2"></i>
+            {{
+              isDeleting
+                ? languageService.translate("common.processing")
+                : languageService.translate("profile.delete_my_account")
+            }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Account Modal -->
+<app-delete-account-modal
+  [isOpen]="showDeleteModal"
+  [isDeleting]="isDeleting"
+  (confirm)="onDeleteConfirm()"
+  (cancel)="onDeleteCancel()"
+></app-delete-account-modal>

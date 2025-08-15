@@ -1,0 +1,580 @@
+/* You can add global styles to this file, and also import other style files */
+@import "tailwindcss";
+@import "ngx-toastr/toastr";
+
+/* Admin pages use custom CSS, user pages use Tailwind */
+
+/* Ensure body always has vertical scroll */
+html,
+body {
+  min-height: 100vh;
+  overflow-y: scroll; /* Force vertical scrollbar */
+}
+
+body {
+  min-height: calc(100vh + 1px); /* Force content to be taller than viewport */
+}
+/* Medium Editor Styling */
+/* Medium Editor Styling */
+.medium-editor {
+  font-family: "Charter", "Georgia", serif;
+  line-height: 1.58;
+  letter-spacing: -0.003em;
+}
+
+.codex-editor {
+  font-family: inherit;
+}
+
+.codex-editor__redactor {
+  padding-bottom: 300px !important;
+}
+
+.ce-block__content {
+  max-width: none !important;
+  margin: 0 !important;
+  position: relative; /* Ensure relative positioning for the + button */
+}
+
+/* Hide ALL default EditorJS UI */
+.ce-toolbar {
+  display: none !important;
+}
+
+.ce-toolbar__plus {
+  display: none !important;
+}
+
+.ce-toolbar__settings-btn {
+  display: none !important;
+}
+
+.ce-toolbar__actions {
+  display: none !important;
+}
+
+/* Hide default popover container */
+.ce-popover__container {
+  display: none !important;
+}
+
+.ce-popover {
+  display: none !important;
+}
+
+.ce-inline-toolbar {
+  display: none !important;
+}
+
+.ce-conversion-toolbar {
+  display: none !important;
+}
+
+/* Custom + button - Medium style with proper rotation */
+
+.ce-block__content::before {
+  content: "\f067"; /* Mã Unicode của icon fa-plus */
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900; /* Phiên bản solid */
+  position: absolute;
+  left: -50px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 32px;
+  border: 1px solid #e6e6e6;
+  border-radius: 50%;
+  background: white;
+  color: #8e8e8e;
+  font-size: 16px; /* Kích thước icon */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transition: all 0.1s ease; /* Chuyển đổi mượt mà */
+  z-index: 10;
+}
+
+.ce-block__content:hover::before {
+  opacity: 1;
+}
+
+/* Rotate + to × when menu is active */
+.ce-block__content.menu-active::before {
+  content: "\f067"; /* Keep plus icon */
+  opacity: 1;
+  transform: translateY(-50%) rotate(45deg); /* Rotate to make it 'x' */
+}
+
+/* Đảm bảo dấu × luôn hiển thị khi menu active, ngay cả khi không hover block */
+.ce-block .ce-block__content.menu-active::before {
+  opacity: 1;
+}
+.ce-block:focus-within .ce-block__content::before {
+  opacity: 1;
+}
+/* Custom Block Menu */
+.custom-block-menu {
+  position: fixed;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  border: 1px solid #e6e6e6;
+  padding: 8px 0;
+  min-width: 200px;
+  z-index: 1000;
+  animation: slideUp 0.15s ease-out;
+}
+
+.block-menu-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  font-size: 14px;
+}
+
+.block-menu-item:hover {
+  background-color: #f8f8f8;
+}
+
+.block-menu-item i {
+  width: 20px;
+  margin-right: 12px;
+  color: #8e8e8e;
+  text-align: center;
+}
+
+/* Custom Inline Toolbar - Medium Style */
+.custom-inline-toolbar {
+  position: fixed;
+  background: #242424;
+  border-radius: 6px;
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.15);
+  border: none;
+  padding: 8px;
+  z-index: 1000;
+  animation: slideUp 0.15s ease-out;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.custom-inline-tool {
+  color: white;
+  border-radius: 4px;
+  padding: 8px 10px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border: none;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
+}
+
+.custom-inline-tool:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.custom-inline-tool.active {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Icon fallbacks for inline toolbar */
+.custom-inline-tool .icon-bold::before {
+  content: "B";
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.custom-inline-tool .icon-italic::before {
+  content: "I";
+  font-style: italic;
+  font-size: 16px;
+}
+
+.custom-inline-tool .icon-link::before {
+  content: "🔗";
+  font-size: 14px;
+}
+
+.custom-inline-tool .icon-quote::before {
+  content: '"';
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.custom-inline-tool i {
+  font-size: 14px;
+}
+
+/* If Font Awesome is not loaded, hide the i tags and show fallback */
+.custom-inline-tool i:not([class*="fa-"]) {
+  display: none;
+}
+
+/* Separator in inline toolbar */
+.inline-toolbar-separator {
+  width: 1px;
+  height: 20px;
+  background: rgba(255, 255, 255, 0.2);
+  margin: 0 4px;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Title textarea auto-resize */
+#titleInput {
+  min-height: 60px;
+  max-height: 200px;
+}
+
+/* Paragraph styling - Medium style */
+.ce-paragraph {
+  font-size: 21px;
+  line-height: 1.58;
+  color: #292929;
+  margin-bottom: 30px;
+  font-weight: 400;
+  letter-spacing: -0.003em;
+}
+
+.ce-paragraph[data-placeholder]:empty::before {
+  color: #b3b3b1;
+  font-weight: 400;
+  font-style: italic;
+}
+
+/* Header styling - Medium style */
+.ce-header {
+  margin-bottom: 24px; /* Adjusted margin */
+  margin-top: 40px; /* Adjusted margin */
+  font-weight: 700;
+  color: #292929;
+  line-height: 1.04;
+  letter-spacing: -0.015em;
+}
+
+.ce-header[data-level="1"] {
+  font-size: 36px; /* Adjusted font size */
+  margin-top: 48px; /* Adjusted margin */
+}
+
+.ce-header[data-level="2"] {
+  font-size: 28px; /* Adjusted font size */
+  margin-top: 40px; /* Adjusted margin */
+}
+
+.ce-header[data-level="3"] {
+  font-size: 22px; /* Adjusted font size */
+  margin-top: 32px; /* Adjusted margin */
+}
+
+.ce-header[data-level="4"] {
+  font-size: 18px; /* Adjusted font size */
+  margin-top: 24px; /* Adjusted margin */
+}
+
+/* Quote styling - Medium style */
+.ce-quote {
+  border-left: 3px solid #292929;
+  padding-left: 23px;
+  margin: 48px 0;
+  font-style: italic;
+  background: none;
+}
+
+.ce-quote__text {
+  outline: none;
+  font-size: 24px;
+  line-height: 1.48;
+  margin-bottom: 10px;
+  color: #292929;
+  font-weight: 400;
+  font-style: italic;
+  letter-spacing: -0.014em;
+}
+
+.ce-quote__caption {
+  outline: none;
+  font-size: 16px;
+  color: #8e8e8e;
+  font-style: normal;
+  font-weight: 400;
+  margin-top: 10px;
+}
+
+/* List styling - Medium style */
+.ce-list {
+  margin: 30px 0;
+  padding-left: 0;
+}
+
+.ce-list__item {
+  margin-bottom: 14px;
+  line-height: 1.58;
+  font-size: 21px;
+  color: #292929;
+  padding-left: 30px;
+  position: relative;
+}
+
+.ce-list--unordered .ce-list__item::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: #292929;
+  font-weight: bold;
+  font-size: 24px;
+  line-height: 1.58;
+}
+
+.ce-list--ordered {
+  counter-reset: list-counter;
+}
+
+.ce-list--ordered .ce-list__item {
+  counter-increment: list-counter;
+}
+
+.ce-list--ordered .ce-list__item::before {
+  content: counter(list-counter) ".";
+  position: absolute;
+  left: 0;
+  color: #292929;
+  font-weight: 400;
+  font-size: 21px;
+}
+
+/* Code block styling - Medium style */
+.ce-code {
+  background: #f8f8f8;
+  color: #333;
+  border-radius: 3px;
+  padding: 20px;
+  font-family: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas,
+    "Courier New", monospace;
+  margin: 48px 0;
+  overflow-x: auto;
+  font-size: 16px;
+  line-height: 1.5;
+  border: 1px solid #e6e6e6;
+}
+
+.ce-code__textarea {
+  background: transparent !important;
+  color: #333 !important;
+  border: none !important;
+  outline: none !important;
+  font-family: inherit !important;
+  resize: none !important;
+  width: 100% !important;
+  min-height: 100px !important;
+  font-size: 16px !important;
+  line-height: 1.5 !important;
+}
+
+/* Delimiter styling - Medium style */
+.ce-delimiter {
+  text-align: center;
+  margin: 48px 0;
+  position: relative;
+}
+
+.ce-delimiter::before {
+  content: "...";
+  color: #8e8e8e;
+  font-size: 28px;
+  letter-spacing: 0.6em;
+  font-weight: 400;
+}
+
+/* Table styling - Medium style */
+.ce-table {
+  margin: 48px 0;
+  overflow-x: auto;
+}
+
+.ce-table__content {
+  border-collapse: collapse;
+  width: 100%;
+  border: 1px solid #e6e6e6;
+  border-radius: 0;
+  overflow: hidden;
+}
+
+.ce-table__content td {
+  border: 1px solid #e6e6e6;
+  padding: 12px 16px;
+  min-width: 120px;
+  font-size: 16px;
+  line-height: 1.4;
+  color: #292929;
+}
+
+.ce-table__content td:focus {
+  outline: 2px solid #46a0f5;
+  outline-offset: -2px;
+}
+
+/* Image styling - Medium style */
+.ce-block--image {
+  margin: 48px 0;
+}
+
+.image-tool {
+  text-align: center;
+}
+
+.image-tool__image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0;
+}
+
+.image-tool__caption {
+  margin-top: 15px;
+  font-size: 14px;
+  color: #8e8e8e;
+  font-style: italic;
+  text-align: center;
+  line-height: 1.4;
+}
+
+/* Link styling - Medium style */
+a {
+  color: #1a8917; /* Medium green */
+  text-decoration: none;
+  text-decoration-color: rgba(26, 137, 23, 0.4); /* Lighter underline */
+  text-underline-offset: 0.2em;
+  transition: text-decoration-color 0.15s ease;
+}
+
+a:hover {
+  text-decoration-color: #1a8917; /* Solid green on hover */
+}
+
+/* Embed styling - Medium style */
+.embed-tool {
+  margin: 48px 0;
+  text-align: center;
+}
+
+.embed-tool__content {
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Settings menu - Position above */
+.ce-settings {
+  background: white !important;
+  border-radius: 6px !important;
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.15) !important;
+  border: 1px solid #e6e6e6 !important;
+  padding: 8px !important;
+  transform: translateY(-100%) !important;
+  margin-top: -10px !important;
+}
+
+.ce-settings__button {
+  border-radius: 4px !important;
+  padding: 12px 16px !important;
+  margin: 2px !important;
+  font-size: 14px !important;
+  color: #292929 !important;
+  transition: all 0.15s ease !important;
+}
+
+.ce-settings__button:hover {
+  background: #f8f8f8 !important;
+}
+
+/* Block selection - Medium style */
+.ce-block--selected .ce-block__content {
+  background: rgba(46, 170, 220, 0.1) !important;
+  border-radius: 2px;
+  padding: 2px 4px;
+  margin: -2px -4px;
+}
+
+/* Focus styles - Medium style */
+.ce-block:focus-within {
+  position: relative;
+}
+
+/* Remove default focus outline */
+.ce-block__content:focus {
+  outline: none !important;
+}
+
+/* Focus indicator */
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .ce-paragraph {
+    font-size: 18px;
+  }
+  .ce-header[data-level="1"] {
+    font-size: 32px;
+  }
+  .ce-header[data-level="2"] {
+    font-size: 26px;
+  }
+  .ce-quote__text {
+    font-size: 20px;
+  }
+  .ce-list__item {
+    font-size: 18px;
+  }
+  /* Hide + button on mobile */
+  .ce-block__content::before {
+    display: none;
+  }
+}
+
+/* Animation for smooth interactions */
+.ce-block {
+  transition: all 0.15s ease;
+  position: relative;
+}
+
+.ce-block:hover {
+  position: relative;
+}
+
+/* Loading spinner */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+.ce-block.is-selected-custom .image-tool__image,
+.ce-block.is-selected-custom .image-tool--empty {
+  outline: 2px solid #10b981; /* Green border, similar to focus indicator */
+  outline-offset: 4px;
+  border-radius: 4px; /* Match existing border-radius if any */
+}

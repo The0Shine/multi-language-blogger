@@ -1,0 +1,99 @@
+<!-- Loading State -->
+<div *ngIf="loading" class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div class="bg-white rounded-lg shadow-sm p-8 text-center">
+    <div
+      class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"
+    ></div>
+    <p class="text-gray-600">Loading post...</p>
+  </div>
+</div>
+
+<!-- Post Content -->
+<div
+  class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
+  *ngIf="post && !loading"
+>
+  <!-- Post Header -->
+  <article>
+    <div class="mb-8">
+      <h1
+        class="text-4xl font-bold text-gray-900 mb-6 leading-tight break-words"
+      >
+        {{ post.title }}
+      </h1>
+
+      <!-- Author Info -->
+      <div class="flex items-center justify-between mb-8">
+        <div class="flex items-center">
+          <div
+            class="w-12 h-12 bg-red-500 rounded-full flex items-center justify-center mr-4"
+          >
+            <span class="text-white font-bold">{{
+              getAuthorInitials(post.author.name)
+            }}</span>
+          </div>
+          <div>
+            <div class="flex items-center">
+              <span class="font-medium text-gray-900">{{
+                post.author.name
+              }}</span>
+            </div>
+            <div class="flex items-center text-sm text-gray-500">
+              <span *ngIf="post.categories.length > 0"
+                >Published in {{ post.categories[0].name }}</span
+              >
+
+              <span>{{ formatDate(post.created_at) }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div
+        class="flex items-center justify-between border-t border-b border-gray-200 py-4 mb-8"
+      >
+        <div class="flex items-center space-x-6">
+          <button class="flex items-center text-gray-600 hover:text-black">
+            <i class="fas fa-comment mr-2"></i>
+            <span>{{ commentCount }}</span>
+          </button>
+        </div>
+        <div class="flex items-center space-x-4">
+          <button
+            (click)="sharePost()"
+            class="share-button flex items-center text-gray-600 hover:text-black transition-colors"
+            title="Share this post"
+          >
+            <i class="fas fa-share mr-2"></i>
+            <span>Share</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Post Image -->
+
+    <!-- Post Content -->
+    <div class="prose prose-lg max-w-none break-words">
+      <div
+        [innerHTML]="post.content | editorjsRenderer"
+        class="break-words overflow-wrap-anywhere"
+      ></div>
+    </div>
+
+    <!-- Post Footer -->
+  </article>
+
+  <!-- Comments Section -->
+  <app-comment-section
+    [comments]="comments"
+    [newComment]="newComment"
+    [pagination]="pagination"
+    [loading]="loading"
+    (newCommentChange)="onNewCommentChange($event)"
+    (submitComment)="onSubmitComment()"
+    (loadMoreComments)="onLoadMoreComments()"
+    (editComment)="onEditComment($event)"
+  ></app-comment-section>
+</div>

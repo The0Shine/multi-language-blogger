@@ -1,8 +1,8 @@
 {
   "development": {
     "username": "root",
-    "password": "Tung@0112",
-    "database": "blog",
+    "password": "Thetoa321*",
+    "database": "nodejs_core_new",
     "host": "127.0.0.1",
     "dialect": "mysql"
   },

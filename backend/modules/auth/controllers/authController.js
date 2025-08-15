@@ -1,4 +1,4 @@
-const authService = require("modules/auth/services/authService");
+const authService = require("../services/authService");
 const responseUtils = require("utils/responseUtils");
 const jwtUtils = require("utils/jwtUtils");
 

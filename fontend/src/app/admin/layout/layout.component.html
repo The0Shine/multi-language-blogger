@@ -1,0 +1,59 @@
+<header class="admin-header">
+  <button class="hamburger" (click)="toggleSidebar()">&#9776;</button>
+
+  <div class="title flex-grow-1 text-center">~Blog Admin~</div>
+
+  <!-- Dropdown user -->
+  <div class="user-dropdown-wrapper">
+    <div class="dropdown ms-auto">
+      <button
+        type="button"
+        class="btn user-dropdown-btn d-flex align-items-center"
+        id="page-header-user-dropdown"
+        data-bs-toggle="dropdown"
+        aria-expanded="false"
+      >
+        <div class="fw-medium user-name-text" style="margin-left: 10px">
+          {{ currentUsername }}
+        </div>
+      </button>
+      <div class="dropdown-menu dropdown-menu-end custom-dropdown-menu">
+        <a class="dropdown-item" (click)="profile()">
+          <i class="mdi mdi-cog-outline me-2 text-muted"></i> Profile
+        </a>
+        <a class="dropdown-item" (click)="logout()">
+          <i class="mdi mdi-logout me-2 text-muted"></i> Logout
+        </a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="admin-container">
+  <aside class="admin-sidebar" id="sidebar">
+    <nav>
+      <a routerLink="/admin/home" routerLinkActive="active"
+        ><i class="fa fa-home"></i> Dashboard</a
+      >
+      <a routerLink="/admin/user/list" routerLinkActive="active"
+        ><i class="fa fa-users"></i> Manage Users</a
+      >
+      <a routerLink="/admin/post/list" routerLinkActive="active"
+        ><i class="fa fa-file-alt"></i> Manage Posts</a
+      >
+      <a routerLink="/admin/role/list" routerLinkActive="active"
+        ><i class="fa fa-user-shield"></i> Manage Roles</a
+      >
+      <a routerLink="/admin/language/list" routerLinkActive="active"
+        ><i class="fa fa-language"></i> Manage Languages</a
+      >
+      <a routerLink="/admin/category/list" routerLinkActive="active"
+        ><i class="fa fa-tags"></i> Manage Categories</a
+      >
+    </nav>
+  </aside>
+
+  <main class="admin-content">
+    <router-outlet></router-outlet>
+  </main>
+</div>

@@ -1,0 +1,112 @@
+.prose {
+  line-height: 1.75;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+
+.prose p {
+  margin-bottom: 1.5rem;
+}
+
+.prose h2 {
+  font-size: 1.875rem;
+  font-weight: 700;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+}
+
+.prose h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.prose h4 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.prose blockquote {
+  border-left: 4px solid #10b981;
+  padding-left: 1.5rem;
+  margin: 2rem 0;
+  font-style: italic;
+  font-size: 1.125rem;
+  color: #374151;
+}
+
+.prose ol {
+  list-style-type: decimal;
+  list-style-position: inside;
+  margin-bottom: 2rem;
+}
+
+.prose ol li {
+  margin-bottom: 1rem;
+}
+
+.prose strong {
+  font-weight: 600;
+}
+
+/* Title and content text wrapping */
+h1 {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  white-space: normal;
+}
+
+.prose p,
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4,
+.prose h5,
+.prose h6 {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  white-space: normal;
+}
+
+/* Ensure long words break properly */
+.prose * {
+  max-width: 100%;
+  word-break: break-word;
+}
+
+/* Utility classes for text wrapping */
+.break-words {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  hyphens: auto;
+}
+
+.overflow-wrap-anywhere {
+  overflow-wrap: anywhere;
+}
+
+/* Specific handling for different content types */
+.prose pre,
+.prose code {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.prose table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+.prose table td,
+.prose table th {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}

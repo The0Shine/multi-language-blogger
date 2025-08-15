@@ -1,0 +1,371 @@
+<div class="bg-white">
+  <!-- Edit Mode Indicator -->
+
+  <!-- Header Bar with Publish Button -->
+
+  <!-- Main Editor -->
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- Single Title Input -->
+    <div class="mb-8">
+      <textarea
+        placeholder="Title"
+        [(ngModel)]="title"
+        (keydown)="onTitleKeydown($event)"
+        class="w-full text-5xl font-bold text-gray-900 placeholder-gray-300 border-none focus:outline-none resize-none leading-tight overflow-hidden"
+        rows="1"
+        style="height: auto"
+        (input)="autoResizeTextarea($event)"
+        id="titleInput"
+      ></textarea>
+    </div>
+    <!-- EditorJS Container with Custom + Button -->
+    <div class="relative">
+      <div
+        #editorContainer
+        id="editorjs"
+        class="max-w-none min-h-[600px] focus:outline-none medium-editor"
+      ></div>
+    </div>
+  </div>
+
+  <!-- Custom Inline Toolbar -->
+  <div
+    *ngIf="showInlineToolbar"
+    class="custom-inline-toolbar"
+    [ngStyle]="{
+      left: inlineToolbarPosition.x + 'px',
+      top: inlineToolbarPosition.y + 'px'
+    }"
+  >
+    <button
+      class="custom-inline-tool"
+      [class.active]="isFormatActive('bold')"
+      (click)="toggleFormat('bold')"
+      title="Bold"
+    >
+      <i class="fas fa-bold"></i>
+    </button>
+    <button
+      class="custom-inline-tool"
+      [class.active]="isFormatActive('italic')"
+      (click)="toggleFormat('italic')"
+      title="Italic"
+    >
+      <i class="fas fa-italic"></i>
+    </button>
+    <div class="inline-toolbar-separator"></div>
+    <button
+      class="custom-inline-tool"
+      (click)="convertToHeader(1)"
+      title="Heading 1"
+    >
+      H1
+    </button>
+    <button
+      class="custom-inline-tool"
+      (click)="convertToHeader(2)"
+      title="Heading 2"
+    >
+      H2
+    </button>
+    <button
+      class="custom-inline-tool"
+      (click)="convertToHeader(3)"
+      title="Heading 3"
+    >
+      H3
+    </button>
+    <button
+      class="custom-inline-tool"
+      (click)="convertToHeader(4)"
+      title="Heading 4"
+    >
+      H4
+    </button>
+    <div class="inline-toolbar-separator"></div>
+    <button class="custom-inline-tool" (click)="createLink()" title="Link">
+      <i class="fas fa-link"></i>
+    </button>
+    <button class="custom-inline-tool" (click)="convertToQuote()" title="Quote">
+      <i class="fas fa-quote-left"></i>
+    </button>
+  </div>
+
+  <!-- Custom Block Menu Template (without list) -->
+  <div
+    *ngIf="showBlockMenu"
+    class="custom-block-menu bg-white rounded-lg shadow-xl border border-gray-200 py-2 min-w-[200px]"
+    [ngStyle]="{
+      left: blockMenuPosition.x + 'px',
+      top: blockMenuPosition.y + 'px'
+    }"
+  >
+    <div
+      class="block-menu-item flex items-center px-4 py-3 hover:bg-gray-50 cursor-pointer"
+      (click)="addBlock('paragraph')"
+    >
+      <i class="fas fa-paragraph w-5 mr-3 text-gray-500"></i>
+      <span class="text-gray-700">Paragraph</span>
+    </div>
+    <div
+      class="block-menu-item flex items-center px-4 py-3 hover:bg-gray-50 cursor-pointer"
+      (click)="addBlock('header-1')"
+    >
+      <i class="fas fa-heading w-5 mr-3 text-gray-500"></i>
+      <span class="text-gray-700">Heading 1</span>
+    </div>
+    <div
+      class="block-menu-item flex items-center px-4 py-3 hover:bg-gray-50 cursor-pointer"
+      (click)="addBlock('header-2')"
+    >
+      <i class="fas fa-heading w-5 mr-3 text-gray-500"></i>
+      <span class="text-gray-700">Heading 2</span>
+    </div>
+    <div
+      class="block-menu-item flex items-center px-4 py-3 hover:bg-gray-50 cursor-pointer"
+      (click)="addBlock('header-3')"
+    >
+      <i class="fas fa-heading w-5 mr-3 text-gray-500"></i>
+      <span class="text-gray-700">Heading 3</span>
+    </div>
+    <div
+      class="block-menu-item flex items-center px-4 py-3 hover:bg-gray-50 cursor-pointer"
+      (click)="addBlock('header-4')"
+    >
+      <i class="fas fa-heading w-5 mr-3 text-gray-500"></i>
+      <span class="text-gray-700">Heading 4</span>
+    </div>
+    <div
+      class="block-menu-item flex items-center px-4 py-3 hover:bg-gray-50 cursor-pointer"
+      (click)="addBlock('image')"
+    >
+      <i class="fas fa-image w-5 mr-3 text-gray-500"></i>
+      <span class="text-gray-700">Image</span>
+    </div>
+    <div
+      class="block-menu-item flex items-center px-4 py-3 hover:bg-gray-50 cursor-pointer"
+      (click)="addBlock('quote')"
+    >
+      <i class="fas fa-quote-left w-5 mr-3 text-gray-500"></i>
+      <span class="text-gray-700">Quote</span>
+    </div>
+  </div>
+
+  <!-- Publish Modal (same as before) -->
+  <div
+    *ngIf="showPublishModal"
+    class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+    (click)="closePublishModal()"
+  >
+    <div
+      class="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+      (click)="$event.stopPropagation()"
+    >
+      <!-- Modal Header -->
+      <div
+        class="flex justify-between items-center p-6 border-b border-gray-200"
+      >
+        <h2 class="text-2xl font-bold text-gray-900">Story preview</h2>
+        <button
+          (click)="closePublishModal()"
+          class="text-gray-400 hover:text-gray-600 text-2xl"
+        >
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <!-- Modal Content -->
+      <div class="p-6">
+        <!-- Post Title Display -->
+        <div class="mb-6">
+          <h3 class="text-xl font-bold text-gray-900 mb-2">
+            {{ title || "Untitled" }}
+          </h3>
+          <p class="text-gray-600 text-sm">
+            This is the title that will be displayed for your story.
+          </p>
+        </div>
+        <!-- Note -->
+        <div class="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+          <p class="text-sm text-yellow-800">
+            <strong>Note:</strong> Changes here will affect how your story
+            appears in public places like Medium's homepage and in subscribers'
+            inboxes — not the contents of the story itself.
+          </p>
+        </div>
+        <!-- Categories -->
+        <div class="mb-6">
+          <label class="block text-sm font-medium text-gray-700 mb-3">
+            Add or change categories (up to 5) so readers know what your story
+            is about
+          </label>
+          <!-- Selected Categories -->
+          <div
+            class="flex flex-wrap gap-2 mb-3"
+            *ngIf="getSelectedCategories().length > 0"
+          >
+            <span
+              *ngFor="let category of getSelectedCategories()"
+              class="inline-flex items-center px-3 py-1 bg-green-100 text-green-700 text-sm rounded-full"
+            >
+              {{ category.name }}
+              <button
+                (click)="removeCategory(category.categoryid)"
+                class="ml-2 text-green-500 hover:text-green-700"
+              >
+                <i class="fas fa-times text-xs"></i>
+              </button>
+            </span>
+          </div>
+          <!-- Category Search and Selection -->
+          <div class="relative">
+            <input
+              type="text"
+              placeholder="Search categories..."
+              [(ngModel)]="categorySearchQuery"
+              (input)="filterCategories()"
+              (focus)="showCategoryDropdown = true"
+              class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+            />
+            <!-- Category Dropdown -->
+            <div
+              *ngIf="showCategoryDropdown && filteredCategories.length > 0"
+              class="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-48 overflow-y-auto"
+            >
+              <div
+                *ngFor="let category of filteredCategories"
+                (click)="selectCategory(category)"
+                class="px-4 py-2 hover:bg-gray-50 cursor-pointer flex items-center justify-between"
+                [class.bg-green-50]="isCategorySelected(+category.categoryid)"
+              >
+                <span class="text-gray-700">{{ category.name }}</span>
+                <i
+                  *ngIf="isCategorySelected(+category.categoryid)"
+                  class="fas fa-check text-green-600"
+                ></i>
+              </div>
+            </div>
+          </div>
+          <p class="text-xs text-gray-500 mt-2">
+            Select up to 5 categories that best describe your story.
+          </p>
+        </div>
+      </div>
+      <!-- Publish Options -->
+      <div class="p-6 border-t border-gray-200">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">
+          Publishing options
+        </h3>
+        <div class="space-y-3">
+          <label class="flex items-center">
+            <input
+              type="radio"
+              name="publishStatus"
+              value="draft"
+              [(ngModel)]="publishStatus"
+              class="mr-3 text-green-600 focus:ring-green-500"
+            />
+            <div>
+              <div class="font-medium text-gray-900">Save as draft</div>
+              <div class="text-sm text-gray-500">
+                Only you can see this story
+              </div>
+            </div>
+          </label>
+          <label class="flex items-center">
+            <input
+              type="radio"
+              name="publishStatus"
+              value="published"
+              [(ngModel)]="publishStatus"
+              class="mr-3 text-green-600 focus:ring-green-500"
+            />
+            <div>
+              <div class="font-medium text-gray-900">Publish now</div>
+              <div class="text-sm text-gray-500">
+                Make this story visible to everyone
+              </div>
+            </div>
+          </label>
+        </div>
+
+        <!-- Multi-language Options -->
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="flex justify-end space-x-4 p-6 border-t border-gray-200">
+        <button
+          (click)="closePublishModal()"
+          class="px-6 py-2 text-gray-600 hover:text-gray-800 transition-colors"
+        >
+          Cancel
+        </button>
+        <button
+          (click)="publishPost()"
+          [disabled]="isSaving"
+          class="px-6 py-3 bg-green-600 text-white rounded-full hover:bg-green-700 disabled:opacity-50 transition-colors flex items-center"
+        >
+          <span *ngIf="!isSaving">{{
+            publishStatus === "draft" ? "Save draft" : "Publish now"
+          }}</span>
+          <span *ngIf="isSaving" class="flex items-center">
+            <svg
+              class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                class="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"
+              ></circle>
+              <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
+            </svg>
+            {{ publishStatus === "draft" ? "Saving..." : "Publishing..." }}
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Image Status Component -->
+  <!-- <app-image-status></app-image-status> -->
+
+  <!-- Saving Indicator -->
+  <div
+    *ngIf="isSaving"
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black/30"
+    style="backdrop-filter: blur(2px)"
+  >
+    <div
+      class="bg-white rounded-lg shadow-lg px-8 py-6 flex flex-col items-center"
+    >
+      <svg
+        class="animate-spin h-8 w-8 text-green-600 mb-3"
+        fill="none"
+        viewBox="0 0 24 24"
+      >
+        <circle
+          class="opacity-25"
+          cx="12"
+          cy="12"
+          r="10"
+          stroke="currentColor"
+          stroke-width="4"
+        ></circle>
+        <path
+          class="opacity-75"
+          fill="currentColor"
+          d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+        ></path>
+      </svg>
+      <div class="text-gray-700 font-medium text-lg">Saving...</div>
+    </div>
+  </div>
+</div>

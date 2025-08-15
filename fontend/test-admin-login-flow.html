@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Test Admin Login Flow</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      .section {
+        margin: 20px 0;
+        padding: 15px;
+        border: 1px solid #ccc;
+      }
+      .success {
+        background: #d4edda;
+      }
+      .error {
+        background: #f8d7da;
+      }
+      button {
+        padding: 10px 15px;
+        margin: 5px;
+      }
+      pre {
+        background: #f8f9fa;
+        padding: 10px;
+        overflow-x: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>🔍 Test Admin Login Flow</h1>
+
+    <div class="section">
+      <h3>1. Test Admin Login</h3>
+      <input type="text" id="username" placeholder="Username" value="admin" />
+      <input
+        type="password"
+        id="password"
+        placeholder="Password"
+        value="admin123"
+      />
+      <button onclick="testAdminLogin()">Test Admin Login</button>
+      <div id="login-result"></div>
+    </div>
+
+    <div class="section">
+      <h3>2. Check User Role</h3>
+      <button onclick="checkUserRole()">Check Current User Role</button>
+      <div id="role-result"></div>
+    </div>
+
+    <div class="section">
+      <h3>3. Test Role-based Redirect</h3>
+      <button onclick="testRedirect()">Test Redirect Logic</button>
+      <div id="redirect-result"></div>
+    </div>
+
+    <div class="section">
+      <h3>4. Clear Storage</h3>
+      <button onclick="clearStorage()">Clear All</button>
+    </div>
+
+    <script>
+      const API_BASE = "http://localhost:4000/api";
+
+      function log(elementId, message, isError = false) {
+        const element = document.getElementById(elementId);
+        element.innerHTML = `<pre class="${
+          isError ? "error" : "success"
+        }">${message}</pre>`;
+      }
+
+      async function testAdminLogin() {
+        const username = document.getElementById("username").value;
+        const password = document.getElementById("password").value;
+
+        try {
+          log("login-result", "Logging in...");
+
+          const response = await fetch(`${API_BASE}/auth/login`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ username, password }),
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            // Save tokens like frontend does
+            localStorage.setItem("accessToken", data.data.accessToken);
+            if (data.data.refreshToken) {
+              localStorage.setItem("refreshToken", data.data.refreshToken);
+            }
+
+            // Decode token to get user info
+            const payload = JSON.parse(
+              atob(data.data.accessToken.split(".")[1])
+            );
+            const user = {
+              userid: payload.userid,
+              roleid: payload.roleid,
+              username: username,
+              first_name: "",
+              last_name: "",
+            };
+            localStorage.setItem("user", JSON.stringify(user));
+
+            log(
+              "login-result",
+              `✅ Login successful!\nUser ID: ${user.userid}\nRole ID: ${user.roleid}\nUsername: ${user.username}`
+            );
+          } else {
+            log("login-result", `❌ Login failed: ${data.message}`, true);
+          }
+        } catch (error) {
+          log("login-result", `❌ Login error: ${error.message}`, true);
+        }
+      }
+
+      function checkUserRole() {
+        const userStr = localStorage.getItem("user");
+
+        if (!userStr) {
+          log("role-result", "❌ No user found. Please login first.", true);
+          return;
+        }
+
+        try {
+          const user = JSON.parse(userStr);
+
+          // Simulate frontend getUserRole logic
+          let role = "";
+          if (user.role?.name) {
+            role = user.role.name.toLowerCase();
+          } else {
+            switch (user.roleid) {
+              case 1:
+                role = "user";
+                break;
+              case 2:
+                role = "admin";
+                break;
+              default:
+                role = "user";
+            }
+          }
+
+          log(
+            "role-result",
+            `✅ User Role Detection:\nUser: ${JSON.stringify(
+              user,
+              null,
+              2
+            )}\nDetected Role: ${role}`
+          );
+        } catch (error) {
+          log("role-result", `❌ Error parsing user: ${error.message}`, true);
+        }
+      }
+
+      function testRedirect() {
+        const userStr = localStorage.getItem("user");
+
+        if (!userStr) {
+          log("redirect-result", "❌ No user found. Please login first.", true);
+          return;
+        }
+
+        try {
+          const user = JSON.parse(userStr);
+
+          // Simulate frontend redirect logic
+          let role = "";
+          if (user.role?.name) {
+            role = user.role.name.toLowerCase();
+          } else {
+            switch (user.roleid) {
+              case 1:
+                role = "admin";
+                break;
+              case 2:
+                role = "user";
+                break;
+              default:
+                role = "user";
+            }
+          }
+
+          let redirectUrl = "";
+          if (role === "admin") {
+            redirectUrl = "/admin/home";
+          } else {
+            redirectUrl = "/";
+          }
+
+          log(
+            "redirect-result",
+            `✅ Redirect Logic:\nUser Role: ${role}\nShould redirect to: ${redirectUrl}\n\n🎯 Expected behavior:\n- Admin users → /admin/home\n- Regular users → /`
+          );
+        } catch (error) {
+          log("redirect-result", `❌ Error: ${error.message}`, true);
+        }
+      }
+
+      function clearStorage() {
+        localStorage.clear();
+        log("login-result", "Storage cleared");
+        log("role-result", "");
+        log("redirect-result", "");
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,67 @@
+/* Header specific styles */
+
+/* Language Selector Styles */
+.language-selector {
+  position: relative;
+}
+
+.language-selector button {
+  transition: all 0.2s ease;
+}
+
+.language-selector button:hover {
+  background-color: #f9fafb;
+}
+
+.language-selector .rotate-180 {
+  transform: rotate(180deg);
+}
+
+/* Language dropdown animation */
+.language-selector .absolute {
+  animation: fadeInDown 0.2s ease-out;
+  transform-origin: top right;
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Language option hover effects */
+.language-selector button:hover .fas {
+  color: #3b82f6;
+}
+
+/* Responsive language selector */
+@media (max-width: 768px) {
+  .language-selector .absolute {
+    right: -1rem;
+    width: 200px;
+  }
+
+  .language-selector button span {
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .language-selector button span:nth-child(2) {
+    display: none; /* Hide language name on mobile */
+  }
+}
+#mainHeader {
+  transition: transform linear;
+  will-change: transform;
+  position: sticky;
+  left: 0;
+  right: 0;
+  background: white;
+  z-index: 50;
+}
