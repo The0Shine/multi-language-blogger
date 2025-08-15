@@ -83,12 +83,23 @@
             <button class="btn btn-danger" (click)="openDeleteModal(post)">
               <i class="fa fa-trash"></i> Delete
             </button>
+
           </div>
+
         </td>
       </tr>
     </tbody>
   </table>
+    <!-- Dropdown chọn số bài/trang -->
+  <div class="page-size-selector">
+    <label for="pageSize" class="me-2 fw-bold">Posts per page:</label>
+    <select id="pageSize" [(ngModel)]="pageSize" (change)="onPageSizeChange($event)">
+      <option *ngFor="let size of pageSizes" [value]="size">{{ size }}</option>
+    </select>
+  </div>
+
 </div>
+
 
 <div class="pagination" *ngIf="totalPages() > 1">
   <!-- Về trang đầu -->

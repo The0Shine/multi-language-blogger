@@ -41,22 +41,30 @@ const postController = {
     }
   },
 
-  // Admin xem danh sách
-  getAll: async (req, res) => {
-    try {
-      const limit = Number.parseInt(req.query.limit, 10) || 10;
-      const offset = Number.parseInt(req.query.offset, 10) || 0;
+// Admin xem danh sách
+getAll: async (req, res) => {
+  try {
+    const { limit, page } = req.query;
 
-      const posts = await postService.getAll({ limit, offset });
-      return responseUtils.ok(res, {
-        message: 'Posts retrieved successfully',
-        data: posts
-      });
-    } catch (error) {
-      console.error('Get all posts error:', error);
-      return responseUtils.serverError(res, error.message);
-    }
-  },
+    const offset = limit && page ? (parseInt(page, 10) - 1) * parseInt(limit, 10) : undefined;
+
+    const posts = await postService.getAll({
+      limit: limit ? parseInt(limit, 10) : undefined, // nếu không có limit -> undefined
+      offset,
+      viewer: req.user,
+    });
+
+    return responseUtils.ok(res, {
+      message: 'Posts retrieved successfully',
+      total: posts.total ?? (Array.isArray(posts) ? posts.length : 0), // tổng số bài
+      data: posts.data ?? posts // mảng bài viết
+    });
+  } catch (error) {
+    console.error('Get all posts error:', error);
+    return responseUtils.serverError(res, error.message);
+  }
+},
+
 
   delete: async (req, res) => {
     try {

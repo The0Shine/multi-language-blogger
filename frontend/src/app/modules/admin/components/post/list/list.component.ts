@@ -29,6 +29,8 @@ export class AdminPostListComponent implements OnInit {
   postToDelete: any = null;
   totalPosts: number = 0;
     viewId: number | null = null;
+    pageSizes = [5, 10, 20, 50];
+
 
   constructor(
     private router: Router,
@@ -287,6 +289,10 @@ confirmDeletePost() {
   });
 }
 
+onPageSizeChange(event: any) {
+  this.pageSize = +event.target.value;
+  this.currentPage = 1;
+}
 
 
   closeDeleteModal() {

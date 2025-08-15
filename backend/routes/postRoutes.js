@@ -16,41 +16,49 @@ router.post('/',
     validateMiddleware,
     postController.create
 );
-// Get a post by ID (accessible to authenticated users)
-router.get('/:postid',
-       validateMiddleware,          
-    postController.getById       
-);
 
 // Admin-only routes
+// Cho phép Admin HOẶC bất kỳ role nào có 'moderate_posts'
 router.get('/',
-    authMiddleware.requireRoles('Admin'),
-    postController.getAll
-);
-
-router.delete('/:postid',
-    authMiddleware.requireRoles('Admin'),
-    validateMiddleware,
-    postController.delete
+  authMiddleware.authenticate,
+  authMiddleware.requireRoleOrPermission(['Admin'], ['moderate_posts']),
+  postController.getAll
 );
 
 router.patch('/:postid/accept',
-    authMiddleware.requireRoles('Admin'),
-    validateMiddleware,
-    postController.accept
+  authMiddleware.authenticate,
+  authMiddleware.requireRoleOrPermission(['Admin'], ['moderate_posts']),
+  validateMiddleware,
+  postController.accept
 );
 
 router.patch('/:postid/reject',
-    authMiddleware.requireRoles('Admin'),
-    validateMiddleware,
-    postController.reject
+  authMiddleware.authenticate,
+  authMiddleware.requireRoleOrPermission(['Admin'], ['moderate_posts']),
+  validateMiddleware,
+  postController.reject
 );
+
+router.delete('/:postid',
+  authMiddleware.authenticate,
+  authMiddleware.requireRoleOrPermission(['Admin'], ['moderate_posts']),
+  validateMiddleware,
+  postController.delete
+);
+
 
 // Upload for authenticated users (both admin & user)
 router.post(
     '/upload',
     uploadMiddleware.single('file'),
     postController.upload
+);
+
+// Get a post by ID (accessible to authenticated users)
+router.get('/:postid',
+    authMiddleware.authenticate, 
+    validateMiddleware,          
+    postController.getById       
 );
 
 module.exports = router;

@@ -227,3 +227,14 @@ label {
   min-width: 90px;
   font-weight: 600;
 }
+.page-size-selector {
+  width: fit-content;
+  margin-left: auto; /* đẩy sang phải */
+}
+
+.page-size-selector select {
+  width: auto;
+  min-width: 50px;
+  padding: 2px 4px;
+  font-size: 0.85rem;
+}
