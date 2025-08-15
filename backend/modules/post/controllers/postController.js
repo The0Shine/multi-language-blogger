@@ -42,17 +42,22 @@ const postController = {
   },
 
   // Admin xem danh sách
- getAll : async (req, res) => {
+getAll: async (req, res) => {
   try {
+    const { limit, page } = req.query;
+
+    const offset = limit && page ? (parseInt(page, 10) - 1) * parseInt(limit, 10) : undefined;
+
     const posts = await postService.getAll({
-      limit: req.query.limit,
-      offset: req.query.offset,
-      viewer: req.user, // ✅ truyền context đã có permissions
+      limit: limit ? parseInt(limit, 10) : undefined, // nếu không có limit -> undefined
+      offset,
+      viewer: req.user,
     });
 
     return responseUtils.ok(res, {
       message: 'Posts retrieved successfully',
-      data: posts
+      total: posts.total ?? (Array.isArray(posts) ? posts.length : 0), // tổng số bài
+      data: posts.data ?? posts // mảng bài viết
     });
   } catch (error) {
     console.error('Get all posts error:', error);

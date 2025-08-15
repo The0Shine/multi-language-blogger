@@ -40,31 +40,33 @@ const postService = {
     return post;
   },
 
-getAll: async ({ limit = 10, offset = 0, viewer }) => {
-    const lim = Number.parseInt(limit, 10) || 10;
-    const off = Number.parseInt(offset, 10) || 0;
+ getAll: async ({ limit, offset, viewer }) => {
+  if (!viewer) throw new Error('viewer context is required');
 
-    try {
-      if (!viewer) throw new Error('viewer context is required');
+  const canModerate = Array.isArray(viewer.permissions)
+    && viewer.permissions.map(p => String(p).toLowerCase()).includes('moderate_posts');
 
-      // viewer = req.user được gắn trong authenticate
-      const canModerate = Array.isArray(viewer.permissions)
-        && viewer.permissions.map(p => String(p).toLowerCase()).includes('moderate_posts');
+  const whereCondition = canModerate ? {} : { userid: viewer.userid };
 
-      const whereCondition = canModerate ? {} : { userid: viewer.userid };
-
-      return await Post.findAll({
-        where: whereCondition,
-        limit: lim,
-        offset: off,
-        include: [{ model: PostContent, as: 'contents' }],
-        order: [['created_at', 'DESC']]
-      });
-    } catch (error) {
-      console.error('Get all posts error:', error);
-      throw new Error('Failed to retrieve posts');
-    }
-  },
+  if (limit && !isNaN(limit)) {
+    const { count, rows } = await Post.findAndCountAll({
+      where: whereCondition,
+      limit: parseInt(limit, 10),
+      offset: parseInt(offset, 10) || 0,
+      include: [{ model: PostContent, as: 'contents' }],
+      order: [['created_at', 'DESC']]
+    });
+    return { total: count, data: rows };
+  } else {
+    const rows = await Post.findAll({
+      where: whereCondition,
+      include: [{ model: PostContent, as: 'contents' }],
+      order: [['created_at', 'DESC']]
+    });
+    return { total: rows.length, data: rows };
+  }
+}
+,
 
 
   delete: async (postid) => {
