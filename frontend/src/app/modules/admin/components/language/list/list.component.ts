@@ -28,6 +28,8 @@ export class AdminLanguageListComponent implements OnInit {
 
   selectedLanguage: any = null;
   showDeleteModal = false;
+showEditConfirmModal = false; // thêm biến mới
+
 
   showModal = false;
   editingLanguage = false;
@@ -100,74 +102,79 @@ export class AdminLanguageListComponent implements OnInit {
     );
   }
 
+// Gọi khi user bấm Save
 saveLanguage() {
   this.validateField('language_name');
   this.validateField('locale_code');
 
   if (this.validationErrors.language_name || this.validationErrors.locale_code) {
-    return; // Dừng nếu còn lỗi
+    return;
   }
 
+  if (this.editingLanguage) {
+    // Mở modal xác nhận thay vì confirm()
+    this.showEditConfirmModal = true;
+    return;
+  }
+
+  // Nếu là create thì gọi luôn
+  this.createLanguage();
+}
+
+private createLanguage() {
+  const payload = this.buildPayload();
+  this.languageService.createLanguage(payload).subscribe({
+    next: (res) => {
+      if (res.success && res.data?.data) {
+        this.languages.push(res.data.data);
+      }
+      this.closeModal();
+      this.createSuccess = true;
+      setTimeout(() => (this.createSuccess = null), 1500);
+    },
+    error: () => {
+      this.createError = true;
+      setTimeout(() => (this.createError = null), 1500);
+    }
+  });
+}
+confirmEditLanguage() {
+  const id = this.modalLanguage.languageid;
+  const payload = this.buildPayload();
+
+  this.languageService.updateLanguage(id, payload).subscribe({
+    next: (res) => {
+      const updatedLang = res?.data?.data;
+      if (res.success && updatedLang) {
+        const idx = this.languages.findIndex(l => l.languageid === id);
+        if (idx !== -1) {
+          this.languages[idx] = updatedLang;
+        }
+      }
+      this.showEditConfirmModal = false;
+      this.closeModal();
+      this.editSuccess = true;
+      setTimeout(() => (this.editSuccess = null), 1500);
+    },
+    error: () => {
+      this.showEditConfirmModal = false;
+      this.editError = true;
+      setTimeout(() => (this.editError = null), 1500);
+    }
+  });
+}
+
+private buildPayload() {
   const statusValue = Number(this.modalLanguage.status);
-  const payload = {
+  return {
     language_name: this.modalLanguage.language_name?.trim(),
     locale_code: this.modalLanguage.locale_code?.trim(),
     status: isNaN(statusValue) ? 1 : statusValue,
   };
+}
 
-
-
-  if (this.editingLanguage) {
-    const id = this.modalLanguage.languageid;
-
-
-    if (!id) {
-      console.error('Không có languageid để update');
-      return;
-    }
-
-    if (!confirm('Bạn có chắc chắn muốn sửa ngôn ngữ này không?')) return;
-
-    this.languageService.updateLanguage(id, payload).subscribe({
-      next: (res) => {
-
-        const updatedLang = res?.data?.data;
-        if (res.success && updatedLang) {
-          const idx = this.languages.findIndex(l => l.languageid === id);
-          if (idx !== -1) {
-            this.languages[idx] = updatedLang;
-          }
-        }
-        this.closeModal();
-        this.editSuccess = true;
-        setTimeout(() => (this.editSuccess = null), 1500);
-      },
-      error: (err) => {
-        console.error('Update language error:', err);
-        console.error('BE message:', err.error); // log chi tiết từ BE
-        this.editError = true;
-        setTimeout(() => (this.editError = null), 1500);
-      },
-    });
-  } else {
-    this.languageService.createLanguage(payload).subscribe({
-      next: (res) => {
-        console.log('Create response:', res);
-        if (res.success && res.data?.data) {
-          this.languages.push(res.data.data);
-        }
-        this.closeModal();
-        this.createSuccess = true;
-        setTimeout(() => (this.createSuccess = null), 1500);
-      },
-      error: (err) => {
-        console.error('Create language error:', err);
-        console.error('BE message:', err.error); // log chi tiết từ BE
-        this.createError = true;
-        setTimeout(() => (this.createError = null), 1500);
-      },
-    });
-  }
+cancelEditConfirm() {
+  this.showEditConfirmModal = false;
 }
 
 

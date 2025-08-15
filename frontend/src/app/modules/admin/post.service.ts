@@ -15,7 +15,6 @@ export class PostService {
     return this.http.get(this.apiUrl);
   }
 
-  // Lấy bài post theo ID
   getPostById(postId: number): Observable<any> {
     return this.http.get(`${this.apiUrl}/${postId}`);
   }

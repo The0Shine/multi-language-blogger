@@ -90,7 +90,7 @@
         <th style="width: 25%;">Role Name</th>
         <th style="width: 35%;">Description</th>
         <th style="width: 15%;">Status</th>
-        <th style="width: 15%; padding-right: 100px;" class="text-end">Actions</th>
+        <th style="width: 15%; padding-right: 95px;" class="text-end">Actions</th>
       </tr>
     </thead>
     <tbody>
@@ -212,7 +212,7 @@
       <div class="modal-body">
         <p class="fw-bold">
           Bạn có chắc chắn muốn xóa Role
-          <strong>{{ selectedRole?.role_name }}</strong> không?
+          <strong>{{ selectedRole?.name }}</strong> không?
         </p>
       </div>
       <div class="modal-footer">
@@ -222,3 +222,24 @@
     </div>
   </div>
 </div>
+<div *ngIf="showSaveConfirmModal  " class="modal fade show d-block custom-modal" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+          <h5 class="modal-title custom-title ">Chỉnh sửa Role</h5>
+        <button type="button" class="btn-close" (click)="closeSaveConfirmModal()" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p class="fw-bold">
+          Bạn có chắc chắn muốn lưu thay đổi cho Role
+          <strong>{{ selectedRole?.name }}</strong> không?
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeSaveConfirmModal()">Hủy bỏ</button>
+        <button type="button" class="btn btn-primary" (click)="confirmEditRole()">Đồng ý</button>
+      </div>
+    </div>
+  </div>
+</div>
+

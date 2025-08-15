@@ -67,7 +67,7 @@
         <th style="width: 25%;">Email</th>
         <th style="width: 15%;">Role</th>
         <th style="width: 10%;">Status</th>
-        <th style="width: 15%; padding-left: 130px;">Actions</th>
+        <th style="width: 15%; padding-left: 115px;">Actions</th>
       </tr>
     </thead>
     <tbody>
@@ -233,3 +233,26 @@
     </div>
   </div>
 </div>
+<!-- Modal Xác nhận chỉnh sửa User -->
+<div class="modal" [class.show]="showSaveUserConfirmModal" style="display: block;" *ngIf="showSaveUserConfirmModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title custom-title">Xác nhận chỉnh sửa User</h5>
+        <button type="button" class="btn-close" (click)="closeSaveUserConfirmModal()"></button>
+      </div>
+      <div class="modal-body">
+        <p class="fw-bold">
+          Bạn có chắc chắn muốn lưu thay đổi cho User
+          <strong>{{ selectedUser?.username || 'Không rõ' }}</strong>
+          không?
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="closeSaveUserConfirmModal()">Hủy</button>
+        <button class="btn btn-primary" (click)="confirmEditUser()">Lưu</button>
+      </div>
+    </div>
+  </div>
+</div>
+

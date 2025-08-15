@@ -34,6 +34,8 @@ export class AdminUserListComponent implements OnInit {
   roleMap: { [key: number]: string } = {};
 
   newUser = this.getEmptyUser();
+showSaveUserConfirmModal = false;
+confirmingEditUser = false;
 
   constructor(
     private userService: UserService,
@@ -213,6 +215,22 @@ private loadUsers() {
         break;
     }
   }
+confirmEditUser() {
+  this.confirmingEditUser = true;
+  this.showSaveUserConfirmModal = false;
+  this.saveUser(); // chạy update
+  this.confirmingEditUser = false; // reset lại cho lần sau
+}
+
+openSaveConfirmModal(user: any) {
+  this.selectedUser = { ...user }; // gán tên user để modal hiển thị
+  this.showSaveUserConfirmModal = true;
+}
+
+closeSaveUserConfirmModal() {
+  this.showSaveUserConfirmModal = false;
+}
+
 saveUser() {
   this.validateField('username');
   if (!this.isEditMode) {
@@ -222,7 +240,12 @@ saveUser() {
   this.validateField('roleid');
 
   if (Object.values(this.validationErrors).some(v => v)) return;
-  if (this.isEditMode && !confirm('Bạn có chắc chắn muốn sửa user này không?')) return;
+
+  // Nếu đang edit và chưa xác nhận -> mở modal
+  if (this.isEditMode && !this.confirmingEditUser) {
+    this.openSaveConfirmModal(this.newUser); // gán selectedUser từ newUser
+    return;
+  }
 
   const payload: any = {
     roleid: Number(this.newUser.roleid),
@@ -245,10 +268,7 @@ saveUser() {
     next: (res) => {
       const userFromApi = res.data ?? res;
 
-      // fallback id nếu API không trả về
       const returnedId = userFromApi?.userid ?? userFromApi?.id ?? Number(this.newUser.userid);
-
-      // đảm bảo roleid lấy từ response nếu có, ngược lại dùng form
       const returnedRoleId = userFromApi?.roleid ?? Number(this.newUser.roleid);
 
       const formattedUser = {
@@ -265,10 +285,7 @@ saveUser() {
 
       if (this.isEditMode) {
         const idx = this.users.findIndex(u => u.userid === Number(this.newUser.userid));
-        console.log('Update user idx:', idx, 'newUser.userid:', this.newUser.userid, 'formattedUser.userid:', formattedUser.userid, 'api:', userFromApi);
-
         if (idx !== -1) {
-          // Merge để giữ lại các field cũ nếu API không trả
           const merged = { ...this.users[idx], ...formattedUser, userid: this.users[idx].userid ?? formattedUser.userid };
           this.users = [
             ...this.users.slice(0, idx),
@@ -276,11 +293,8 @@ saveUser() {
             ...this.users.slice(idx + 1)
           ];
         } else {
-          console.warn('Không tìm thấy user để update trong danh sách, thêm tạm formattedUser');
           this.users = [...this.users, formattedUser];
         }
-
-        // nếu bạn muốn form hiện giá trị mới (trong modal) thì set, nhưng closeModal() sẽ reset newUser anyway
         this.newUser = { ...formattedUser };
         this.editSuccess = true;
         setTimeout(() => this.editSuccess = null, 1500);

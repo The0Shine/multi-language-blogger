@@ -35,6 +35,8 @@ editError: boolean | null = null;
   };
 
 isSuccess: boolean | null = null;
+showEditConfirmModal = false;
+
 
   categories: any[] = [];
   modalCategory = {
@@ -77,6 +79,16 @@ loadCategories() {
   this.modalCategory = { ...category };
   this.showModal = true;
 }
+openEditConfirmModal(category: any) {
+  this.selectedCategory = category;
+  this.showEditConfirmModal = true;
+}
+
+
+closeEditConfirmModal() {
+  this.showEditConfirmModal = false;
+}
+
 
 deleteCategory(categoryId: number) {
   this.categoryService.permanentDeleteCategory(categoryId).subscribe({
@@ -126,24 +138,11 @@ saveCategory() {
     this.closeModal();
   };
 
-  if (this.editingCategory) {
-    if (!confirm('Bạn có chắc chắn muốn sửa danh mục này không?')) return;
-
-    this.categoryService.updateCategory(this.modalCategory.categoryid, payload).subscribe({
-      next: (res) => {
-        if (res?.success && res.data) {
-          reloadList();
-          this.editSuccess = true;
-          setTimeout(() => (this.editSuccess = null), 1500);
-        }
-      },
-      error: () => {
-        this.editError = true;
-        setTimeout(() => (this.editError = null), 1500);
-      }
-    });
-
-  } else {
+ if (this.editingCategory) {
+  this.openEditConfirmModal(this.modalCategory);
+  return;
+}
+ else {
     this.categoryService.createCategory(payload).subscribe({
       next: (res) => {
         if (res?.success && res.data) {
@@ -158,6 +157,33 @@ saveCategory() {
       }
     });
   }
+}
+
+confirmEditCategory() {
+  const payload = {
+    category_name: this.modalCategory.category_name?.trim() || '',
+    status: this.modalCategory.status ?? 1
+  };
+
+  const reloadList = () => {
+    this.loadCategories();
+    this.closeModal();
+    this.closeEditConfirmModal();
+  };
+
+  this.categoryService.updateCategory(this.modalCategory.categoryid, payload).subscribe({
+    next: (res) => {
+      if (res?.success && res.data) {
+        reloadList();
+        this.editSuccess = true;
+        setTimeout(() => (this.editSuccess = null), 1500);
+      }
+    },
+    error: () => {
+      this.editError = true;
+      setTimeout(() => (this.editError = null), 1500);
+    }
+  });
 }
 
 

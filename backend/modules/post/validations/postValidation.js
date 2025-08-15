@@ -39,7 +39,12 @@ const postValidation = {
     param('postid')
       .isInt({ min: 1 })
       .withMessage('Invalid post ID.')
-  ]
+  ],
+    getById: [
+    param('postid')
+      .isInt({ min: 1 })
+      .withMessage('Post ID must be a positive integer.'),
+  ],
 };
 
 module.exports = postValidation;

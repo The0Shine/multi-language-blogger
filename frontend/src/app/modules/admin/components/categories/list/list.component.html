@@ -89,7 +89,7 @@
         <th style="width: 5%;">ID</th>
         <th style="width: 40%;">Category Name</th>
         <th style="width: 20%;">Status</th>
-        <th style="width: 30%; padding-right: 100px;" class="text-end">Actions</th>
+        <th style="width: 30%; padding-right: 95px;" class="text-end">Actions</th>
       </tr>
     </thead>
     <tbody>
@@ -209,6 +209,27 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" (click)="closeDeleteModal()">Hủy bỏ</button>
         <button type="button" class="btn btn-danger" (click)="confirmDelete()">Đồng ý</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div *ngIf="showEditConfirmModal" class="modal fade show d-block custom-modal" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Xác nhận chỉnh sửa</h5>
+        <button type="button" class="btn-close" (click)="closeEditConfirmModal()" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p class="fw-bold">
+          Bạn có chắc chắn muốn lưu thay đổi cho
+          <strong>{{ selectedCategory?.category_name }}</strong> không?
+        </p>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeEditConfirmModal()">Hủy bỏ</button>
+        <button type="button" class="btn btn-primary" (click)="confirmEditCategory()">Đồng ý</button>
       </div>
     </div>
   </div>

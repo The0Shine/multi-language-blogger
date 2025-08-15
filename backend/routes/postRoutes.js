@@ -16,6 +16,11 @@ router.post('/',
     validateMiddleware,
     postController.create
 );
+// Get a post by ID (accessible to authenticated users)
+router.get('/:postid',
+       validateMiddleware,          
+    postController.getById       
+);
 
 // Admin-only routes
 router.get('/',

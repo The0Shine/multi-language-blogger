@@ -92,7 +92,7 @@
         <th style="width: 30%;">Language</th>
         <th style="width: 30%;">Locale Code</th>
         <th style="width: 20%;">Status</th>
-        <th style="width: 20%; padding-right: 100px;" class="text-end">Actions</th>
+        <th style="width: 20%; padding-right: 95px;" class="text-end">Actions</th>
 
       </tr>
     </thead>
@@ -227,6 +227,27 @@
       <div class="modal-footer">
         <button class="btn btn-secondary" (click)="closeDeleteModal()">Hủy</button>
         <button class="btn btn-danger" (click)="confirmDeleteLanguage()">Xóa</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal xác nhận Edit -->
+<div class="modal" [class.show]="showEditConfirmModal" style="display: block;" *ngIf="showEditConfirmModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Xác nhận sửa</h5>
+        <button type="button" class="btn-close" (click)="cancelEditConfirm()"></button>
+      </div>
+      <div class="modal-body">
+        <p class="fw-bold">
+          Bạn có chắc chắn muốn sửa Ngôn Ngữ
+          <strong>{{ modalLanguage.language_name }}</strong> không?
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="cancelEditConfirm()">Hủy</button>
+        <button class="btn btn-primary" (click)="confirmEditLanguage()">Xác nhận</button>
       </div>
     </div>
   </div>

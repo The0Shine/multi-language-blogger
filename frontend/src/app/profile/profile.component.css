@@ -27,26 +27,9 @@
   color: #495057;
 }
 
-.profile-container img {
-  width: 180px !important;
-  height: 180px !important;
-  object-fit: cover;
-  border: 3px solid #dee2e6;
-}
 
 #editProfileModal .modal-content {
   max-width: 500px;
   margin: auto;
 }
 
-/* Đảm bảo phần trái chiếm đủ không gian */
-.profile-container .col-md-8 {
-  flex: 0 0 66.6667%;
-  max-width: 66.6667%;
-}
-
-/* Nếu muốn bên phải cân đối hơn */
-.profile-container .col-md-4 {
-  flex: 0 0 33.3333%;
-  max-width: 33.3333%;
-}

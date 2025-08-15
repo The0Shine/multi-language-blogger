@@ -23,6 +23,10 @@ export class HomeComponent implements OnInit {
 
   users: any[] = [];
   recentPosts: any[] = [];
+selectedPost: any = null;
+isPostModalOpen = false;
+
+
 
   constructor(
     private router: Router,
@@ -104,20 +108,36 @@ loadCounts() {
 goToAllPosts(): void {
     this.router.navigate(['/admin/post/list']);
   }
+
 openPostDetailFromHome(postId: number) {
-  const postsPerPage = 5;
+  this.postService.getPostById(postId).subscribe((res: any) => {
+    console.log('Post detail response:', res);
+    if (res?.data?.data) {
+      const post = res.data.data;
 
-  this.postService.getAllPosts().subscribe((res: any) => {
-    const allPosts = res?.data?.data || [];
-    const index = allPosts.findIndex((p: any) => p.postid === postId);
+      // Lấy username
+      const user = this.users.find(u =>
+        String(u.id ?? u.userid) === String(post.userid)
+      );
+      post.username = user ? user.username : 'Unknown';
 
-    if (index !== -1) {
-      const pageNumber = Math.floor(index / postsPerPage) + 1;
-      this.router.navigate(['/admin/post/list'], {
-        queryParams: { page: pageNumber, view: postId }
-      });
+      // Format ngày tạo
+      if (post.createdAt) {
+        post.date = new Date(post.createdAt).toLocaleDateString('vi-VN');
+      } else {
+        post.date = 'N/A';
+      }
+
+      this.selectedPost = post;
+      this.isPostModalOpen = true;
     }
   });
+}
+
+
+
+closePostModal() {
+  this.selectedPost = null;
 }
 
 

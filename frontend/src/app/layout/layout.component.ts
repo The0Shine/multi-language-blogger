@@ -20,6 +20,7 @@ ngOnInit(): void {
   const userData = localStorage.getItem('currentUser');
   if (userData) {
     this.currentUser = JSON.parse(userData);
+
   }
 }
 logout(): void {

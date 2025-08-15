@@ -24,6 +24,11 @@ export class AuthInterceptor implements HttpInterceptor {
         setHeaders: { Authorization: `Bearer ${token}` }
       });
     }
+    if (req.url.includes('/login')) {
+  // Không gắn Authorization header khi gọi API login
+  return next.handle(req);
+}
+
 
     return next.handle(authReq).pipe(
       catchError((error: HttpErrorResponse) => {

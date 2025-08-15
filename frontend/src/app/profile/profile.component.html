@@ -1,14 +1,14 @@
 <main class="profile-container my-2" style="max-width: 900px; margin-top: 100px; ">
   <div class="row">
     <!-- LEFT: Thông tin người dùng -->
-    <div class="col-md-8 border-end pe-md-4">
+    <div class="col-md-8 ">
       <div class="p-4 bg-light border rounded shadow-sm mb-4">
         <h3 class="mb-4">Thông tin người quản trị</h3>
 
         <div class="row mb-3">
           <div class="col-4 fw-bold">ID:</div>
           <div class="col-8">{{ profile.userid }}
-</div>
+          </div>
         </div>
 
         <div class="row mb-3">
@@ -23,12 +23,12 @@
           <div class="col-8">{{ profile.email }}</div>
         </div>
 
-       <div class="row mb-3">
-  <div class="col-4 fw-bold">Vai trò:</div>
-  <div class="col-8">
-    <span class="badge bg-primary">{{ getRoleName(profile.roleid) }}</span>
-  </div>
-</div>
+        <div class="row mb-3">
+          <div class="col-4 fw-bold">Vai trò:</div>
+          <div class="col-8">
+            <span class="badge bg-primary">{{ getRoleName(profile.roleid) }}</span>
+          </div>
+        </div>
 
 
         <div class="row mb-3">
@@ -39,9 +39,9 @@
         <div class="row mb-3">
           <div class="col-4 fw-bold">Trạng thái:</div>
           <div class="col-8">
-         <span class="badge" [ngClass]="profile.status === 'active' ? 'bg-success' : 'bg-danger'">
-  {{ profile.status === 'active' ? 'Hoạt động' : 'Ngưng hoạt động' }}
-</span>
+            <span class="badge" [ngClass]="profile.status === 'active' ? 'bg-success' : 'bg-danger'">
+              {{ profile.status === 'active' ? 'Hoạt động' : 'Ngưng hoạt động' }}
+            </span>
 
 
           </div>
@@ -50,8 +50,7 @@
       </div>
     </div>
 
-    <!-- RIGHT: Avatar + Edit -->
+
 
   </div>
 </main>
-

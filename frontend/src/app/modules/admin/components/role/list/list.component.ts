@@ -34,6 +34,9 @@ deleteError: boolean | null = null;
   roles: any[] = [];
   modalRole = { roleid: 0, name: '', discription: '', status: 1 };
 
+showSaveConfirmModal = false;
+
+
   constructor(
     private roleService: RoleService,
     private router: Router,
@@ -58,6 +61,8 @@ loadRoles() {
     }
   });
 }
+
+
 
   openCreateModal() {
     this.editingRole = false;
@@ -120,31 +125,37 @@ loadRoles() {
         break;
     }
   }
-  saveRole() {
+saveRole(confirm: boolean = false) {
   if (!this.modalRole.name?.trim() || !this.modalRole.discription?.trim()) {
     return;
   }
 
-  const payload = {
-  name: this.modalRole.name,
-  discription: this.modalRole.discription,
-   status: this.modalRole.status, // status đã là 0 hoặc 1
-};
+  // Chỉ hiện popup confirm khi đang edit
+if (this.editingRole && !confirm) {
+  this.selectedRole = { ...this.modalRole }; // copy dữ liệu hiện tại của form
+  this.showSaveConfirmModal = true;
+  return;
+}
 
+
+  const payload = {
+    name: this.modalRole.name,
+    discription: this.modalRole.discription,
+    status: this.modalRole.status
+  };
 
   if (this.editingRole) {
-    if (!confirm('Bạn có chắc chắn muốn sửa role này không?')) return;
-
     this.roleService.updateRole(this.modalRole.roleid, payload).subscribe({
       next: (res) => {
-        // Lưu ý: res có thể trả về object có structure khác, hãy dùng đúng kiểu
         const idx = this.roles.findIndex((r) => r.roleid === this.modalRole.roleid);
-        if (idx > -1) this.roles[idx] = res.data.data; // theo cấu trúc backend
+        if (idx > -1) this.roles[idx] = res.data.data;
         this.closeModal();
+        this.showSaveConfirmModal = false;
         this.editSuccess = true;
         setTimeout(() => (this.editSuccess = null), 1500);
       },
       error: () => {
+        this.showSaveConfirmModal = false;
         this.editError = true;
         setTimeout(() => (this.editError = null), 1500);
       },
@@ -164,6 +175,16 @@ loadRoles() {
     });
   }
 }
+
+confirmEditRole() {
+  this.saveRole(true);
+}
+
+closeSaveConfirmModal() {
+  this.showSaveConfirmModal = false;
+}
+
+
 
 
   closeModal() {
