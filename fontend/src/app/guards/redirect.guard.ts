@@ -15,13 +15,29 @@ export const redirectGuard: CanActivateFn = (route, state) => {
 
   // Get user role
   const userRole = authService.getUserRole();
+  const currentUrl = state.url;
 
-  // Redirect based on role
+  console.log(
+    '🔍 Redirect Guard - Role:',
+    userRole,
+    'Current URL:',
+    currentUrl
+  );
+
+  // Check if user is already on the correct page
   if (userRole === 'admin') {
-    router.navigate(['/admin/home']);
-    return false;
+    if (currentUrl.startsWith('/admin')) {
+      return true; // Allow access to admin pages
+    } else {
+      router.navigate(['/admin/home']);
+      return false;
+    }
   } else {
-    router.navigate(['/']);
-    return false;
+    if (currentUrl.startsWith('/admin')) {
+      router.navigate(['/']); // Redirect non-admin away from admin pages
+      return false;
+    } else {
+      return true; // Allow access to user pages
+    }
   }
 };

@@ -151,7 +151,7 @@
     </div>
   </div>
 
-  <!-- Publish Modal (same as before) -->
+  <!-- Publish Modal -->
   <div
     *ngIf="showPublishModal"
     class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
@@ -174,7 +174,7 @@
         </button>
       </div>
       <!-- Modal Content -->
-      <div class="p-6">
+      <div class="p-8 pb-20">
         <!-- Post Title Display -->
         <div class="mb-6">
           <h3 class="text-xl font-bold text-gray-900 mb-2">
@@ -251,45 +251,6 @@
         </div>
       </div>
       <!-- Publish Options -->
-      <div class="p-6 border-t border-gray-200">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">
-          Publishing options
-        </h3>
-        <div class="space-y-3">
-          <label class="flex items-center">
-            <input
-              type="radio"
-              name="publishStatus"
-              value="draft"
-              [(ngModel)]="publishStatus"
-              class="mr-3 text-green-600 focus:ring-green-500"
-            />
-            <div>
-              <div class="font-medium text-gray-900">Save as draft</div>
-              <div class="text-sm text-gray-500">
-                Only you can see this story
-              </div>
-            </div>
-          </label>
-          <label class="flex items-center">
-            <input
-              type="radio"
-              name="publishStatus"
-              value="published"
-              [(ngModel)]="publishStatus"
-              class="mr-3 text-green-600 focus:ring-green-500"
-            />
-            <div>
-              <div class="font-medium text-gray-900">Publish now</div>
-              <div class="text-sm text-gray-500">
-                Make this story visible to everyone
-              </div>
-            </div>
-          </label>
-        </div>
-
-        <!-- Multi-language Options -->
-      </div>
 
       <!-- Modal Footer -->
       <div class="flex justify-end space-x-4 p-6 border-t border-gray-200">
@@ -304,9 +265,7 @@
           [disabled]="isSaving"
           class="px-6 py-3 bg-green-600 text-white rounded-full hover:bg-green-700 disabled:opacity-50 transition-colors flex items-center"
         >
-          <span *ngIf="!isSaving">{{
-            publishStatus === "draft" ? "Save draft" : "Publish now"
-          }}</span>
+          <span *ngIf="!isSaving">Save</span>
           <span *ngIf="isSaving" class="flex items-center">
             <svg
               class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
@@ -327,7 +286,7 @@
                 d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
               ></path>
             </svg>
-            {{ publishStatus === "draft" ? "Saving..." : "Publishing..." }}
+            Publishing...
           </span>
         </button>
       </div>

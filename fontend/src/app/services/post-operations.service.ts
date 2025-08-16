@@ -138,10 +138,17 @@ export class PostOperationsService {
         const updateData: UpdatePostRequest = {
           title: title,
           content: JSON.stringify(editorData),
-          status: status,
           // Always include categoryids to preserve current categories (empty array if none)
           categoryids: selectedCategoryIds,
         };
+
+        // Only include status if explicitly changing publish status
+        if (publishStatus === 'published') {
+          updateData.status = 1; // Approved/Published
+        } else if (publishStatus === 'draft') {
+          updateData.status = 0; // Pending/Draft
+        }
+        // If publishStatus is 'save' or undefined, don't include status to preserve current status
 
         console.log('Updating post with data:', updateData);
 
@@ -217,6 +224,79 @@ export class PostOperationsService {
   private handlePublishError(): void {
     this.editorStateService.setIsSaving(false);
     alert('Failed to save post. Please try again.');
+  }
+
+  // Save post without changing status (for auto-save or manual save)
+  savePost(
+    editorData: any,
+    title: string,
+    selectedCategoryIds: number[],
+    editPostId?: string
+  ): void {
+    if (!title.trim()) {
+      console.warn('Cannot save post without title');
+      return;
+    }
+
+    this.editorStateService.setIsSaving(true);
+
+    if (editPostId) {
+      // Update existing post without changing status
+      const updateData: UpdatePostRequest = {
+        title: title,
+        content: JSON.stringify(editorData),
+        categoryids: selectedCategoryIds,
+        // Don't include status - preserve current status
+      };
+
+      console.log('Saving post (preserving status) with data:', updateData);
+
+      this.postService.updatePost(+editPostId, updateData).subscribe({
+        next: (response) => {
+          console.log('Post saved successfully:', response);
+          this.handleSaveSuccess();
+        },
+        error: (error) => {
+          console.error('Error saving post:', error);
+          this.handleSaveError();
+        },
+      });
+    } else {
+      // Create new post with default status (0 = pending)
+      const createData: CreatePostRequest = {
+        title: title,
+        content: JSON.stringify(editorData),
+        categoryids: selectedCategoryIds,
+        userid: 0, // Will be set by backend from token
+        status: 0, // Default to pending status
+      };
+
+      console.log('Creating new post with data:', createData);
+
+      this.postService.createPost(createData).subscribe({
+        next: (response) => {
+          console.log('Post created successfully:', response);
+          this.handleSaveSuccess();
+        },
+        error: (error) => {
+          console.error('Error creating post:', error);
+          this.handleSaveError();
+        },
+      });
+    }
+  }
+
+  // Handle save success
+  private handleSaveSuccess() {
+    this.editorStateService.setIsSaving(false);
+    this.editorStateService.setLastSaved(new Date());
+    console.log('Post saved successfully');
+  }
+
+  // Handle save error
+  private handleSaveError() {
+    this.editorStateService.setIsSaving(false);
+    console.error('Failed to save post');
   }
 
   async loadPostForEdit(

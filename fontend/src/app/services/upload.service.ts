@@ -30,7 +30,7 @@ export interface CloudinarySignature {
 })
 export class UploadService {
   private http = inject(HttpClient);
-  private baseUrl = 'http://localhost:3000/api/upload';
+  private baseUrl = 'http://localhost:4000/api/upload';
 
   // Upload image file
   uploadImage(file: File): Observable<UploadResponse> {

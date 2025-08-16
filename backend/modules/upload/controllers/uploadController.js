@@ -10,9 +10,18 @@ const uploadController = {
         return responseUtils.badRequest(res, "No image file provided");
       }
 
-      // Upload to temporary storage with user context
-      const result = await imageManager.uploadToTemp(req.file.path, {
+      console.log("📤 Upload request received:", {
+        filename: req.file.originalname,
+        mimetype: req.file.mimetype,
+        size: req.file.size,
         userId: req.user?.userid,
+      });
+
+      // Upload to temporary storage with user context (using buffer for memory storage)
+      const result = await imageManager.uploadToTemp(req.file.buffer, {
+        userId: req.user?.userid,
+        filename: req.file.originalname,
+        mimetype: req.file.mimetype,
         width: req.body.width,
         height: req.body.height,
         quality: req.body.quality || "auto",

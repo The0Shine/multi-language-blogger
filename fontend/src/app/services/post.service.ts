@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, map } from 'rxjs';
+import { Observable, map, tap, catchError, of } from 'rxjs';
 import { HttpService } from './http.service';
 import { LanguageService } from './language.service';
 
@@ -371,7 +371,7 @@ export class PostService {
     if (currentLanguage) {
       params.languageid = currentLanguage.languageid;
       console.log(
-        `🌍 Searching in language: ${currentLanguage.language_name} (${currentLanguage.languageid})`
+        `🌍 Full-Text Searching in language: ${currentLanguage.language_name} (${currentLanguage.languageid})`
       );
     }
 
@@ -382,19 +382,39 @@ export class PostService {
     if (startDate) params.startDate = startDate;
     if (endDate) params.endDate = endDate;
 
-    console.log('🔍 Searching posts with params:', params);
+    console.log('🔍 Full-Text Search with params:', params);
 
     return this.httpService.get<any>('/posts/search', params).pipe(
       map((response: any) => {
-        console.log('🔍 Search response:', response);
+        console.log('🔍 Full-Text Search response:', response);
 
         // Handle consistent response format: { data: { items: [], pagination: {} } }
         const posts: BackendPost[] = response.data?.items || [];
 
-        console.log('🔍 Mapped posts:', posts.length);
+        console.log('🔍 Full-Text Search results:', posts.length);
         return posts.map((post: BackendPost) => this.mapPostToFrontend(post));
       })
     );
+  }
+
+  // Get search suggestions
+  getSearchSuggestions(query: string): Observable<string[]> {
+    if (!query || query.trim().length < 2) {
+      return of([]);
+    }
+
+    return this.httpService
+      .get<any>('/posts/search/suggestions', { q: query.trim() })
+      .pipe(
+        map((response: any) => {
+          console.log('🔍 Search suggestions response:', response);
+          return response.data?.suggestions || [];
+        }),
+        catchError((error) => {
+          console.error('Error getting search suggestions:', error);
+          return of([]);
+        })
+      );
   }
 
   // Enhanced search with pagination info
@@ -407,7 +427,7 @@ export class PostService {
     sortOrder?: string,
     startDate?: string,
     endDate?: string
-  ): Observable<{ posts: Post[]; pagination: any }> {
+  ): Observable<{ data: Post[]; pagination: any }> {
     const params: SearchPostsParams = { search: query, page, limit };
 
     // Add current language to search
@@ -436,9 +456,124 @@ export class PostService {
         const pagination = response.data?.pagination || {};
 
         return {
-          posts: posts.map((post: BackendPost) => this.mapPostToFrontend(post)),
+          data: posts.map((post: BackendPost) => this.mapPostToFrontend(post)),
           pagination,
         };
+      }),
+      catchError((error) => {
+        console.error(
+          '🔍 PostService: searchPostsWithPagination error:',
+          error
+        );
+        throw error;
+      })
+    );
+  }
+
+  // Enhanced search with pagination (new unified method)
+  searchPostsUnified(params: any): Observable<any> {
+    console.log(
+      '🔍 PostService: searchPostsWithPagination called with params:',
+      params
+    );
+
+    const queryParams: any = {};
+    Object.keys(params).forEach((key) => {
+      if (params[key] !== undefined && params[key] !== null) {
+        queryParams[key] = params[key];
+      }
+    });
+
+    return this.httpService.get<any>('/posts/search', queryParams).pipe(
+      map((response: any) => {
+        console.log('🔍 Search response with pagination:', response);
+
+        if (!response.success) {
+          throw new Error(response.message || 'Search failed');
+        }
+
+        const posts: BackendPost[] =
+          response.data?.items || response.data?.posts || [];
+        const backendPagination = response.data?.pagination || {};
+
+        // Map backend pagination structure to frontend expected structure
+        const pagination = {
+          page: backendPagination.currentPage || backendPagination.page || 1,
+          limit:
+            backendPagination.itemsPerPage || backendPagination.limit || 10,
+          total:
+            backendPagination.totalItems ||
+            backendPagination.total ||
+            posts.length,
+          totalPages:
+            backendPagination.totalPages || Math.ceil(posts.length / 10),
+        };
+
+        console.log('🔍 Backend search pagination:', backendPagination);
+        console.log('🔍 Mapped search pagination:', pagination);
+
+        return {
+          data: posts.map((post: BackendPost) => this.mapPostToFrontend(post)),
+          pagination,
+        };
+      }),
+      catchError((error) => {
+        console.error(
+          '🔍 PostService: searchPostsWithPagination error:',
+          error
+        );
+        throw error;
+      })
+    );
+  }
+
+  // Get posts with pagination for home page
+  getPostsWithPagination(params: any): Observable<any> {
+    console.log(
+      '📄 PostService: getPostsWithPagination called with params:',
+      params
+    );
+
+    const queryParams: any = {};
+    Object.keys(params).forEach((key) => {
+      if (params[key] !== undefined && params[key] !== null) {
+        queryParams[key] = params[key];
+      }
+    });
+
+    return this.httpService.get<any>('/posts', queryParams).pipe(
+      map((response: any) => {
+        console.log('📄 Posts response with pagination:', response);
+
+        if (!response.success) {
+          throw new Error(response.message || 'Failed to retrieve posts');
+        }
+
+        // Backend returns different structure for posts endpoint
+        const posts: BackendPost[] =
+          response.data?.posts || response.data?.items || [];
+        const backendPagination = response.data?.pagination || {};
+
+        // Map backend pagination structure to frontend expected structure
+        const pagination = {
+          page: backendPagination.currentPage || 1,
+          limit: backendPagination.itemsPerPage || 10,
+          total: backendPagination.totalItems || posts.length,
+          totalPages:
+            backendPagination.totalPages || Math.ceil(posts.length / 10),
+        };
+
+        console.log('🔄 Backend pagination:', backendPagination);
+        console.log('🔄 Mapped pagination:', pagination);
+
+        return {
+          data: posts.map((post: BackendPost) => this.mapPostToFrontend(post)),
+          pagination,
+        };
+      }),
+      catchError((error) => {
+        console.error('📄 PostService: getPostsWithPagination error:', error);
+        throw error;
       })
     );
   }

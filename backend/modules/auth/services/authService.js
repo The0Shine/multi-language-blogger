@@ -74,17 +74,33 @@ const authService = {
   login: async (data) => {
     const { username, password } = data;
 
-    const user = await User.findOne({ where: { username } });
+    const user = await User.findOne({
+      where: { username },
+      include: [
+        {
+          model: Role,
+          as: "role",
+          attributes: ["name", "discription"], // Fix: use correct column name
+        },
+      ],
+      attributes: { exclude: ["password"] },
+    });
+
     if (!user) throw new Error("User not found.");
 
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    // Need to get user with password for validation
+    const userWithPassword = await User.findOne({ where: { username } });
+    const isPasswordValid = await bcrypt.compare(
+      password,
+      userWithPassword.password
+    );
     if (!isPasswordValid) throw new Error("Invalid credentials.");
 
     const payload = { userid: user.userid, roleid: user.roleid };
     const accessToken = jwtUtils.generateToken(payload);
     const refreshToken = jwtUtils.generateRefreshToken(payload);
 
-    return { accessToken, refreshToken };
+    return { accessToken, refreshToken, user };
   },
 
   refreshToken: async (refreshToken) => {

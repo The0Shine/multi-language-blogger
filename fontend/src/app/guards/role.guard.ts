@@ -17,10 +17,22 @@ export const roleGuard = (allowedRoles: string[]): CanActivateFn => {
     // Get user role
     const userRole = authService.getUserRole();
 
+    console.log(
+      '🔍 Role Guard - Required roles:',
+      allowedRoles,
+      'User role:',
+      userRole,
+      'URL:',
+      state.url
+    );
+
     // Check if user has required role
     if (allowedRoles.includes(userRole)) {
+      console.log('✅ Role Guard - Access granted');
       return true;
     }
+
+    console.log('❌ Role Guard - Access denied, redirecting...');
 
     // Redirect based on user role
     if (userRole === 'admin') {

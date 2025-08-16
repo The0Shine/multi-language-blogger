@@ -54,7 +54,6 @@ export class WriteComponent implements OnInit, OnDestroy, AfterViewInit {
   // New properties for real API integration
   categories: Category[] = [];
   selectedCategoryIds: number[] = [];
-  publishStatus: 'draft' | 'published' = 'draft';
   isEditMode = false;
   editPostId: string | null = null;
   currentUser: any = null;
@@ -761,6 +760,11 @@ export class WriteComponent implements OnInit, OnDestroy, AfterViewInit {
     this.showPublishModal = false;
   }
 
+  getCategoryName(categoryId: number): string {
+    const category = this.categories.find((c) => c.categoryid === categoryId);
+    return category ? category.name : 'Unknown';
+  }
+
   // Category management methods
   filterCategories() {
     if (!this.categorySearchQuery.trim()) {
@@ -909,7 +913,9 @@ export class WriteComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   async publishPost() {
-    console.log('publishPost called with status:', this.publishStatus);
+    console.log(
+      'publishPost called - publishing with status -1 (default draft)'
+    );
 
     if (!this.editor || !this.title.trim()) {
       alert('Please provide a title for your post.');
@@ -931,31 +937,15 @@ export class WriteComponent implements OnInit, OnDestroy, AfterViewInit {
         return;
       }
 
-      const status = this.publishStatus === 'published' ? 1 : 0; // 1 = published, 0 = draft
+      const status = 0; // Always save as draft with status -1
 
       // Update image tracking from editor data
       this.imageManager.updateImagesFromEditor(editorData);
 
-      // Move temp images to permanent storage if publishing
-      if (this.publishStatus === 'published') {
-        const tempImages = this.imageManager.getTempImages();
-        if (tempImages.length > 0) {
-          console.log(
-            `Moving ${tempImages.length} temporary images to permanent storage...`
-          );
-          try {
-            await firstValueFrom(
-              this.imageManager.moveAllTempToPermanent('posts')
-            );
-            console.log('Images moved to permanent storage successfully');
-          } catch (error) {
-            console.error('Failed to move images to permanent storage:', error);
-            this.toastService.warning(
-              'Some images may not be saved permanently'
-            );
-          }
-        }
-      }
+      // Keep images in temp storage for posts with status -1 (default)
+      console.log(
+        'Saving post with status -1 - images will remain in temp storage'
+      );
 
       if (this.isEditMode && this.editPostId) {
         // Update existing post
@@ -973,17 +963,13 @@ export class WriteComponent implements OnInit, OnDestroy, AfterViewInit {
           next: (post) => {
             this.isSaving = false;
             this.closePublishModal();
-            const message =
-              this.publishStatus === 'published'
-                ? 'Post published successfully!'
-                : 'Post saved as draft!';
-            this.toastService.success(message);
+            this.toastService.success('Post saved successfully!');
             this.router.navigate(['/post', post.postid]);
           },
           error: (error) => {
             this.isSaving = false;
             console.error('Error updating post:', error);
-            this.toastService.error('Failed to update post. Please try again.');
+            this.toastService.error('Failed to save post. Please try again.');
           },
         });
       } else {
@@ -1004,21 +990,13 @@ export class WriteComponent implements OnInit, OnDestroy, AfterViewInit {
           next: (post) => {
             this.isSaving = false;
             this.closePublishModal();
-            const message =
-              this.publishStatus === 'published'
-                ? 'Post published successfully!'
-                : 'Post saved as draft!';
-            this.toastService.success(message);
+            this.toastService.success('Post saved successfully!');
             this.router.navigate(['/post', post.data.postid]);
           },
           error: (error) => {
             this.isSaving = false;
             console.error('Error creating post:', error);
-            const message =
-              this.publishStatus === 'published'
-                ? 'Failed to publish post. Please try again.'
-                : 'Failed to save draft. Please try again.';
-            this.toastService.error(message);
+            this.toastService.error('Failed to save post. Please try again.');
           },
         });
       }

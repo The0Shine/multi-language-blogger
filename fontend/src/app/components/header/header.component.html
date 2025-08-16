@@ -108,7 +108,7 @@
                 [class.bg-blue-50]="lang.code === currentLanguage?.code"
                 [class.text-blue-600]="lang.code === currentLanguage?.code"
               >
-                <span class="text-lg">{{ lang.flag }}</span>
+                <span class="flag-icon" [class]="lang.flag"></span>
                 <span class="flex-1 text-left">{{ lang.name }}</span>
                 <i
                   *ngIf="lang.code === currentLanguage?.code"

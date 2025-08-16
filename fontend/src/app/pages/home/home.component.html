@@ -21,7 +21,9 @@
           id="navTabs"
           class="sticky flex top-[57px] left-0 right-0 z-40 bg-white transition-transform duration-100 ease-out border-b border-gray-200"
         >
-          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full relative">
+          <div
+            class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full relative mb-3"
+          >
             <!-- Nút scroll trái -->
             <button
               id="scrollLeft"
@@ -67,11 +69,23 @@
           </div>
         </nav>
 
+        <!-- Loading indicator -->
+        <div *ngIf="loading" class="flex justify-center items-center py-8">
+          <div
+            class="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"
+          ></div>
+          <span class="ml-2 text-gray-600">Loading posts...</span>
+        </div>
+
         <!-- Posts -->
-        <div class="space-y-8 posts-container">
+        <div
+          class="space-y-8 posts-container transition-opacity duration-300"
+          [class.opacity-50]="loadingMore"
+          *ngIf="!loading"
+        >
           <article
-            *ngFor="let post of filteredPosts"
-            class="flex items-start space-x-4 pb-8 border-b border-gray-100 cursor-pointer post-card"
+            *ngFor="let post of filteredPosts; trackBy: trackByPostId"
+            class="flex items-start space-x-4 pb-8 border-b border-gray-100 cursor-pointer post-card transition-all duration-200 mt-1 hover:bg-gray-50"
             (click)="navigateToPost(post.postid)"
           >
             <div class="flex-1">
@@ -121,6 +135,43 @@
               </div>
             </div>
           </article>
+
+          <!-- No posts message -->
+          <div *ngIf="filteredPosts.length === 0" class="text-center py-12">
+            <div class="text-gray-500">
+              <i class="fas fa-file-alt text-4xl mb-4"></i>
+              <p class="text-lg">No posts found</p>
+              <p class="text-sm">
+                Try adjusting your search or category filter
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Loading more indicator (subtle) -->
+        <div *ngIf="loadingMore" class="mt-8 flex justify-center">
+          <div class="flex items-center text-gray-500 text-sm">
+            <div
+              class="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-400 mr-2"
+            ></div>
+            Loading more posts...
+          </div>
+        </div>
+
+        <!-- End of posts message -->
+        <div
+          *ngIf="!loading && !hasMorePosts && filteredPosts.length > 0"
+          class="mt-8 text-center text-gray-500"
+        >
+          <p class="text-sm">You've reached the end of the posts</p>
+        </div>
+
+        <!-- Posts count info -->
+        <div
+          *ngIf="!loading && filteredPosts.length > 0"
+          class="mt-4 text-center text-sm text-gray-500"
+        >
+          Showing {{ filteredPosts.length }} posts
         </div>
       </main>
 

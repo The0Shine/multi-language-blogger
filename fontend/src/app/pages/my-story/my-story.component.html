@@ -135,8 +135,15 @@
               </span>
             </div>
             <h3
-              class="text-xl font-bold text-gray-900 mb-2 hover:text-green-600 cursor-pointer transition-colors story-title break-words"
-              (click)="viewPost(post)"
+              class="text-xl font-bold text-gray-900 mb-2 transition-colors story-title break-words"
+              [class.hover:text-green-600]="canViewPost(post)"
+              [class.cursor-pointer]="canViewPost(post)"
+              [class.cursor-not-allowed]="!canViewPost(post)"
+              [class.text-gray-500]="!canViewPost(post)"
+              (click)="canViewPost(post) ? viewPost(post) : null"
+              [title]="
+                !canViewPost(post) ? 'This post is not published yet' : ''
+              "
             >
               {{ post.title }}
             </h3>
@@ -177,15 +184,38 @@
                 "
               >
                 <div class="py-2">
-                  <button class="dropdown-item" (click)="viewPost(post)">
+                  <!-- View option - chỉ hiện khi post được publish -->
+                  <button
+                    *ngIf="canViewPost(post)"
+                    class="dropdown-item"
+                    (click)="viewPost(post)"
+                  >
                     <i class="fas fa-eye mr-3 text-gray-400"></i>
                     {{ "mystories.view_story" | translate }}
                   </button>
+
+                  <!-- Disabled view option cho post chưa publish -->
+                  <button
+                    *ngIf="!canViewPost(post)"
+                    class="dropdown-item opacity-50 cursor-not-allowed"
+                    disabled
+                    title="Post is not published yet"
+                  >
+                    <i class="fas fa-eye mr-3 text-gray-400"></i>
+                    {{ "mystories.view_story" | translate }}
+                    <span class="text-xs text-gray-500 ml-auto"
+                      >(Not published)</span
+                    >
+                  </button>
+
+                  <!-- Edit option - luôn hiện -->
                   <button class="dropdown-item" (click)="editPost(post)">
                     <i class="fas fa-edit mr-3 text-gray-400"></i>
                     {{ "mystories.edit_story" | translate }}
                   </button>
+
                   <hr class="my-2 border-gray-200" />
+
                   <button
                     class="dropdown-item danger"
                     (click)="confirmDeletePost(post)"

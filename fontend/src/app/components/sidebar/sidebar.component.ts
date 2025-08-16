@@ -19,6 +19,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
   categories: Category[] = [];
 
   private languageSubscription?: Subscription;
+  private currentLanguageId: number | null = null;
 
   private postService = inject(PostService);
   private categoryService = inject(CategoryService);
@@ -26,16 +27,35 @@ export class SidebarComponent implements OnInit, OnDestroy {
   private router = inject(Router);
 
   ngOnInit() {
-    // Load initial data
-    this.loadStaffPicks();
+    // Load recommended topics (language-independent)
     this.loadRecommendedTopics();
 
-    // Subscribe to language changes
+    // Subscribe to language changes with optimization
     this.languageSubscription = this.languageService.currentLanguage$.subscribe(
       (language) => {
-        console.log('🌐 Language changed in sidebar:', language);
-        // Reload staff picks for new language
-        this.loadStaffPicks();
+        if (language) {
+          console.log(
+            '🌐 Language changed in sidebar:',
+            language.language_name
+          );
+
+          const newLanguageId = language.languageid;
+
+          // Only reload if language actually changed
+          if (
+            this.currentLanguageId !== null &&
+            this.currentLanguageId !== newLanguageId
+          ) {
+            console.log('🔄 Reloading staff picks for new language');
+            this.loadStaffPicks();
+          } else if (this.currentLanguageId === null) {
+            // Initial load
+            console.log('📚 Initial staff picks load');
+            this.loadStaffPicks();
+          }
+
+          this.currentLanguageId = newLanguageId;
+        }
       }
     );
   }
@@ -50,29 +70,80 @@ export class SidebarComponent implements OnInit, OnDestroy {
     const currentLanguage = this.languageService.getCurrentLanguage();
     console.log('📚 Loading staff picks for language:', currentLanguage);
 
-    this.postService.getPosts(1, 50).subscribe((posts) => {
-      // Chỉ lấy bài gốc
-      const originalPosts = posts.filter((post) => post.originalid === null);
+    if (!currentLanguage) {
+      console.log('⚠️ No current language available for staff picks');
+      return;
+    }
 
-      // Sắp xếp theo comment giảm dần
-      const topOriginals = originalPosts
-        .sort((a, b) => (b.comments || 0) - (a.comments || 0))
-        .slice(0, 3);
+    // Use the new pagination API with language filter
+    const params = {
+      page: 1,
+      limit: 50,
+      languageid: currentLanguage.languageid,
+    };
 
-      // Map sang bản dịch nếu có
-      this.staffPicks = topOriginals.map((origPost) => {
-        const translated = posts.find(
-          (p) =>
-            p.originalid === origPost.postid &&
-            p.language.id === currentLanguage?.languageid
+    this.postService.getPostsWithPagination(params).subscribe({
+      next: (response) => {
+        const posts = response.data || [];
+        console.log(`📚 Received ${posts.length} posts for staff picks`);
+
+        // Since API already filters by language, just sort by comments and take top 3
+        this.staffPicks = posts
+          .sort((a: Post, b: Post) => {
+            return (b.comments || 0) - (a.comments || 0);
+          })
+          .slice(0, 3);
+
+        console.log(
+          `✅ Loaded ${this.staffPicks.length} staff picks for ${currentLanguage.locale_code}:`,
+          this.staffPicks.map((p) => ({
+            id: p.postid,
+            title: p.title,
+            lang: p.language?.locale_code,
+            comments: p.comments,
+          }))
         );
-        return translated || origPost;
-      });
+      },
+      error: (error) => {
+        console.error('❌ Failed to load staff picks:', error);
+        // Fallback to legacy method
+        this.loadStaffPicksLegacy();
+      },
+    });
+  }
 
-      console.log(
-        `✅ Loaded ${this.staffPicks.length} staff picks for ${currentLanguage?.locale_code}`,
-        this.staffPicks
-      );
+  private loadStaffPicksLegacy() {
+    console.log('📚 Using legacy method for staff picks');
+    this.postService.getPosts(1, 50).subscribe({
+      next: (posts) => {
+        const currentLanguage = this.languageService.getCurrentLanguage();
+
+        // Filter original posts only
+        const originalPosts = posts.filter((post) => post.originalid === null);
+
+        // Sort by comments
+        const topOriginals = originalPosts
+          .sort((a, b) => (b.comments || 0) - (a.comments || 0))
+          .slice(0, 3);
+
+        // Map to translations if available
+        this.staffPicks = topOriginals.map((origPost) => {
+          if (!currentLanguage) return origPost;
+
+          const translated = posts.find(
+            (p) =>
+              p.originalid === origPost.postid &&
+              p.language?.id === currentLanguage.languageid
+          );
+          return translated || origPost;
+        });
+
+        console.log(`✅ Legacy staff picks loaded: ${this.staffPicks.length}`);
+      },
+      error: (error) => {
+        console.error('❌ Legacy staff picks also failed:', error);
+        this.staffPicks = []; // Clear on error
+      },
     });
   }
 

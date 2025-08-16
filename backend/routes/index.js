@@ -19,6 +19,6 @@ router.use("/languages", languageRoutes);
 router.use("/comments", commentRouter);
 router.use("/upload", uploadRoutes);
 router.use("/roles", roleRoutes);
-router.use("/users", userRoutes); // Mount user routes at root level
+router.use("/", userRoutes); // Mount user routes at root level
 
 module.exports = router;

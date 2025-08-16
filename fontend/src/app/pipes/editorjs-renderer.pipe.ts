@@ -1,10 +1,12 @@
-import { Pipe, type PipeTransform } from '@angular/core';
+import { Pipe, type PipeTransform, inject } from '@angular/core';
+import { ImageService } from '../services/image.service';
 
 @Pipe({
   name: 'editorjsRenderer',
   standalone: true,
 })
 export class EditorjsRendererPipe implements PipeTransform {
+  private imageService = inject(ImageService);
   // Clean RTF formatting codes from text
   private cleanRTFCodes(text: string): string {
     if (!text || typeof text !== 'string') return text;
@@ -54,12 +56,12 @@ export class EditorjsRendererPipe implements PipeTransform {
     }
 
     // Replace numeric entities like &#160; (non-breaking space)
-    decodedText = decodedText.replace(/&#(\d+);/g, (match, num) => {
+    decodedText = decodedText.replace(/&#(\d+);/g, (_, num) => {
       return String.fromCharCode(parseInt(num, 10));
     });
 
     // Replace hex entities like &#x00A0;
-    decodedText = decodedText.replace(/&#x([0-9A-Fa-f]+);/g, (match, hex) => {
+    decodedText = decodedText.replace(/&#x([0-9A-Fa-f]+);/g, (_, hex) => {
       return String.fromCharCode(parseInt(hex, 16));
     });
 
@@ -187,13 +189,42 @@ export class EditorjsRendererPipe implements PipeTransform {
         return `<div class="text-center my-8"><span class="text-2xl text-gray-400">* * *</span></div>`;
 
       case 'image':
-        const caption = block.data.caption
-          ? `<figcaption class="text-sm text-gray-500 text-center mt-2">${block.data.caption}</figcaption>`
+        const originalImageUrl = block.data.file?.url || '';
+        const imageCaption = block.data.caption || '';
+        const caption = imageCaption
+          ? `<figcaption class="text-sm text-gray-500 text-center mt-2">${imageCaption}</figcaption>`
           : '';
+
+        // Optimize image URL for better loading
+        const optimizedImageUrl = this.imageService.getOptimizedPostImage(
+          originalImageUrl,
+          'content'
+        );
+
+        // Add error handling and loading optimization for images
         return `<figure class="mb-6">
-          <img src="${block.data.file?.url || ''}" alt="${
-          block.data.caption || ''
-        }" class="w-full rounded-lg shadow-sm">
+          <img
+            src="${optimizedImageUrl}"
+            alt="${imageCaption}"
+            class="w-full rounded-lg shadow-sm transition-opacity duration-300"
+            loading="lazy"
+            onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
+            onload="this.nextElementSibling.style.display='none'; this.style.opacity='1';"
+            style="opacity: 0;"
+          >
+          <div class="hidden bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+            <div class="text-gray-500">
+              <i class="fas fa-image text-2xl mb-2"></i>
+              <p class="text-sm">Image failed to load</p>
+              <p class="text-xs text-gray-400 mt-1 break-all">${originalImageUrl}</p>
+              <button
+                onclick="window.open('${originalImageUrl}', '_blank')"
+                class="mt-2 px-3 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600"
+              >
+                Open in new tab
+              </button>
+            </div>
+          </div>
           ${caption}
         </figure>`;
 

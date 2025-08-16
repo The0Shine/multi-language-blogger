@@ -7,6 +7,7 @@ import { ApiResponse } from '../models/api-response.model';
 export interface User {
   userid: number;
   username: string;
+  email: string;
   first_name: string;
   last_name: string;
   roleid: number;
@@ -26,6 +27,7 @@ export interface RegisterData {
   first_name: string;
   last_name: string;
   username: string;
+  email: string;
   password: string;
   password_confirmation: string;
 }
@@ -124,8 +126,9 @@ export class AuthService {
                 userid: payload.userid,
                 roleid: payload.roleid,
                 username: credentials.username,
-                first_name: '',
-                last_name: '',
+                email: payload.email || '',
+                first_name: payload.first_name || '',
+                last_name: payload.last_name || '',
               };
               localStorage.setItem('user', JSON.stringify(user));
               this.currentUserSubject.next(user);
@@ -148,6 +151,7 @@ export class AuthService {
         first_name: userData.first_name,
         last_name: userData.last_name,
         username: userData.username,
+        email: userData.email,
         password: userData.password,
         password_confirmation: userData.password_confirmation,
       })
@@ -175,14 +179,32 @@ export class AuthService {
     this.router.navigate(['/login']);
   }
 
+  clearSession(): void {
+    // Clear session without redirecting (for login preparation)
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('user');
+    this.currentUserSubject.next(null);
+    this.isAuthenticatedSubject.next(false);
+  }
+
   getCurrentUser(): User | null {
     return this.currentUserSubject.value;
   }
 
   getProfile(): Observable<User> {
-    return this.httpService.get<User>('/auth/profile').pipe(
-      map((response) => response.data),
+    console.log(
+      '🔄 AuthService: Getting current user profile via /users/profile'
+    );
+
+    return this.httpService.get<any>('/users/profile').pipe(
+      map((response) => {
+        console.log('🔍 AuthService: Raw API response:', response);
+        // API returns nested structure: { data: { data: actualUserData } }
+        return response.data.data;
+      }),
       tap((user) => {
+        console.log('✅ AuthService: Profile fetched successfully:', user);
         localStorage.setItem('user', JSON.stringify(user));
         this.currentUserSubject.next(user);
       })
@@ -190,10 +212,29 @@ export class AuthService {
   }
 
   updateProfile(userData: Partial<User>): Observable<User> {
-    return this.httpService.put<User>('/auth/profile', userData).pipe(
-      map((response) => response.data),
+    console.log('🔄 AuthService: Updating profile via /users endpoint');
+
+    // Get current user ID from localStorage
+    const userString = localStorage.getItem('user');
+    const currentUser = userString ? JSON.parse(userString) : null;
+    const userid = currentUser?.userid;
+
+    if (!userid) {
+      console.error('🔄 AuthService: No userid found for profile update');
+      throw new Error('User ID not found. Please login again.');
+    }
+
+    console.log('🔄 AuthService: Updating profile for userid:', userid);
+    console.log('🔄 AuthService: Update data:', userData);
+
+    return this.httpService.put<any>(`/users/${userid}`, userData).pipe(
+      map((response) => {
+        console.log('🔍 AuthService: Raw update response:', response);
+        // API returns nested structure: { data: { data: actualUserData } }
+        return response.data.user || response.data.data || response.data;
+      }),
       tap((user) => {
-        console.log(user);
+        console.log('✅ AuthService: Profile updated successfully:', user);
         localStorage.setItem('user', JSON.stringify(user));
         this.currentUserSubject.next(user);
       })
@@ -210,22 +251,27 @@ export class AuthService {
       .pipe(map((response) => response.data));
   }
 
-  refreshToken(): Observable<AuthResponse> {
+  refreshToken(): Observable<any> {
     const refreshToken = localStorage.getItem('refreshToken');
     if (!refreshToken) {
       throw new Error('No refresh token available');
     }
 
     return this.httpService
-      .post<AuthResponse>('/auth/refresh-token', { refreshToken })
+      .post<any>('/auth/refresh-token', { refreshToken })
       .pipe(
-        map((response) => response.data),
+        map((response) => {
+          console.log('🔄 Refresh token response:', response);
+          // Backend returns: { success: true, data: { message: "...", accessToken: "..." } }
+          return {
+            token: response.data.accessToken,
+            refreshToken: refreshToken, // Keep existing refresh token
+          };
+        }),
         tap((authData) => {
+          console.log('✅ Refresh token successful, updating localStorage');
           localStorage.setItem('accessToken', authData.token);
-          if (authData.refreshToken) {
-            localStorage.setItem('refreshToken', authData.refreshToken);
-          }
-          // User data should remain the same, no need to update
+          // Keep existing refresh token
         })
       );
   }

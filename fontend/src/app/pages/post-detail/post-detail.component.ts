@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { CommonModule } from '@angular/common';
@@ -41,6 +41,7 @@ export class PostDetailComponent implements OnInit, OnDestroy {
   private languageSubscription?: Subscription;
 
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
   private postService = inject(PostService);
   private languageService = inject(LanguageService);
 
@@ -50,9 +51,14 @@ export class PostDetailComponent implements OnInit, OnDestroy {
       const id = params.get('id');
       if (id) {
         console.log('PostDetail: Route changed to post ID:', id);
+        // Reset language switching state for new post
+        this.isLanguageSwitching = false;
+        this.lastLanguageId = null;
+        this.translationCache.clear();
+
         this.loadPost(id);
         this.loadComments(id);
-        this.loadTranslations(id);
+        // loadTranslations is called inside loadPost now
       }
     });
 
@@ -73,9 +79,18 @@ export class PostDetailComponent implements OnInit, OnDestroy {
           ) {
             console.log(
               'PostDetail: Language changed to',
-              language.language_name
+              language.language_name,
+              'ID:',
+              language.languageid
             );
             this.switchToLanguageVersionOptimized(language.languageid);
+          } else if (language && !this.lastLanguageId) {
+            // Initial language load - just track it
+            this.lastLanguageId = language.languageid;
+            console.log(
+              'PostDetail: Initial language set to',
+              language.language_name
+            );
           }
         },
         error: (error) => {
@@ -111,6 +126,10 @@ export class PostDetailComponent implements OnInit, OnDestroy {
 
         console.log('PostDetail: Loaded post:', post?.title || 'Unknown');
         console.log('PostDetail: Original post ID:', this.originalPostId);
+        console.log('PostDetail: Post language:', post?.language?.locale_code);
+
+        // Load translations for language switching
+        this.loadTranslations(this.originalPostId);
       },
       error: (error) => {
         console.error('PostDetail: Failed to load post:', error);
@@ -179,23 +198,91 @@ export class PostDetailComponent implements OnInit, OnDestroy {
       // Cache the translation for future use
       this.translationCache.set(languageId, targetTranslation);
 
-      // Optimistic update: Show loading state immediately
+      // Load the translation post
       this.loadPostOptimized(targetTranslation.postid.toString());
     } else {
-      // Check if current language is the original language
-      const currentLanguage = this.languageService.getCurrentLanguage();
-      if (currentLanguage && this.post?.language?.id === languageId) {
+      // Check if current post is already in the target language
+      if (this.post?.language?.id === languageId) {
         console.log('PostDetail: Already viewing post in selected language');
         this.isLanguageSwitching = false;
         return;
       }
 
-      // Load original post
-      console.log('PostDetail: No translation found, loading original post');
-      this.loadPostOptimized(this.originalPostId);
+      // No translation found - try to find post in target language via API
+      console.log(
+        'PostDetail: No translation found, searching for post in target language'
+      );
+      this.findPostInTargetLanguage(languageId);
+    }
+  }
+
+  // Find post in target language when no direct translation exists
+  private findPostInTargetLanguage(languageId: number) {
+    if (!this.originalPostId) {
+      console.error('PostDetail: No original post ID available');
+      this.isLanguageSwitching = false;
+      return;
     }
 
-    this.isLanguageSwitching = false;
+    // Try to get the original post and its translations
+    this.postService.getPostTranslations(+this.originalPostId).subscribe({
+      next: (response) => {
+        if (response.success && response.data) {
+          const allTranslations = response.data.translations || [];
+
+          // Update our translations cache
+          this.translations = allTranslations;
+
+          // Look for the target language in updated translations
+          const targetTranslation = allTranslations.find(
+            (t: any) => t.languageid === languageId
+          );
+
+          if (targetTranslation) {
+            console.log(
+              'PostDetail: Found translation via API:',
+              targetTranslation.postid
+            );
+            this.translationCache.set(languageId, targetTranslation);
+            this.loadPostOptimized(targetTranslation.postid.toString());
+          } else {
+            // Still no translation - check if original post is in target language
+            this.postService.getPost(+this.originalPostId!).subscribe({
+              next: (originalPost) => {
+                if (originalPost?.language?.id === languageId) {
+                  console.log(
+                    'PostDetail: Original post is in target language'
+                  );
+                  this.loadPostOptimized(this.originalPostId!);
+                } else {
+                  console.log(
+                    'PostDetail: No version available in target language, staying with current'
+                  );
+                  // Stay with current post but update language tracking
+                  this.isLanguageSwitching = false;
+                }
+              },
+              error: (error) => {
+                console.error(
+                  'PostDetail: Failed to check original post language:',
+                  error
+                );
+                this.isLanguageSwitching = false;
+              },
+            });
+          }
+        } else {
+          console.log(
+            'PostDetail: No translations available, staying with current post'
+          );
+          this.isLanguageSwitching = false;
+        }
+      },
+      error: (error) => {
+        console.error('PostDetail: Failed to fetch translations:', error);
+        this.isLanguageSwitching = false;
+      },
+    });
   }
 
   // Optimized post loading with minimal UI disruption
@@ -214,16 +301,34 @@ export class PostDetailComponent implements OnInit, OnDestroy {
         // Load comments in background without disrupting UI
         this.loadCommentsOptimized(postId);
 
+        // Update URL to reflect the new post
+        this.updateUrlForPost(postId);
+
         console.log(
           'PostDetail: Optimized post load complete:',
-          post?.title || 'Unknown'
+          post?.title || 'Unknown',
+          'Language:',
+          post?.language?.locale_code
         );
+
+        // Clear language switching flag
+        this.isLanguageSwitching = false;
       },
       error: (error) => {
         console.error('PostDetail: Optimized post load failed:', error);
         // Graceful fallback - don't disrupt user experience
+        this.isLanguageSwitching = false;
       },
     });
+  }
+
+  // Update URL to reflect current post without triggering reload
+  private updateUrlForPost(postId: string) {
+    // Only update if the URL postId is different
+    const currentPostId = this.route.snapshot.paramMap.get('id');
+    if (currentPostId !== postId) {
+      this.router.navigate(['/post', postId], { replaceUrl: true });
+    }
   }
 
   // Optimized comment loading

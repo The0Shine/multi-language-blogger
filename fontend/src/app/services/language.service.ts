@@ -78,7 +78,7 @@ export class LanguageService {
         this.setCurrentLanguage({
           languageid: 1,
           language_name: 'English',
-          locale_code: 'en_US',
+          locale_code: 'en',
           status: 1,
           created_at: new Date(),
           updated_at: new Date(),
@@ -145,6 +145,19 @@ export class LanguageService {
 
   // Get translations for a specific locale
   private getTranslationsForLocale(localeCode: string): Translation {
+    // Map short codes to long codes for backward compatibility
+    const localeMapping: { [key: string]: string } = {
+      en: 'en_US',
+      vi: 'vi_VN',
+      fr: 'fr_FR',
+      zh: 'zh_CN',
+    };
+
+    const mappedLocale = localeMapping[localeCode] || localeCode;
+    console.log(
+      `LanguageService: Mapping locale '${localeCode}' to '${mappedLocale}'`
+    );
+
     const translations: { [locale: string]: Translation } = {
       en_US: {
         // Navigation
@@ -187,6 +200,7 @@ export class LanguageService {
         'profile.first_name': 'First Name',
         'profile.last_name': 'Last Name',
         'profile.username': 'Username',
+        'profile.email': 'Email',
         'profile.update': 'Update Profile',
         'profile.change_password': 'Change Password',
         'profile.current_password': 'Current Password',
@@ -266,6 +280,7 @@ export class LanguageService {
         'profile.first_name': 'Tên',
         'profile.last_name': 'Họ',
         'profile.username': 'Tên đăng nhập',
+        'profile.email': 'Email',
         'profile.update': 'Cập nhật hồ sơ',
         'profile.change_password': 'Đổi mật khẩu',
         'profile.current_password': 'Mật khẩu hiện tại',
@@ -343,6 +358,7 @@ export class LanguageService {
         'profile.first_name': 'Prénom',
         'profile.last_name': 'Nom',
         'profile.username': 'Nom d’utilisateur',
+        'profile.email': 'Email',
         'profile.update': 'Mettre à jour le profil',
         'profile.change_password': 'Changer le mot de passe',
         'profile.current_password': 'Mot de passe actuel',
@@ -423,6 +439,7 @@ export class LanguageService {
         'profile.first_name': 'Vorname',
         'profile.last_name': 'Nachname',
         'profile.username': 'Benutzername',
+        'profile.email': 'E-Mail',
         'profile.update': 'Profil aktualisieren',
         'profile.change_password': 'Passwort ändern',
         'profile.current_password': 'Aktuelles Passwort',
@@ -503,6 +520,7 @@ export class LanguageService {
         'profile.first_name': '이름',
         'profile.last_name': '성',
         'profile.username': '사용자 이름',
+        'profile.email': '이메일',
         'profile.update': '프로필 업데이트',
         'profile.change_password': '비밀번호 변경',
         'profile.current_password': '현재 비밀번호',
@@ -583,6 +601,7 @@ export class LanguageService {
         'profile.first_name': '名字',
         'profile.last_name': '姓氏',
         'profile.username': '用户名',
+        'profile.email': '邮箱',
         'profile.update': '更新资料',
         'profile.change_password': '修改密码',
         'profile.current_password': '当前密码',
@@ -620,9 +639,15 @@ export class LanguageService {
         'message.post_updated': '文章更新成功',
         'message.post_deleted': '文章删除成功',
       },
-      // TODO: fr_FR, de_DE, ko_KR, zh_CN — sẽ copy từ en_US làm mặc định để không thiếu key
+      // TODO: de_DE, ko_KR — sẽ copy từ en_US làm mặc định để không thiếu key
     };
 
-    return translations[localeCode] || translations['en_US'];
+    const result = translations[mappedLocale] || translations['en_US'];
+    console.log(
+      `LanguageService: Using translations for '${mappedLocale}', found: ${!!translations[
+        mappedLocale
+      ]}`
+    );
+    return result;
   }
 }

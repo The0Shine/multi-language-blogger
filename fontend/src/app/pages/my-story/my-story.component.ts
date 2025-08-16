@@ -95,9 +95,9 @@ export class MyStoryComponent implements OnInit, OnDestroy {
   // Status options
   statusOptions = [
     { value: 'all', label: 'All Posts' },
-    { value: '0', label: 'Draft' },
+    { value: '0', label: 'Pending' }, // Sửa từ 'Peding' thành 'Pending'
     { value: '1', label: 'Published' },
-    { value: '2', label: 'Rejected' },
+    { value: '-1', label: 'Rejected' },
   ];
 
   ngOnInit() {
@@ -385,9 +385,20 @@ export class MyStoryComponent implements OnInit, OnDestroy {
 
   viewPost(post: Post) {
     this.closeActionMenu();
+
+    // Chỉ cho phép xem post đã được publish (status = 1)
+    if (post.status !== 1) {
+      this.toastService.warning(
+        this.languageService.translate('message.post_not_published')
+      );
+      return;
+    }
+
     this.router.navigate(['/post', post.postid]);
   }
-
+  canViewPost(post: Post): boolean {
+    return post.status === 1; // Chỉ cho phép xem post published
+  }
   confirmDeletePost(post: Post) {
     console.log('🗑️ Confirm delete post:', post);
     this.postToDelete = post;
@@ -475,10 +486,10 @@ export class MyStoryComponent implements OnInit, OnDestroy {
   getStatusLabel(status: number): string {
     switch (status) {
       case 0:
-        return 'Draft';
+        return 'Pending'; // Sửa lỗi chính tả từ 'Peding' thành 'Pending'
       case 1:
         return 'Published';
-      case 2:
+      case -1:
         return 'Rejected';
       default:
         return 'Unknown';
@@ -488,10 +499,10 @@ export class MyStoryComponent implements OnInit, OnDestroy {
   getStatusClass(status: number): string {
     switch (status) {
       case 0:
-        return 'status-draft';
+        return 'status-pending';
       case 1:
         return 'status-published';
-      case 2:
+      case -1:
         return 'status-rejected';
       default:
         return 'status-unknown';

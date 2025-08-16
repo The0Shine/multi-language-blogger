@@ -50,7 +50,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
           return authService.refreshToken().pipe(
             switchMap((authData) => {
               isRefreshing = false;
-              console.log('Token refreshed successfully');
+              console.log('Token refreshed successfully:', authData);
 
               // Retry the original request with new token
               const newAuthReq = req.clone({

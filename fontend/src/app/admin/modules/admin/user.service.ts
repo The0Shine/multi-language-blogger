@@ -5,7 +5,7 @@ import { map } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
 export class AdminUserService {
-  private apiUrl = 'http://localhost:4000/api/users';
+  private apiUrl = 'http://localhost:4000/api';
 
   constructor(private http: HttpClient) {}
 

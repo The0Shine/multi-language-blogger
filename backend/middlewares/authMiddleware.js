@@ -31,7 +31,7 @@ const authMiddleware = {
         include: [
           {
             model: Role,
-            as: "Role", // 🔁 alias phải khớp association
+            as: "role", // 🔁 alias phải khớp association (lowercase)
             attributes: ["roleid", "name", "status", "deleted_at"],
           },
         ],
@@ -40,9 +40,9 @@ const authMiddleware = {
       // Chặn user/role không hợp lệ hoặc role inactive/soft-deleted
       if (
         !user ||
-        !user.Role ||
-        user.Role.deleted_at ||
-        user.Role.status === 0
+        !user.role ||
+        user.role.deleted_at ||
+        user.role.status === 0
       ) {
         return responseUtils.unauthorized(res, "Invalid user or role.");
       }
@@ -51,7 +51,7 @@ const authMiddleware = {
         userid: user.userid,
         roleid: user.roleid,
         username: user.username,
-        roleName: String(user.Role.name || "").toLowerCase(),
+        roleName: String(user.role.name || "").toLowerCase(),
       };
 
       next();

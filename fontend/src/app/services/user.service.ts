@@ -15,6 +15,7 @@ interface BackendUser {
 export interface UserProfile {
   userid: number;
   username: string;
+  email: string;
   first_name: string;
   last_name: string;
   roleid: number;
@@ -101,10 +102,19 @@ export class UserService {
   }
 
   updateProfile(profileData: UpdateUserRequest): Observable<UserProfile> {
-    return this.httpService.put<any>('/auth/profile', profileData).pipe(
+    console.log('🔄 UserService: Updating profile via /users/profile endpoint');
+    console.log('🔄 UserService: Profile data:', profileData);
+
+    // Use /users/profile endpoint - no userid needed (gets from JWT token)
+    return this.httpService.put<any>('/users/profile', profileData).pipe(
       map((response: any) => {
-        const userData: BackendUser = response.data.user || response.data;
-        return this.mapUserToFrontend(userData);
+        console.log('✅ UserService: Profile update response:', response);
+        // Handle nested response structure: { data: { data: actualUserData } }
+        const userData: BackendUser =
+          response.data.user || response.data.data || response.data;
+        const mappedUser = this.mapUserToFrontend(userData);
+        console.log('✅ UserService: Mapped user data:', mappedUser);
+        return mappedUser;
       })
     );
   }
@@ -121,6 +131,7 @@ export class UserService {
     return {
       userid: user.userid,
       username: user.username,
+      email: user.email || '',
       first_name: user.first_name,
       last_name: user.last_name,
       roleid: user.roleid,

@@ -20,6 +20,7 @@ router.get(
 // Public routes
 router.get("/", postController.index);
 router.get("/search", postController.search);
+router.get("/search/suggestions", postController.searchSuggestions);
 router.get("/my-posts", authenticate, postController.getMyPosts);
 router.get("/:postid", postController.show);
 router.get("/:postid/translations", postController.getTranslations);

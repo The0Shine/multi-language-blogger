@@ -18,6 +18,7 @@ interface ProfileUpdateData {
   first_name: string;
   last_name: string;
   username: string;
+  email: string;
 }
 
 @Component({
@@ -37,6 +38,7 @@ export class ProfileComponent implements OnInit {
     first_name: '',
     last_name: '',
     username: '',
+    email: '',
   };
 
   // Password form data
@@ -65,6 +67,7 @@ export class ProfileComponent implements OnInit {
 
   ngOnInit() {
     this.debugTokens();
+    this.debugLocalStorageUser();
     this.loadUserProfile();
   }
 
@@ -81,27 +84,91 @@ export class ProfileComponent implements OnInit {
     console.log('User:', localStorage.getItem('user') ? 'exists' : 'not found');
   }
 
-  loadUserProfile() {
-    this.isLoading = true;
-    this.authService.currentUser$.subscribe({
-      next: (user) => {
-        if (user) {
-          this.currentUser = user;
-          this.profileData = {
-            first_name: user.first_name || '',
-            last_name: user.last_name || '',
-            username: user.username || '',
-          };
+  debugLocalStorageUser() {
+    console.log('=== LocalStorage User Debug ===');
+    const userStr = localStorage.getItem('user');
+
+    if (userStr) {
+      try {
+        const user = JSON.parse(userStr);
+        console.log('👤 Raw localStorage user:', userStr);
+        console.log('👤 Parsed user object:', user);
+        console.log('👤 User structure check:');
+        console.log('  - userid:', user.userid);
+        console.log('  - username:', user.username);
+        console.log('  - email:', user.email);
+        console.log('  - first_name:', user.first_name);
+        console.log('  - last_name:', user.last_name);
+        console.log('  - roleName:', user.roleName);
+
+        // Check if required fields are missing
+        const missingFields = [];
+        if (!user.first_name) missingFields.push('first_name');
+        if (!user.last_name) missingFields.push('last_name');
+        if (!user.username) missingFields.push('username');
+
+        if (missingFields.length > 0) {
+          console.warn('⚠️ Missing required fields:', missingFields);
         } else {
+          console.log('✅ All required fields present');
+        }
+
+        // Check field types
+        console.log('👤 Field types:');
+        console.log('  - first_name type:', typeof user.first_name);
+        console.log('  - last_name type:', typeof user.last_name);
+        console.log('  - email type:', typeof user.email);
+      } catch (error) {
+        console.error('❌ Error parsing localStorage user:', error);
+      }
+    } else {
+      console.warn('⚠️ No user data in localStorage');
+    }
+  }
+
+  loadUserProfile() {
+    console.log('👤 ProfileComponent: Loading user profile...');
+    this.isLoading = true;
+
+    // Simply load fresh profile data from API every time
+    this.authService.getProfile().subscribe({
+      next: (user) => {
+        console.log('👤 ProfileComponent: Profile data loaded from API:', user);
+
+        this.currentUser = user;
+        this.setProfileDataFromUser(user);
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.error('👤 ProfileComponent: Error loading profile:', error);
+
+        // If API fails, try to use localStorage data as fallback
+        const currentUser = this.authService.getCurrentUser();
+        if (currentUser) {
+          console.warn(
+            '👤 ProfileComponent: Using localStorage data as fallback'
+          );
+          this.currentUser = currentUser;
+          this.setProfileDataFromUser(currentUser);
+        } else {
+          console.warn(
+            '👤 ProfileComponent: No data available, redirecting to login'
+          );
           this.router.navigate(['/login']);
         }
         this.isLoading = false;
       },
-      error: (error) => {
-        console.error('Error loading user profile:', error);
-        this.isLoading = false;
-      },
     });
+  }
+
+  private setProfileDataFromUser(user: any) {
+    this.profileData = {
+      first_name: user.first_name || '',
+      last_name: user.last_name || '',
+      username: user.username || '',
+      email: user.email || '',
+    };
+    console.log('👤 ProfileComponent: Profile data set:', this.profileData);
   }
 
   // Profile update methods

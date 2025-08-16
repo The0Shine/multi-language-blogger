@@ -64,11 +64,22 @@ const authController = {
       }
 
       // Nếu không có token → cho login
-      const { accessToken, refreshToken } = await authService.login(req.body);
+      const { accessToken, refreshToken, user } = await authService.login(
+        req.body
+      );
       return responseUtils.ok(res, {
         message: "Login successful.",
         accessToken,
         refreshToken,
+        user: {
+          userid: user.userid,
+          first_name: user.first_name,
+          last_name: user.last_name,
+          email: user.email,
+          username: user.username,
+          roleid: user.roleid,
+          roleName: user.role?.name || "user",
+        },
       });
     } catch (error) {
       console.error("Login error:", error);

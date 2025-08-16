@@ -6,8 +6,7 @@ import { LoginComponent } from './pages/auth/login/login.component';
 import { ProfileComponent } from './pages/profile/profile.component';
 import { MyStoryComponent } from './pages/my-story/my-story.component';
 import { PostDetailComponent } from './pages/post-detail/post-detail.component';
-import { authGuard } from './guards/auth.guard';
-import { adminGuard, userGuard, adminOrUserGuard } from './guards/role.guard';
+import { adminGuard, adminOrUserGuard } from './guards/role.guard';
 import { redirectGuard } from './guards/redirect.guard';
 
 // Admin imports
@@ -32,15 +31,23 @@ export const routes: Routes = [
   { path: 'post/:id', component: PostDetailComponent },
   { path: 'role-test', component: RoleTestComponent },
 
-  // User routes (require user role)
-  { path: 'write', component: WriteComponent, canActivate: [userGuard] },
-  { path: 'write/:id', component: WriteComponent, canActivate: [userGuard] },
+  // User routes (accessible by both admin and user)
+  { path: 'write', component: WriteComponent, canActivate: [adminOrUserGuard] },
+  {
+    path: 'write/:id',
+    component: WriteComponent,
+    canActivate: [adminOrUserGuard],
+  },
   {
     path: 'profile',
     component: ProfileComponent,
     canActivate: [adminOrUserGuard],
   },
-  { path: 'my-story', component: MyStoryComponent, canActivate: [userGuard] },
+  {
+    path: 'my-story',
+    component: MyStoryComponent,
+    canActivate: [adminOrUserGuard],
+  },
 
   // Admin routes (require admin role)
   {

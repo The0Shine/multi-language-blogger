@@ -349,7 +349,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   private setFallbackEnglishLanguage() {
     this.availableLanguages = [
       {
-        code: 'en_US',
+        code: 'en',
         name: 'English',
         flag: '🇺🇸',
         languageid: 1,
@@ -363,7 +363,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.languageService.setCurrentLanguage({
       languageid: 1,
       language_name: 'English',
-      locale_code: 'en_US',
+      locale_code: 'en',
       status: 1,
       created_at: new Date(),
       updated_at: new Date(),
@@ -372,12 +372,21 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   private getLanguageFlag(localeCode: string): string {
     const flags: { [key: string]: string } = {
+      // Existing languages
       en_US: '🇺🇸',
+      en: '🇺🇸',
       vi_VN: '🇻🇳',
-      zh_CN: '🇨🇳',
+      vi: '🇻🇳',
       fr_FR: '🇫🇷',
-      de_DE: '🇩🇪',
+      fr: '🇫🇷',
+      // New languages
       es_ES: '🇪🇸',
+      es: '🇪🇸',
+      'zh-CN': '🇨🇳',
+      zh_CN: '🇨🇳',
+      zh: '🇨🇳',
+      de_DE: '🇩🇪',
+      de: '🇩🇪',
     };
 
     return flags[localeCode] || '🌍';

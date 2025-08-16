@@ -27,10 +27,15 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.TEXT,
         allowNull: true,
       },
+      search_summary: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        comment: "Auto-generated search summary for better search results",
+      },
       status: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        defaultValue: 0,
+        defaultValue: 0, // Default to pending status (0 = pending, 1 = approved, -1 = rejected)
         validate: {
           isIn: [[-1, 0, 1]],
         },

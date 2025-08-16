@@ -9,6 +9,12 @@ const authMiddleware = require("middlewares/authMiddleware");
 // 🔐 Require login cho toàn bộ route
 router.use(authMiddleware.authenticate);
 
+// Current user: get own profile
+router.get("/users/profile", userController.getCurrentUserProfile);
+
+// Current user: update own profile
+router.put("/users/profile", userController.updateCurrentUserProfile);
+
 // Owner hoặc Admin: xem profile
 router.get(
   "/users/:userid",
@@ -65,6 +71,5 @@ router.get(
   authMiddleware.requireRoles("admin"),
   userController.getDetailedUserStats
 );
-
 
 module.exports = router;
