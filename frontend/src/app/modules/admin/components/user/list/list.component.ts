@@ -424,41 +424,41 @@ private getRoleNameById(roleid: number): string {
     this.showDeleteModal = true;
   }
 
-  confirmDeleteUser() {
-    if (!this.selectedUser?.id) {
-      alert('Xóa thất bại: Không có ID người dùng!');
-      console.error('Không có ID để xóa!');
-      return;
-    }
-
-    this.userService.deleteUser(this.selectedUser.id).subscribe({
-      next: () => {
-        // Xóa user khỏi danh sách hiện tại
-        this.users = this.users.filter(
-          (u) => u.userid !== this.selectedUser.id
-        );
-
-        // Tính lại danh sách user sau khi lọc và phân trang
-        const filtered = this.filteredUsers();
-        const totalAfterDelete = filtered.length;
-        const totalPages = Math.ceil(totalAfterDelete / this.pageSize);
-        const startIndex = (this.currentPage - 1) * this.pageSize;
-
-        // Nếu không còn user nào ở trang hiện tại (nhưng vẫn còn user ở trang trước)
-        if (startIndex >= totalAfterDelete && this.currentPage > 1) {
-          this.changePage(this.currentPage - 1); // 👈 chỉ lùi về 1 trang
-        }
-
-        this.isSuccess = true;
-        this.closeDeleteModal();
-      },
-      error: (err) => {
-        alert('Thất bại! - Xóa user không thành công.');
-        console.error('Xóa lỗi:', err);
-        this.isSuccess = false;
-      },
-    });
+confirmDeleteUser() {
+  if (!this.selectedUser?.userid) {
+    alert('Xóa thất bại: Không có ID người dùng!');
+    console.error('Không có ID để xóa!');
+    return;
   }
+
+  this.userService.deleteUser(this.selectedUser.userid).subscribe({
+    next: () => {
+      // ✅ Sửa lại: dùng userid thay vì id
+      this.users = this.users.filter(
+        (u) => u.userid !== this.selectedUser.userid
+      );
+
+      // Cập nhật lại danh sách phân trang
+      const filtered = this.filteredUsers();
+      const totalAfterDelete = filtered.length;
+      const totalPages = Math.ceil(totalAfterDelete / this.pageSize);
+      const startIndex = (this.currentPage - 1) * this.pageSize;
+
+      if (startIndex >= totalAfterDelete && this.currentPage > 1) {
+        this.changePage(this.currentPage - 1);
+      }
+
+      this.isSuccess = true;
+      this.closeDeleteModal();
+    },
+    error: (err) => {
+      alert('Thất bại! - Xóa user không thành công.');
+      console.error('Xóa lỗi:', err);
+      this.isSuccess = false;
+    },
+  });
+}
+
 
   closeDeleteModal() {
     this.showDeleteModal = false;

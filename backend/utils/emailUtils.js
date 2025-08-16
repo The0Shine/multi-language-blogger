@@ -17,7 +17,15 @@ const emailUtils = {
             to: email,
             subject: 'Password Reset Code',
             html: `
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                    <h2>Password Reset Request</h2>
+                    <p>You have requested to reset your password. Please use the following code to reset your password:</p>
+                    <div style="background-color: #f4f4f4; padding: 20px; text-align: center; font-size: 24px; font-weight: bold; letter-spacing: 2px; margin: 20px 0;">
                         ${resetCode}
+                    </div>
+                    <p>This code will expire in 15 minutes.</p>
+                    <p>If you didn't request this password reset, please ignore this email.</p>
+                </div>
             `,
         };
         try {

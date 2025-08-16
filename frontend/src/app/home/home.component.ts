@@ -17,16 +17,24 @@ export class HomeComponent implements OnInit {
   stats = [
     { section: 'post/list', icon: 'fa fa-file-alt', value: 0, label: 'Posts' },
     { section: 'user/list', icon: 'fa fa-users', value: 0, label: 'Users' },
-    { section: 'category/list', icon: 'fa fa-tags', value: 0, label: 'Categories' },
-    { section: 'language/list', icon: 'fa fa-language', value: 0, label: 'Languages' },
+    {
+      section: 'category/list',
+      icon: 'fa fa-tags',
+      value: 0,
+      label: 'Categories',
+    },
+    {
+      section: 'language/list',
+      icon: 'fa fa-language',
+      value: 0,
+      label: 'Languages',
+    },
   ];
 
   users: any[] = [];
   recentPosts: any[] = [];
-selectedPost: any = null;
-isPostModalOpen = false;
-
-
+  selectedPost: any = null;
+  isPostModalOpen = false;
 
   constructor(
     private router: Router,
@@ -34,112 +42,119 @@ isPostModalOpen = false;
     private http: HttpClient,
     private userService: UserService,
     private categoryService: CategoryService,
-    private languageService: LanguageService,
+    private languageService: LanguageService
   ) {}
 
   ngOnInit() {
-    this.userService.getAllUsers().subscribe(users => {
+    this.userService.getAllUsers().subscribe((users) => {
       this.users = users;
       this.loadRecentPosts();
       this.loadCounts();
     });
   }
 
-  loadRecentPosts() {
-  this.postService.getAllPosts().subscribe((res: any) => {
-    const postsData = Array.isArray(res?.data?.data)
-      ? res.data.data
-      : Array.isArray(res)
-        ? res
-        : [];
+  // Trong file home.component.ts
 
-    const sorted = [...postsData]
-      .sort((a, b) =>
-        new Date(b.createdAt || '').getTime() -
-        new Date(a.createdAt || '').getTime()
+loadRecentPosts() {
+  this.postService.getAllPosts().subscribe((res: any) => {
+    const postsData = res?.data?.posts || [];
+
+    // 👉 Lọc bài viết chỉ lấy Published (status = 1) cho recentPosts
+    const publishedPosts = postsData.filter((p: any) => p.status === 1);
+
+    // 👉 Sắp xếp theo ngày tạo mới nhất rồi lấy 5 bài
+    const sorted = [...publishedPosts]
+      .sort(
+        (a, b) =>
+          new Date(b.createdAt || b.created_at || '').getTime() -
+          new Date(a.createdAt || a.created_at || '').getTime()
       )
       .slice(0, 5);
 
     this.recentPosts = sorted.map((p: any) => {
-      const user = this.users.find(u =>
-        String(u.id ?? u.userid) === String(p.user_id ?? p.userid)
+      const user = this.users.find(
+        (u) => String(u.id ?? u.userid) === String(p.user_id ?? p.userid)
       );
+
+      const rawDate = p.createdAt || p.created_at || p.date;
+
       return {
         ...p,
         username: user ? user.username : 'Unknown',
-        date: p.createdAt
-          ? new Date(p.createdAt).toLocaleDateString('vi-VN')
-          : 'N/A'
+        date: rawDate ? new Date(rawDate).toLocaleString('vi-VN') : 'N/A',
       };
     });
 
+    // 👉 Tổng số post = TẤT CẢ post (không lọc status)
     this.stats[0].value = postsData.length;
   });
 }
 
 
-loadCounts() {
-  this.stats[1].value = this.users.length;
 
-  this.categoryService.getCategories()
-    .subscribe(res => {
+  loadCounts() {
+    this.stats[1].value = this.users.length;
+
+    this.categoryService.getCategories().subscribe((res) => {
       const cats = res?.data?.data || [];
       this.stats[2].value = cats.length;
     });
 
-  this.languageService.getLanguages()
-    .subscribe(res => {
+    this.languageService.getLanguages().subscribe((res) => {
       const langs = res?.data?.data || [];
       this.stats[3].value = langs.length;
     });
-}
+  }
 
   getStatusText(status: number) {
     switch (status) {
-      case 1: return 'Published';
-      case -1: return 'Rejected';
-      default: return 'Pending Review';
+      case 1:
+        return 'Published';
+      case -1:
+        return 'Rejected';
+      default:
+        return 'Pending Review';
     }
   }
 
   navigateTo(section: string) {
     this.router.navigate([`/admin/${section}`]);
   }
-goToAllPosts(): void {
+  goToAllPosts(): void {
     this.router.navigate(['/admin/post/list']);
   }
 
-openPostDetailFromHome(postId: number) {
-  this.postService.getPostById(postId).subscribe((res: any) => {
-    console.log('Post detail response:', res);
-    if (res?.data?.data) {
-      const post = res.data.data;
+  // Trong file home.component.ts
 
-      // Lấy username
-      const user = this.users.find(u =>
-        String(u.id ?? u.userid) === String(post.userid)
-      );
-      post.username = user ? user.username : 'Unknown';
+  // Trong file home.component.ts
 
-      // Format ngày tạo
-      if (post.createdAt) {
-        post.date = new Date(post.createdAt).toLocaleDateString('vi-VN');
+  openPostDetailFromHome(postId: number) {
+    this.postService.getPostById(postId).subscribe((res: any) => {
+      console.log('API response for getPostById:', res);
+
+      // ✅ SỬA LẠI ĐIỀU KIỆN VÀ CÁCH LẤY DỮ LIỆU TẠI ĐÂY
+      if (res && res.data && res.data.post) {
+        // Lấy đúng object bài viết từ response.data.post
+        const post = res.data.post;
+
+        // Logic lấy username (giữ nguyên)
+        const user = this.users.find(
+          (u) => String(u.id ?? u.userid) === String(post.userid)
+        );
+        // Gán username vào đúng object post
+        post.username = user ? user.username : 'Unknown';
+
+        // Dòng quan trọng: Gán đúng object bài viết
+        this.selectedPost = post;
       } else {
-        post.date = 'N/A';
+        console.error('Không tìm thấy dữ liệu bài viết trong response:', res);
       }
+    });
+  }
 
-      this.selectedPost = post;
-      this.isPostModalOpen = true;
-    }
-  });
-}
-
-
-
-closePostModal() {
-  this.selectedPost = null;
-}
-
+  closePostModal() {
+    this.selectedPost = null;
+  }
 
   truncateTitle(title: string, wordLimit: number = 15): string {
     if (!title) return '';

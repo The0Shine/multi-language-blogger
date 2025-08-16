@@ -1,65 +1,61 @@
 // backend/routes/languageRoutes.js
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 
-const authMiddleware = require('middlewares/authMiddleware');
-const validateMiddleware = require('middlewares/validateMiddleware');
+const languageController = require("../modules/language/controllers/languageController");
+const languageValidation = require("../modules/language/validations/languageValidation");
+const validateMiddleware = require("../middlewares/validateMiddleware");
+const authMiddleware = require("../middlewares/authMiddleware");
 
-const languageValidation = require('modules/language/validations/languageValidation');
-const languageController = require('modules/language/controllers/languageController');
+// Public routes
+// Get all active languages
+router.get("/", languageController.getAll);
 
-// 🔐 All language APIs are admin-only
-router.use(authMiddleware.authenticate, authMiddleware.requireRoles('admin'));
+// Admin routes - require authentication and admin role
+router.use("/admin", authMiddleware.authenticate);
+router.use("/admin", authMiddleware.requireRoles("admin"));
 
-// List languages (optional ?onlyActive=1)
-router.get('/admin/languages', languageController.getAll);
+// Admin: Get all languages (including inactive)
+router.get("/admin/languages", languageController.getAll);
 
-// Get one language
+// Admin: Get language by ID
 router.get(
-  '/admin/languages/:languageid',
+  "/admin/languages/:languageid",
   languageValidation.getById,
   validateMiddleware,
   languageController.getById
 );
 
-// Create language
+// Admin: Create language
 router.post(
-  '/admin/languages',
+  "/admin/languages",
   languageValidation.create,
   validateMiddleware,
   languageController.create
 );
 
-// Update language
+// Admin: Update language
 router.put(
-  '/admin/languages/:languageid',
+  "/admin/languages/:languageid",
   languageValidation.update,
   validateMiddleware,
   languageController.update
 );
 
-// Soft delete language
+// Admin: Soft delete language
 router.delete(
-  '/admin/languages/:languageid',
+  "/admin/languages/:languageid",
   languageValidation.delete,
   validateMiddleware,
   languageController.delete
 );
 
-// Hard delete language
+// Admin: Hard delete language
 router.delete(
-  '/admin/languages/:languageid/hard',
+  "/admin/languages/:languageid/hard",
   languageValidation.delete,
   validateMiddleware,
   languageController.permanentDelete
-);
-
-// Restore soft-deleted language
-router.post(
-  '/admin/languages/:languageid/restore',
-  languageValidation.getById,
-  validateMiddleware,
-  languageController.restore
 );
 
 module.exports = router;

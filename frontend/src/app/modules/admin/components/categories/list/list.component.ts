@@ -91,7 +91,7 @@ closeEditConfirmModal() {
 
 
 deleteCategory(categoryId: number) {
-  this.categoryService.permanentDeleteCategory(categoryId).subscribe({
+  this.categoryService.deleteCategory(categoryId).subscribe({
     next: () => {
       this.categories = this.categories.filter(c => c.categoryid !== categoryId);
       const filtered = this.filteredCategories();

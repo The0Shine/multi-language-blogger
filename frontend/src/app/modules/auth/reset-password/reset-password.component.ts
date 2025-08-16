@@ -16,26 +16,31 @@ export class ResetPasswordComponent {
   errorMessage: string = '';
   successMessage: string = '';
   isLoading = false;
+  showNewPassword = false;
+showConfirmPassword = false;
 
   constructor(
     private fb: FormBuilder,
     private http: HttpClient,
     private router: Router
   ) {
-    this.resetForm = this.fb.group({
-      email: ['', [
-        Validators.required,
-        Validators.email
-      ]],
-      resetCode: ['', [
-        Validators.required,
-        Validators.pattern(/^\d{6}$/) // Mã 6 số
-      ]],
-      newPassword: ['', [
-        Validators.required,
-        Validators.minLength(6)
-      ]]
-    });
+   this.resetForm = this.fb.group({
+  email: ['', [
+    Validators.required,
+    Validators.email
+  ]],
+  resetCode: ['', [
+    Validators.required,
+    Validators.pattern(/^\d{6}$/)
+  ]],
+  newPassword: ['', [
+    Validators.required,
+    Validators.minLength(6)
+  ]],
+  confirmPassword: ['', [
+    Validators.required
+  ]]
+}, { validators: this.passwordMatchValidator });
   }
 
   get email() {
@@ -49,6 +54,10 @@ export class ResetPasswordComponent {
   get newPassword() {
     return this.resetForm.get('newPassword');
   }
+  get confirmPassword() {
+  return this.resetForm.get('confirmPassword');
+}
+
 
   onSubmit() {
     if (this.resetForm.invalid) {
@@ -78,4 +87,17 @@ export class ResetPasswordComponent {
       }
     });
   }
+  toggleNewPassword() {
+  this.showNewPassword = !this.showNewPassword;
+}
+
+toggleConfirmPassword() {
+  this.showConfirmPassword = !this.showConfirmPassword;
+}
+passwordMatchValidator(form: FormGroup) {
+  const pass = form.get('newPassword')?.value;
+  const confirmPass = form.get('confirmPassword')?.value;
+  return pass === confirmPass ? null : { passwordMismatch: true };
+}
+
 }

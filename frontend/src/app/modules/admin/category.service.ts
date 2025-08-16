@@ -8,10 +8,9 @@ export class CategoryService {
 
   constructor(private http: HttpClient) {}
 
- getCategories(): Observable<{ success: boolean; data: { message: string; data: any[] } }> {
-  return this.http.get<{ success: boolean; data: { message: string; data: any[] } }>(this.apiUrl);
-}
-
+  getCategories(): Observable<{ success: boolean; data: { message: string; data: any[] } }> {
+    return this.http.get<{ success: boolean; data: { message: string; data: any[] } }>(this.apiUrl);
+  }
 
   createCategory(category: any): Observable<any> {
     return this.http.post<any>(this.apiUrl, category);
@@ -26,10 +25,9 @@ export class CategoryService {
   }
 
   deleteCategory(id: number): Observable<any> {
+    // Chỉ giữ lại hàm này, nó đã gọi đúng API
     return this.http.delete<any>(`${this.apiUrl}/${id}`);
   }
 
-  permanentDeleteCategory(id: number): Observable<any> {
-    return this.http.delete<any>(`${this.apiUrl}/permanent/${id}`);
-  }
+  // ✅ ĐÃ XÓA BỎ HÀM permanentDeleteCategory()
 }

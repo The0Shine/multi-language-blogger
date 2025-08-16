@@ -16,6 +16,7 @@ export class RegisterComponent {
   registerForm: FormGroup;
   showPassword = false;
   errorMessage: string | null = null;
+  showConfirmPassword = false;
 
   constructor(
     private fb: FormBuilder,
@@ -47,6 +48,9 @@ export class RegisterComponent {
     this.showPassword = !this.showPassword;
     this.errorMessage = null;
   }
+  toggleConfirmPassword() {
+  this.showConfirmPassword = !this.showConfirmPassword;
+}
 
   private passwordsMatch(password: string, confirmPassword: string): boolean {
     return password === confirmPassword;

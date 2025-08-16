@@ -1,24 +1,24 @@
 const express = require("express");
 const router = express.Router();
 
-// Import module-specific routes
-const authRoutes = require("routes/authRoutes");
-const userRoutes = require("routes/userRoutes");
-const categoryRoutes = require("routes/categoryRoutes");
-const postRoutes = require("routes/postRoutes");
-const roleRoutes = require("routes/roleRoutes");
-const languageRoutes = require("routes/languageRoutes");
-const rolePermissionRoutes = require("routes/rolePermissionRoutes");
-// Add other routes as needed
+// Import all route modules
+const authRoutes = require("./authRoutes");
+const postRoutes = require("./postRoutes");
+const categoryRoutes = require("./categoryRoutes");
+const languageRoutes = require("./languageRoutes");
+const { commentRouter } = require("./commentsRoutes");
+const uploadRoutes = require("./uploadRoutes");
+const roleRoutes = require("./roleRoutes");
+const userRoutes = require("./userRoutes");
 
-// Use module-specific routes
+// Mount routes
 router.use("/auth", authRoutes);
-router.use("/users", userRoutes);
-router.use("/categories", categoryRoutes);
 router.use("/posts", postRoutes);
-router.use("/role", roleRoutes);
+router.use("/categories", categoryRoutes);
 router.use("/languages", languageRoutes);
-router.use("/role-permissions", rolePermissionRoutes);
-// // Add other routes as needed
+router.use("/comments", commentRouter);
+router.use("/upload", uploadRoutes);
+router.use("/roles", roleRoutes);
+router.use("/users", userRoutes); // Mount user routes at root level
 
 module.exports = router;

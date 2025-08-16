@@ -12,7 +12,8 @@ export class PostService {
 
   // Lấy tất cả bài post (Admin)
   getAllPosts(): Observable<any> {
-    return this.http.get(this.apiUrl);
+    // SỬA LẠI: Thêm '/admin/all' để gọi đúng API cho admin
+    return this.http.get(`${this.apiUrl}/admin/all`);
   }
 
   getPostById(postId: number): Observable<any> {
@@ -21,21 +22,25 @@ export class PostService {
 
   // Tạo bài post (User)
   create(postData: any): Observable<any> {
+    // Giữ nguyên, hàm này đã đúng
     return this.http.post(this.apiUrl, postData);
   }
 
   // Duyệt bài post (Admin)
   acceptPost(postId: number): Observable<any> {
-    return this.http.patch(`${this.apiUrl}/${postId}/accept`, {});
+    // SỬA LẠI: Backend dùng 'approve' chứ không phải 'accept'
+    return this.http.patch(`${this.apiUrl}/${postId}/approve`, {});
   }
 
   // Từ chối bài post (Admin)
   rejectPost(postId: number): Observable<any> {
+    // Giữ nguyên, hàm này đã đúng
     return this.http.patch(`${this.apiUrl}/${postId}/reject`, {});
   }
 
   // Xóa bài post (Admin)
   deletePost(postId: number): Observable<any> {
+    // Giữ nguyên, hàm này đã đúng
     return this.http.delete(`${this.apiUrl}/${postId}`);
   }
 
@@ -43,10 +48,9 @@ export class PostService {
   upload(file: File): Observable<any> {
     const formData = new FormData();
     formData.append('file', file);
-    return this.http.post(`${this.apiUrl}/upload`, formData);
+    // SỬA LẠI: URL upload thường là một endpoint riêng, không nằm trong /posts
+    return this.http.post('http://localhost:4000/api/upload', formData);
   }
-  addPost(postData: any) {
-  return this.http.post<{ data: any }>(`${this.apiUrl}/posts`, postData);
-}
 
+  // XÓA BỎ: Hàm addPost bị thừa và sai URL, dùng hàm create() ở trên
 }

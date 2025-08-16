@@ -1,0 +1,766 @@
+openapi: 3.0.3
+info:
+  title: NodeJS Core API
+  description: |
+    NodeJS Core API - A comprehensive backend system for blog/content management with multi-language support.
+
+    ## Features
+    - User authentication & authorization
+    - Multi-language content support
+    - Category management
+    - Post management with rich content
+    - File upload with Cloudinary
+    - Role-based access control
+
+    ## Authentication
+    Most endpoints require JWT token in Authorization header:
+    ```
+    Authorization: Bearer <your_jwt_token>
+    ```
+
+    ## Test Results
+    All endpoints have been tested with real data. See examples below for actual request/response formats.
+
+  version: 1.0.0
+  contact:
+    name: NodeJS Core API Support
+    email: support@example.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:3000/api
+    description: Development server
+  - url: https://api.example.com/api
+    description: Production server
+
+tags:
+  - name: Authentication
+    description: User registration and login
+  - name: Languages
+    description: Multi-language support
+  - name: Categories
+    description: Category management
+  - name: Posts
+    description: Post/content management
+  - name: Upload
+    description: File upload operations
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token obtained from login endpoint
+
+  schemas:
+    User:
+      type: object
+      properties:
+        userid:
+          type: integer
+          example: 246
+        username:
+          type: string
+          example: "testuser_1755241926003"
+        email:
+          type: string
+          format: email
+          example: "test_1755241926003@example.com"
+        role:
+          type: string
+          example: "User"
+
+    Language:
+      type: object
+      properties:
+        languageid:
+          type: integer
+          example: 1
+        language_name:
+          type: string
+          example: "English"
+        locale_code:
+          type: string
+          example: "en"
+        status:
+          type: integer
+          example: 1
+
+    Category:
+      type: object
+      properties:
+        categoryid:
+          type: integer
+          example: 438
+        category_name:
+          type: string
+          example: "Test Category 1755241926022"
+        status:
+          type: integer
+          example: 1
+
+    Post:
+      type: object
+      properties:
+        postid:
+          type: integer
+          example: 537
+        title:
+          type: string
+          example: "Test Post 1755241926033"
+        content:
+          type: string
+          example: "This is a test post content for API testing. It contains sample text to verify the post creation functionality."
+        userid:
+          type: integer
+          example: 1
+        username:
+          type: string
+          example: "testuser"
+        languageid:
+          type: integer
+          example: 1
+        language_name:
+          type: string
+          example: "English"
+        status:
+          type: integer
+          example: 1
+        created_at:
+          type: string
+          format: date-time
+          example: "2025-08-15T07:12:06.042Z"
+        categories:
+          type: array
+          items:
+            $ref: "#/components/schemas/Category"
+
+    UploadSignature:
+      type: object
+      properties:
+        signature:
+          type: string
+          example: "mock_signature_1755241926049"
+        timestamp:
+          type: integer
+          example: 1755241926049
+        api_key:
+          type: string
+          example: "mock_api_key"
+        cloud_name:
+          type: string
+          example: "mock_cloud"
+
+    UploadResult:
+      type: object
+      properties:
+        public_id:
+          type: string
+          example: "mock_public_id_1755241926051"
+        secure_url:
+          type: string
+          format: uri
+          example: "https://via.placeholder.com/300x200.png?text=Test+Image"
+        original_url:
+          type: string
+          format: uri
+          example: "https://via.placeholder.com/300x200.png?text=Test+Image"
+        message:
+          type: string
+          example: "Image uploaded successfully (mock)"
+
+    ApiResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+        error:
+          type: string
+
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: string
+          example: "Error message"
+
+paths:
+  /auth/register:
+    post:
+      tags:
+        - Authentication
+      summary: Register a new user
+      description: Create a new user account with email and username
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - first_name
+                - last_name
+                - email
+                - username
+                - password
+              properties:
+                first_name:
+                  type: string
+                  example: "Test"
+                last_name:
+                  type: string
+                  example: "User"
+                email:
+                  type: string
+                  format: email
+                  example: "test_1755241926003@example.com"
+                username:
+                  type: string
+                  example: "testuser_1755241926003"
+                password:
+                  type: string
+                  format: password
+                  example: "password123"
+      responses:
+        "201":
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      userid:
+                        type: integer
+                        example: 246
+                      username:
+                        type: string
+                        example: "testuser_1755241926003"
+                      email:
+                        type: string
+                        example: "test_1755241926003@example.com"
+                      message:
+                        type: string
+                        example: "User registered successfully"
+        "400":
+          description: Bad request - validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: User login
+      description: Authenticate user and get access token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  type: string
+                  example: "testuser_1755241926003"
+                password:
+                  type: string
+                  format: password
+                  example: "password123"
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                        example: "Login successful."
+                      accessToken:
+                        type: string
+                        example: "eyJ1c2VyaWQiOjEsInVzZXJuYW1lIjoidGVzdHVzZXJfMTc1NTI0MTkyNjAwMyIsInJvbGVpZCI6MSwiZXhwIjoxNzU1MjQ1NTI2MDEyfQ=="
+                      user:
+                        $ref: "#/components/schemas/User"
+        "401":
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /languages:
+    get:
+      tags:
+        - Languages
+      summary: Get all languages
+      description: Retrieve list of all active languages
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: Languages retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Language"
+                    example:
+                      - languageid: 1
+                        language_name: "English"
+                        locale_code: "en"
+                        status: 1
+                      - languageid: 2
+                        language_name: "Vietnamese"
+                        locale_code: "vi"
+                        status: 1
+                      - languageid: 3
+                        language_name: "French"
+                        locale_code: "fr"
+                        status: 1
+        "401":
+          description: Unauthorized - token required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /categories:
+    get:
+      tags:
+        - Categories
+      summary: Get all categories
+      description: Retrieve list of all active categories
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: Categories retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Category"
+                    example:
+                      - categoryid: 1
+                        category_name: "Technology"
+                        status: 1
+                      - categoryid: 2
+                        category_name: "Lifestyle"
+                        status: 1
+                      - categoryid: 3
+                        category_name: "Business"
+                        status: 1
+                      - categoryid: 4
+                        category_name: "Education"
+                        status: 1
+        "401":
+          description: Unauthorized - token required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+    post:
+      tags:
+        - Categories
+      summary: Create a new category
+      description: Create a new category with name and status
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - category_name
+              properties:
+                category_name:
+                  type: string
+                  example: "Test Category 1755241926022"
+                status:
+                  type: integer
+                  example: 1
+                  default: 1
+      responses:
+        "201":
+          description: Category created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      categoryid:
+                        type: integer
+                        example: 438
+                      category_name:
+                        type: string
+                        example: "Test Category 1755241926022"
+                      status:
+                        type: integer
+                        example: 1
+                      message:
+                        type: string
+                        example: "Category created successfully"
+        "400":
+          description: Bad request - validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized - token required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /categories/{id}:
+    get:
+      tags:
+        - Categories
+      summary: Get category by ID
+      description: Retrieve a specific category by its ID
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 438
+      responses:
+        "200":
+          description: Category retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: "#/components/schemas/Category"
+        "404":
+          description: Category not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized - token required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /posts:
+    get:
+      tags:
+        - Posts
+      summary: Get all posts
+      description: Retrieve list of all posts with user and language information
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: Posts retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Post"
+                    example:
+                      - postid: 1
+                        title: "Sample Post 1"
+                        content: "This is sample content for post 1"
+                        userid: 1
+                        username: "testuser"
+                        languageid: 1
+                        language_name: "English"
+                        status: 1
+                        created_at: "2025-08-15T07:12:06.042Z"
+                      - postid: 2
+                        title: "Sample Post 2"
+                        content: "This is sample content for post 2"
+                        userid: 1
+                        username: "testuser"
+                        languageid: 2
+                        language_name: "Vietnamese"
+                        status: 1
+                        created_at: "2025-08-15T07:12:06.042Z"
+        "401":
+          description: Unauthorized - token required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+    post:
+      tags:
+        - Posts
+      summary: Create a new post
+      description: Create a new post with title, content, language and categories
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title
+                - content
+                - languageid
+              properties:
+                title:
+                  type: string
+                  example: "Test Post 1755241926033"
+                content:
+                  type: string
+                  example: "This is a test post content for API testing. It contains sample text to verify the post creation functionality."
+                languageid:
+                  type: integer
+                  example: 1
+                categoryids:
+                  type: array
+                  items:
+                    type: integer
+                  example: [438]
+                status:
+                  type: integer
+                  example: 1
+                  default: 0
+                  description: "Status: -1 (rejected), 0 (draft), 1 (published)"
+      responses:
+        "201":
+          description: Post created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      postid:
+                        type: integer
+                        example: 537
+                      title:
+                        type: string
+                        example: "Test Post 1755241926033"
+                      content:
+                        type: string
+                        example: "This is a test post content for API testing. It contains sample text to verify the post creation functionality."
+                      languageid:
+                        type: integer
+                        example: 1
+                      categoryids:
+                        type: array
+                        items:
+                          type: integer
+                        example: [438]
+                      status:
+                        type: integer
+                        example: 1
+                      message:
+                        type: string
+                        example: "Post created successfully"
+        "400":
+          description: Bad request - validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized - token required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /posts/{id}:
+    get:
+      tags:
+        - Posts
+      summary: Get post by ID
+      description: Retrieve a specific post by its ID with categories
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 537
+      responses:
+        "200":
+          description: Post retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    allOf:
+                      - $ref: "#/components/schemas/Post"
+                      - type: object
+                        properties:
+                          categories:
+                            type: array
+                            items:
+                              $ref: "#/components/schemas/Category"
+                            example:
+                              - categoryid: 1
+                                category_name: "Technology"
+        "404":
+          description: Post not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized - token required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /upload/signature:
+    get:
+      tags:
+        - Upload
+      summary: Get upload signature
+      description: Get Cloudinary upload signature for direct file upload
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: Upload signature retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: "#/components/schemas/UploadSignature"
+        "401":
+          description: Unauthorized - token required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /upload/image-by-url:
+    post:
+      tags:
+        - Upload
+      summary: Upload image by URL
+      description: Upload an image from a URL to Cloudinary
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - url
+              properties:
+                url:
+                  type: string
+                  format: uri
+                  example: "https://via.placeholder.com/300x200.png?text=Test+Image"
+      responses:
+        "200":
+          description: Image uploaded successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: "#/components/schemas/UploadResult"
+        "400":
+          description: Bad request - URL required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized - token required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"

@@ -1,64 +1,78 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-
-const postController = require('modules/post/controllers/postController');
-const postValidation = require('modules/post/validations/postValidation');
-const validateMiddleware = require('middlewares/validateMiddleware');
-const authMiddleware = require('middlewares/authMiddleware');
-const uploadMiddleware = require('middlewares/uploadMiddleware');
+const { authenticate } = require("middlewares/authMiddleware");
+const postController = require("modules/post/controllers/postController");
+const postValidation = require("modules/post/validations/postValidation");
+const validateMiddleware = require("middlewares/validateMiddleware");
+const authMiddleware = require("middlewares/authMiddleware");
+const { postCommentRouter } = require("./commentsRoutes");
 
 // Require login for all routes
 router.use(authMiddleware.authenticate);
 
-// Người dùng thường — chỉ được tạo post
-router.post('/',
-    postValidation.create,
-    validateMiddleware,
-    postController.create
+// Admin routes - get all posts including pending/rejected
+router.get(
+  "/admin/all",
+  // authMiddleware.requireRoles("admin"), // Tạm thời comment để test
+  postController.getAllForAdmin
 );
 
-// Admin-only routes
-// Cho phép Admin HOẶC bất kỳ role nào có 'moderate_posts'
-router.get('/',
-  authMiddleware.authenticate,
-  authMiddleware.requireRoleOrPermission(['Admin'], ['moderate_posts']),
-  postController.getAll
-);
-
-router.patch('/:postid/accept',
-  authMiddleware.authenticate,
-  authMiddleware.requireRoleOrPermission(['Admin'], ['moderate_posts']),
+// Public routes
+router.get("/", postController.index);
+router.get("/search", postController.search);
+router.get("/my-posts", authenticate, postController.getMyPosts);
+router.get("/:postid", postController.show);
+router.get("/:postid/translations", postController.getTranslations);
+router.post(
+  "/",
+  authenticate,
+  postValidation.create,
   validateMiddleware,
-  postController.accept
+  postController.create
+);
+router.put(
+  "/:postid",
+  authenticate,
+
+  postController.update
+);
+router.delete("/:postid", authenticate, postController.destroy);
+// Create post
+// router.post(
+//   "/",
+//   postValidation.create,
+//   validateMiddleware,
+//   postController.create
+// );
+
+// // Get all posts (Admin only)
+// router.get("/", authMiddleware.requireRoles("Admin"), postController.index);
+
+// // Delete post (Admin only)
+// router.delete(
+//   "/:postid",
+//   authMiddleware.requireRoles("Admin"),
+//   validateMiddleware,
+//   postController.destroy
+// );
+
+// Approve post (Admin only)
+router.patch(
+  "/:postid/approve",
+  authMiddleware.requireRoles("Admin"),
+  validateMiddleware,
+  postController.approve
 );
 
-router.patch('/:postid/reject',
-  authMiddleware.authenticate,
-  authMiddleware.requireRoleOrPermission(['Admin'], ['moderate_posts']),
+// Reject post (Admin only)
+router.patch(
+  "/:postid/reject",
+  authMiddleware.requireRoles("Admin"),
   validateMiddleware,
   postController.reject
 );
 
-router.delete('/:postid',
-  authMiddleware.authenticate,
-  authMiddleware.requireRoleOrPermission(['Admin'], ['moderate_posts']),
-  validateMiddleware,
-  postController.delete
-);
-
-
-// Upload for authenticated users (both admin & user)
-router.post(
-    '/upload',
-    uploadMiddleware.single('file'),
-    postController.upload
-);
-
-// Get a post by ID (accessible to authenticated users)
-router.get('/:postid',
-    authMiddleware.authenticate, 
-    validateMiddleware,          
-    postController.getById       
-);
+// Comments routes for posts
+router.use("/:postid/comments", postCommentRouter);
 
 module.exports = router;

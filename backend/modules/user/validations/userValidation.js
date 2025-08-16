@@ -50,7 +50,7 @@ const userValidation = {
             .optional()
             .trim()
             .isLength({ min: 3, max: 30 })
-            .withMessage('Username must be 3-30 characters'),
+            .withMessage('Username must be 3-30 characters long'),
         body('password')
             .optional()
             .isLength({ min: 6 })

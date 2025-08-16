@@ -1,0 +1,524 @@
+{
+  "auth": {
+    "register": {
+      "success": true,
+      "data": {
+        "success": true,
+        "data": {
+          "userid": 246,
+          "username": "testuser_1755241926003",
+          "email": "test_1755241926003@example.com",
+          "message": "User registered successfully"
+        }
+      },
+      "status": 201,
+      "request": {
+        "method": "POST",
+        "endpoint": "/auth/register",
+        "data": {
+          "first_name": "Test",
+          "last_name": "User",
+          "email": "test_1755241926003@example.com",
+          "username": "testuser_1755241926003",
+          "password": "password123"
+        }
+      },
+      "response": {
+        "success": true,
+        "data": {
+          "userid": 246,
+          "username": "testuser_1755241926003",
+          "email": "test_1755241926003@example.com",
+          "message": "User registered successfully"
+        }
+      }
+    },
+    "login": {
+      "success": true,
+      "data": {
+        "success": true,
+        "data": {
+          "message": "Login successful.",
+          "accessToken": "eyJ1c2VyaWQiOjEsInVzZXJuYW1lIjoidGVzdHVzZXJfMTc1NTI0MTkyNjAwMyIsInJvbGVpZCI6MSwiZXhwIjoxNzU1MjQ1NTI2MDEyfQ==",
+          "user": {
+            "userid": 1,
+            "username": "testuser_1755241926003",
+            "role": "User"
+          }
+        }
+      },
+      "status": 200,
+      "request": {
+        "method": "POST",
+        "endpoint": "/auth/login",
+        "data": {
+          "username": "testuser_1755241926003",
+          "password": "password123"
+        }
+      },
+      "response": {
+        "success": true,
+        "data": {
+          "message": "Login successful.",
+          "accessToken": "eyJ1c2VyaWQiOjEsInVzZXJuYW1lIjoidGVzdHVzZXJfMTc1NTI0MTkyNjAwMyIsInJvbGVpZCI6MSwiZXhwIjoxNzU1MjQ1NTI2MDEyfQ==",
+          "user": {
+            "userid": 1,
+            "username": "testuser_1755241926003",
+            "role": "User"
+          }
+        }
+      }
+    },
+    "adminLogin": {
+      "success": true,
+      "data": {
+        "success": true,
+        "data": {
+          "message": "Login successful.",
+          "accessToken": "eyJ1c2VyaWQiOjEsInVzZXJuYW1lIjoiYWRtaW4iLCJyb2xlaWQiOjIsImV4cCI6MTc1NTI0NTUyNjAxNn0=",
+          "user": {
+            "userid": 1,
+            "username": "admin",
+            "role": "Admin"
+          }
+        }
+      },
+      "status": 200,
+      "request": {
+        "method": "POST",
+        "endpoint": "/auth/login",
+        "data": {
+          "username": "admin",
+          "password": "admin123"
+        }
+      },
+      "response": {
+        "success": true,
+        "data": {
+          "message": "Login successful.",
+          "accessToken": "eyJ1c2VyaWQiOjEsInVzZXJuYW1lIjoiYWRtaW4iLCJyb2xlaWQiOjIsImV4cCI6MTc1NTI0NTUyNjAxNn0=",
+          "user": {
+            "userid": 1,
+            "username": "admin",
+            "role": "Admin"
+          }
+        }
+      }
+    }
+  },
+  "users": {},
+  "categories": {
+    "create": {
+      "success": true,
+      "data": {
+        "success": true,
+        "data": {
+          "categoryid": 438,
+          "category_name": "Test Category 1755241926022",
+          "status": 1,
+          "message": "Category created successfully"
+        }
+      },
+      "status": 201,
+      "request": {
+        "method": "POST",
+        "endpoint": "/categories",
+        "data": {
+          "category_name": "Test Category 1755241926022",
+          "status": 1
+        }
+      },
+      "response": {
+        "success": true,
+        "data": {
+          "categoryid": 438,
+          "category_name": "Test Category 1755241926022",
+          "status": 1,
+          "message": "Category created successfully"
+        }
+      }
+    },
+    "getAll": {
+      "success": true,
+      "data": {
+        "success": true,
+        "data": [
+          {
+            "categoryid": 1,
+            "category_name": "Technology",
+            "status": 1
+          },
+          {
+            "categoryid": 2,
+            "category_name": "Lifestyle",
+            "status": 1
+          },
+          {
+            "categoryid": 3,
+            "category_name": "Business",
+            "status": 1
+          },
+          {
+            "categoryid": 4,
+            "category_name": "Education",
+            "status": 1
+          }
+        ]
+      },
+      "status": 200,
+      "request": {
+        "method": "GET",
+        "endpoint": "/categories",
+        "data": null
+      },
+      "response": {
+        "success": true,
+        "data": [
+          {
+            "categoryid": 1,
+            "category_name": "Technology",
+            "status": 1
+          },
+          {
+            "categoryid": 2,
+            "category_name": "Lifestyle",
+            "status": 1
+          },
+          {
+            "categoryid": 3,
+            "category_name": "Business",
+            "status": 1
+          },
+          {
+            "categoryid": 4,
+            "category_name": "Education",
+            "status": 1
+          }
+        ]
+      }
+    },
+    "getById": {
+      "success": true,
+      "data": {
+        "success": true,
+        "data": {
+          "categoryid": 438,
+          "category_name": "Category 438",
+          "status": 1
+        }
+      },
+      "status": 200,
+      "request": {
+        "method": "GET",
+        "endpoint": "/categories/438",
+        "data": null
+      },
+      "response": {
+        "success": true,
+        "data": {
+          "categoryid": 438,
+          "category_name": "Category 438",
+          "status": 1
+        }
+      }
+    }
+  },
+  "posts": {
+    "create": {
+      "success": true,
+      "data": {
+        "success": true,
+        "data": {
+          "postid": 537,
+          "title": "Test Post 1755241926033",
+          "content": "This is a test post content for API testing. It contains sample text to verify the post creation functionality.",
+          "languageid": 1,
+          "categoryids": [
+            438
+          ],
+          "status": 1,
+          "message": "Post created successfully"
+        }
+      },
+      "status": 201,
+      "request": {
+        "method": "POST",
+        "endpoint": "/posts",
+        "data": {
+          "title": "Test Post 1755241926033",
+          "content": "This is a test post content for API testing. It contains sample text to verify the post creation functionality.",
+          "languageid": 1,
+          "categoryids": [
+            438
+          ],
+          "status": 1
+        }
+      },
+      "response": {
+        "success": true,
+        "data": {
+          "postid": 537,
+          "title": "Test Post 1755241926033",
+          "content": "This is a test post content for API testing. It contains sample text to verify the post creation functionality.",
+          "languageid": 1,
+          "categoryids": [
+            438
+          ],
+          "status": 1,
+          "message": "Post created successfully"
+        }
+      }
+    },
+    "getAll": {
+      "success": true,
+      "data": {
+        "success": true,
+        "data": [
+          {
+            "postid": 1,
+            "title": "Sample Post 1",
+            "content": "This is sample content for post 1",
+            "userid": 1,
+            "username": "testuser",
+            "languageid": 1,
+            "language_name": "English",
+            "status": 1,
+            "created_at": "2025-08-15T07:12:06.042Z"
+          },
+          {
+            "postid": 2,
+            "title": "Sample Post 2",
+            "content": "This is sample content for post 2",
+            "userid": 1,
+            "username": "testuser",
+            "languageid": 2,
+            "language_name": "Vietnamese",
+            "status": 1,
+            "created_at": "2025-08-15T07:12:06.042Z"
+          }
+        ]
+      },
+      "status": 200,
+      "request": {
+        "method": "GET",
+        "endpoint": "/posts",
+        "data": null
+      },
+      "response": {
+        "success": true,
+        "data": [
+          {
+            "postid": 1,
+            "title": "Sample Post 1",
+            "content": "This is sample content for post 1",
+            "userid": 1,
+            "username": "testuser",
+            "languageid": 1,
+            "language_name": "English",
+            "status": 1,
+            "created_at": "2025-08-15T07:12:06.042Z"
+          },
+          {
+            "postid": 2,
+            "title": "Sample Post 2",
+            "content": "This is sample content for post 2",
+            "userid": 1,
+            "username": "testuser",
+            "languageid": 2,
+            "language_name": "Vietnamese",
+            "status": 1,
+            "created_at": "2025-08-15T07:12:06.042Z"
+          }
+        ]
+      }
+    },
+    "getById": {
+      "success": true,
+      "data": {
+        "success": true,
+        "data": {
+          "postid": 537,
+          "title": "Post 537",
+          "content": "This is the content for post 537",
+          "userid": 1,
+          "username": "testuser",
+          "languageid": 1,
+          "language_name": "English",
+          "status": 1,
+          "categories": [
+            {
+              "categoryid": 1,
+              "category_name": "Technology"
+            }
+          ],
+          "created_at": "2025-08-15T07:12:06.045Z"
+        }
+      },
+      "status": 200,
+      "request": {
+        "method": "GET",
+        "endpoint": "/posts/537",
+        "data": null
+      },
+      "response": {
+        "success": true,
+        "data": {
+          "postid": 537,
+          "title": "Post 537",
+          "content": "This is the content for post 537",
+          "userid": 1,
+          "username": "testuser",
+          "languageid": 1,
+          "language_name": "English",
+          "status": 1,
+          "categories": [
+            {
+              "categoryid": 1,
+              "category_name": "Technology"
+            }
+          ],
+          "created_at": "2025-08-15T07:12:06.045Z"
+        }
+      }
+    }
+  },
+  "comments": {},
+  "languages": {
+    "getAll": {
+      "success": true,
+      "data": {
+        "success": true,
+        "data": [
+          {
+            "languageid": 1,
+            "language_name": "English",
+            "locale_code": "en",
+            "status": 1
+          },
+          {
+            "languageid": 2,
+            "language_name": "Vietnamese",
+            "locale_code": "vi",
+            "status": 1
+          },
+          {
+            "languageid": 3,
+            "language_name": "French",
+            "locale_code": "fr",
+            "status": 1
+          }
+        ]
+      },
+      "status": 200,
+      "request": {
+        "method": "GET",
+        "endpoint": "/languages",
+        "data": null
+      },
+      "response": {
+        "success": true,
+        "data": [
+          {
+            "languageid": 1,
+            "language_name": "English",
+            "locale_code": "en",
+            "status": 1
+          },
+          {
+            "languageid": 2,
+            "language_name": "Vietnamese",
+            "locale_code": "vi",
+            "status": 1
+          },
+          {
+            "languageid": 3,
+            "language_name": "French",
+            "locale_code": "fr",
+            "status": 1
+          }
+        ]
+      }
+    }
+  },
+  "roles": {
+    "getAll": {
+      "success": false,
+      "error": {
+        "success": false,
+        "error": "Route not found",
+        "path": "/api/roles",
+        "method": "GET"
+      },
+      "status": 404,
+      "request": {
+        "method": "GET",
+        "endpoint": "/roles",
+        "data": null
+      },
+      "response": {
+        "success": false,
+        "error": "Route not found",
+        "path": "/api/roles",
+        "method": "GET"
+      }
+    }
+  },
+  "upload": {
+    "getSignature": {
+      "success": true,
+      "data": {
+        "success": true,
+        "data": {
+          "signature": "mock_signature_1755241926049",
+          "timestamp": 1755241926049,
+          "api_key": "mock_api_key",
+          "cloud_name": "mock_cloud"
+        }
+      },
+      "status": 200,
+      "request": {
+        "method": "GET",
+        "endpoint": "/upload/signature",
+        "data": null
+      },
+      "response": {
+        "success": true,
+        "data": {
+          "signature": "mock_signature_1755241926049",
+          "timestamp": 1755241926049,
+          "api_key": "mock_api_key",
+          "cloud_name": "mock_cloud"
+        }
+      }
+    },
+    "uploadByUrl": {
+      "success": true,
+      "data": {
+        "success": true,
+        "data": {
+          "public_id": "mock_public_id_1755241926051",
+          "secure_url": "https://via.placeholder.com/300x200.png?text=Test+Image",
+          "original_url": "https://via.placeholder.com/300x200.png?text=Test+Image",
+          "message": "Image uploaded successfully (mock)"
+        }
+      },
+      "status": 200,
+      "request": {
+        "method": "POST",
+        "endpoint": "/upload/image-by-url",
+        "data": {
+          "url": "https://via.placeholder.com/300x200.png?text=Test+Image"
+        }
+      },
+      "response": {
+        "success": true,
+        "data": {
+          "public_id": "mock_public_id_1755241926051",
+          "secure_url": "https://via.placeholder.com/300x200.png?text=Test+Image",
+          "original_url": "https://via.placeholder.com/300x200.png?text=Test+Image",
+          "message": "Image uploaded successfully (mock)"
+        }
+      }
+    }
+  }
+}

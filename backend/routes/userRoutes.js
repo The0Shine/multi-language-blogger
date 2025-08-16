@@ -66,4 +66,5 @@ router.get(
   userController.getDetailedUserStats
 );
 
+
 module.exports = router;
