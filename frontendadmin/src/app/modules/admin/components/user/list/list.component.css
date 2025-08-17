@@ -163,3 +163,31 @@ label {
   opacity: 0.6;
   cursor: not-allowed;
 }
+/* Lớp phủ mờ phía sau */
+.custom-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1050; /* Đảm bảo nổi lên trên cùng */
+}
+
+/* Nội dung của modal */
+.custom-modal-content {
+  background-color: white;
+  padding: 20px 30px;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  max-width: 400px;
+}
+
+.custom-modal-content p {
+  margin-bottom: 20px; /* Khoảng cách từ chữ tới nút */
+  font-size: 16px;
+}

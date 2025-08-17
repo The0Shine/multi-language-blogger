@@ -41,6 +41,21 @@
     </div>
   </ng-container>
 </div>
+<div *ngIf="updateRoleSuccess"
+  class="alert alert-success alert-dismissible bg-success text-white alert-label-icon fade show material-shadow"
+  role="alert">
+  <i class="ri-checkbox-circle-line label-icon"></i>
+  <strong>Thành công!</strong> - {{ alertMessage }}
+  <button type="button" class="btn-close btn-close-white" (click)="updateRoleSuccess = false" aria-label="Close"></button>
+</div>
+
+<div *ngIf="updateRoleError"
+  class="alert alert-danger alert-dismissible bg-danger text-white alert-label-icon fade show material-shadow"
+  role="alert">
+  <i class="ri-error-warning-line label-icon"></i>
+  <strong>Thất bại!</strong> - {{ alertMessage }}
+  <button type="button" class="btn-close btn-close-white" (click)="updateRoleError = false" aria-label="Close"></button>
+</div>
 
 
 <div class="card">
@@ -252,4 +267,11 @@
     </div>
   </div>
 </div>
-
+<div *ngIf="showSuccessModal" class="custom-modal-backdrop">
+  <div class="custom-modal-content">
+    <p>{{ modalMessage }}</p>
+    <button (click)="showSuccessModal = false" class="btn btn-primary btn-sm">
+      Đã hiểu
+    </button>
+  </div>
+</div>

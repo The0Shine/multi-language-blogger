@@ -31,10 +31,23 @@ deleteError: boolean | null = null;
   editSuccess: boolean | null = null;
   editError: boolean | null = null;
 
-  roles: any[] = [];
-  modalRole = { roleid: 0, name: '', discription: '', status: 1 };
 
+
+  roles: any[] = [];
+ modalRole: { roleid: number; name: string; discription: string; permissionid: number[]; status: number } = {
+  roleid: 0,
+  name: '',
+  discription: '',
+  permissionid: [],
+  status: 1
+};
+
+  permissions = [
+  { permissionid: 1, name: 'moderate_posts', description: 'Permission to accept or reject posts' },
+  { permissionid: 2, name: 'manage_users', description: 'Manage Users' }
+];
 showSaveConfirmModal = false;
+
 
 
   constructor(
@@ -70,16 +83,28 @@ loadRoles() {
       roleid: 0,
       name: '',
       discription: '',
+      permissionid: [],
       status: 1,
     };
     this.showModal = true;
   }
 
- editRole(role: any) {
+editRole(role: any) {
+   console.log('Dữ liệu role nhận được:', role); // <-- THÊM DÒNG NÀY
   this.editingRole = true;
-  this.modalRole = { ...role }; // đảm bảo role có roleid chứ không phải id
+
+  this.modalRole = {
+    roleid: role.roleid,
+    name: role.name,
+    discription: role.discription,
+    status: role.status,
+    // convert permissions[] -> [id, id, ...]
+    permissionid: role.permissions ? role.permissions.map((p: any) => p.permissionid) : []
+  };
+
   this.showModal = true;
 }
+
 
 
   deleteRole(role: any) {
@@ -131,17 +156,17 @@ saveRole(confirm: boolean = false) {
   }
 
   // Chỉ hiện popup confirm khi đang edit
-if (this.editingRole && !confirm) {
-  this.selectedRole = { ...this.modalRole }; // copy dữ liệu hiện tại của form
-  this.showSaveConfirmModal = true;
-  return;
-}
-
+  if (this.editingRole && !confirm) {
+    this.selectedRole = { ...this.modalRole }; // copy dữ liệu hiện tại của form
+    this.showSaveConfirmModal = true;
+    return;
+  }
 
   const payload = {
     name: this.modalRole.name,
     discription: this.modalRole.discription,
-    status: this.modalRole.status
+    status: this.modalRole.status,
+     permissionid: this.modalRole.permissionid
   };
 
   if (this.editingRole) {
@@ -175,6 +200,17 @@ if (this.editingRole && !confirm) {
     });
   }
 }
+onPermissionChange(event: any, permissionid: number) {
+  if (event.target.checked) {
+    this.modalRole.permissionid.push(permissionid);
+  } else {
+    this.modalRole.permissionid = this.modalRole.permissionid.filter(
+      (id) => id !== permissionid
+    );
+  }
+}
+
+
 
 confirmEditRole() {
   this.saveRole(true);
@@ -193,6 +229,7 @@ closeSaveConfirmModal() {
       roleid: 0,
       name: '',
       discription: '',
+      permissionid: [],
       status: 1,
     };
   }

@@ -76,7 +76,7 @@
     <input type="text" [(ngModel)]="searchText" (ngModelChange)="onSearchOrFilterChange()" placeholder="Search role...">
 
     <select [(ngModel)]="statusFilter" (ngModelChange)="onSearchOrFilterChange()">
-   <option value="">All Status</option>
+      <option value="">All Status</option>
       <option value="1">Active</option>
       <option value="0">Inactive</option>
     </select>
@@ -100,14 +100,14 @@
         <td>{{ role.roleid }}</td>
         <td>{{ role.name }}</td>
         <td>{{ role.discription }}</td>
-     <td>
-  <span class="badge" [ngClass]="{
+        <td>
+          <span class="badge" [ngClass]="{
     'bg-success': role.status === 1,
     'bg-danger': role.status === 0
   }">
-    {{ role.status === 1 ? 'Active' : 'Inactive' }}
-  </span>
-</td>
+            {{ role.status === 1 ? 'Active' : 'Inactive' }}
+          </span>
+        </td>
 
         <td class="text-end">
           <div class="d-inline-flex gap-2">
@@ -177,15 +177,29 @@
             </div>
           </div>
 
-
-
-            <div class="form-group">
-              <label for="roleStatus">Status:</label>
-              <select class="form-select" name="roleStatus" [(ngModel)]="modalRole.status">
-                <option [value]="1">Active</option>
-                <option [value]="0">Inactive</option>
-              </select>
+          <div class="form-group">
+            <label for="rolePermission">Permissions:</label>
+            <div class="border rounded p-2 mt-2">
+              <div *ngFor="let p of permissions" class="form-check mb-2">
+                <input class="form-check-input" type="checkbox" [value]="p.permissionid"
+                 [checked]="modalRole.permissionid.includes(p.permissionid)"
+                  (change)="onPermissionChange($event, p.permissionid)" id="perm-{{p.permissionid}}" />
+                <label class="form-check-label" for="perm-{{p.permissionid}}" style="margin-left: 10px;">
+                  {{ p.description }}
+                </label>
+              </div>
             </div>
+          </div>
+
+
+
+          <div class="form-group">
+            <label for="roleStatus">Status:</label>
+            <select class="form-select" name="roleStatus" [(ngModel)]="modalRole.status">
+              <option [value]="1">Active</option>
+              <option [value]="0">Inactive</option>
+            </select>
+          </div>
 
 
         </form>
@@ -226,7 +240,7 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-          <h5 class="modal-title custom-title ">Chỉnh sửa Role</h5>
+        <h5 class="modal-title custom-title ">Chỉnh sửa Role</h5>
         <button type="button" class="btn-close" (click)="closeSaveConfirmModal()" aria-label="Close"></button>
       </div>
       <div class="modal-body">
@@ -242,4 +256,3 @@
     </div>
   </div>
 </div>
-

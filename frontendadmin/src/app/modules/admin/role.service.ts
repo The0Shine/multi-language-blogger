@@ -12,6 +12,11 @@ export interface Role {
   updated_at: string;
   deleted_at: string | null;
 }
+export interface Permission {
+  permissionid: number;
+  description: string;
+}
+
 
 // Định nghĩa interface cho response của API lấy roles
 interface RoleApiResponse {
@@ -40,14 +45,18 @@ export class RoleService {
   }
 
   // Tạo role mới
-  createRole(role: Partial<Role>): Observable<{ success: boolean; data: { data: Role } }> {
-    return this.http.post<{ success: boolean; data: { data: Role } }>(this.adminUrl, role);
-  }
+// Tạo role mới
+createRole(role: Partial<Role> & { permissionid?: number[] }):
+  Observable<{ success: boolean; data: { data: Role } }> {
+  return this.http.post<{ success: boolean; data: { data: Role } }>(this.adminUrl, role);
+}
 
-  // Cập nhật role
-  updateRole(roleid: number, role: Partial<Role>): Observable<{ success: boolean; data: { data: Role } }> {
-    return this.http.put<{ success: boolean; data: { data: Role } }>(`${this.adminUrl}/${roleid}`, role);
-  }
+// Cập nhật role
+updateRole(roleid: number, role: Partial<Role> & { permissionid?: number[] }):
+  Observable<{ success: boolean; data: { data: Role } }> {
+  return this.http.put<{ success: boolean; data: { data: Role } }>(`${this.adminUrl}/${roleid}`, role);
+}
+
 
 
   // Soft delete role

@@ -1,4 +1,4 @@
-const { Role, User, Sequelize } = require('models');
+const { Role, User, Sequelize,Permission } = require('models');
 const { Op } = Sequelize;
 
 const roleService = {
@@ -9,55 +9,111 @@ const roleService = {
     const existed = await Role.findOne({ where: { name, deleted_at: null } });
     if (existed) throw new Error('Role name already exists');
 
-    return Role.create({
+    // 1. Tạo role
+    const role = await Role.create({
       name,
       discription: data.discription ?? null,
       status: Number(data.status) === 0 ? 0 : 1
     });
-  },
 
-  getAll: async ({ onlyActive = false } = {}) => {
-    const where = {};
-    if (onlyActive) {
-      where.status = 1;
-      where.deleted_at = null;
+    // 2. Nếu có permissionid thì gán
+    if (data.permissionid && Array.isArray(data.permissionid)) {
+      // validate permission tồn tại
+      const perms = await Permission.findAll({
+        where: { permissionid: data.permissionid }
+      });
+
+      if (perms.length !== data.permissionid.length) {
+        throw new Error("Some permissionid not found");
+      }
+
+      // gán quan hệ -> Sequelize tự insert vào role_permission
+      await role.setPermissions(perms);
     }
-    return Role.findAll({
-      attributes: ['roleid', 'name', 'status', 'discription', 'created_at', 'updated_at', 'deleted_at'],
-      where,
-      order: [['name', 'ASC']]
+
+    // 3. Trả về role kèm permissions
+    return Role.findByPk(role.roleid, {
+      include: [{ model: Permission, as: 'permissions' }]
     });
   },
 
-  getById: async (roleid) => {
-    return Role.findByPk(roleid);
-  },
+ getAll: async ({ onlyActive = false } = {}) => {
+  const where = {};
+  if (onlyActive) {
+    where.status = 1;
+    where.deleted_at = null;
+  }
+  return Role.findAll({
+    where,
+    // THÊM ĐOẠN NÀY VÀO
+    include: [{
+      model: Permission,
+      as: 'permissions',
+      through: { attributes: [] } // Dòng này để không lấy dữ liệu thừa từ bảng trung gian
+    }],
+    order: [['name', 'ASC']]
+  });
+},
 
-  update: async (roleid, updateData) => {
-    const role = await Role.findByPk(roleid);
-    if (!role) return null;
+getById: async (roleid) => {
+  return Role.findByPk(roleid, {
+    // THÊM INCLUDE VÀO ĐÂY
+    include: [{
+      model: Permission,
+      as: 'permissions',
+      through: { attributes: [] }
+    }]
+  });
+},
 
-    if (updateData.name && updateData.name !== role.name) {
-      const dup = await Role.findOne({
-        where: { name: updateData.name, roleid: { [Op.ne]: roleid }, deleted_at: null }
-      });
-      if (dup) throw new Error('Role name already exists');
-      role.name = updateData.name.trim();
+ update: async (roleid, updateData) => {
+  const role = await Role.findByPk(roleid, {
+    include: [{ model: Permission, as: 'permissions' }]
+  });
+  if (!role) return null;
+
+  // check name duplicate
+  if (updateData.name && updateData.name !== role.name) {
+    const dup = await Role.findOne({
+      where: { 
+        name: updateData.name, 
+        roleid: { [Op.ne]: roleid }, 
+        deleted_at: null 
+      }
+    });
+    if (dup) throw new Error('Role name already exists');
+    role.name = updateData.name.trim();
+  }
+
+  if (updateData.discription !== undefined) {
+    role.discription = updateData.discription ?? null;
+  }
+
+  if (updateData.status !== undefined) {
+    role.status = Number(updateData.status) === 0 ? 0 : 1;
+  }
+
+  role.updated_at = new Date();
+  await role.save();
+
+  // ✅ cập nhật permission nếu có gửi lên
+  if (updateData.permissionid && Array.isArray(updateData.permissionid)) {
+    const perms = await Permission.findAll({
+      where: { permissionid: updateData.permissionid }
+    });
+
+    if (perms.length !== updateData.permissionid.length) {
+      throw new Error("Some permissionid not found");
     }
 
-    if (updateData.discription !== undefined) {
-      role.discription = updateData.discription ?? null;
-    }
+    await role.setPermissions(perms); // Sequelize sẽ sync lại role_permission
+  }
 
-    if (updateData.status !== undefined) {
-      role.status = Number(updateData.status) === 0 ? 0 : 1;
-    }
-
-    role.updated_at = new Date();
-    await role.save();
-
-    return role;
-  },
+  return Role.findByPk(roleid, {
+    include: [{ model: Permission, as: 'permissions' }]
+  });
+}
+,
 
   delete: async (roleid) => {
     const role = await Role.findByPk(roleid);

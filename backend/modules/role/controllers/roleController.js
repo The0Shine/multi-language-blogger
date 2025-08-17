@@ -84,7 +84,7 @@ const roleController = {
   // Hard delete role
   permanentDelete: async (req, res) => {
     try {
-      const deleted = await roleService.hardDelete(req.params.roleid);
+      const deleted = await roleService.permanentDelete(req.params.roleid);
       if (!deleted) {
         return responseUtils.notFound(res, 'Role not found for permanent delete');
       }
