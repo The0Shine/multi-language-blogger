@@ -59,7 +59,7 @@ const roleService = {
     return role;
   },
 
-  softDelete: async (roleid) => {
+  delete: async (roleid) => {
     const role = await Role.findByPk(roleid);
     if (!role) return false;
 
@@ -74,7 +74,7 @@ const roleService = {
     return true;
   },
 
-  hardDelete: async (roleid) => {
+  permanentDelete: async (roleid) => {
     const role = await Role.findByPk(roleid);
     if (!role) return false;
 

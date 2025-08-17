@@ -1,0 +1,445 @@
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8" (click)="closeActionMenu()">
+  <!-- Page Header -->
+  <div class="flex items-center justify-between mb-8">
+    <div>
+      <h1 class="text-3xl font-bold text-gray-900 mb-2">
+        {{ "mystories.title" | translate }}
+      </h1>
+      <p class="text-gray-600">
+        {{ "mystories.subtitle" | translate }}
+      </p>
+    </div>
+    <button
+      class="px-6 py-2 bg-green-600 text-white rounded-full hover:bg-green-700 font-medium transition-colors"
+      (click)="createNewPost()"
+    >
+      <i class="fas fa-plus mr-2"></i>
+      {{ "mystories.write_new" | translate }}
+    </button>
+  </div>
+
+  <!-- Filters and Search -->
+  <div class="flex items-center justify-between mb-6">
+    <div class="flex items-center space-x-4">
+      <select
+        class="form-select"
+        [(ngModel)]="filter.status"
+        (change)="onFilterChange()"
+      >
+        <option *ngFor="let option of statusOptions" [value]="option.value">
+          {{ option.label }}
+        </option>
+      </select>
+      <select
+        class="form-select"
+        [(ngModel)]="filter.sortOrder"
+        (change)="onFilterChange()"
+      >
+        <option value="DESC">Newest First</option>
+        <option value="ASC">Oldest First</option>
+      </select>
+    </div>
+
+    <!-- Search input section -->
+    <div class="relative">
+      <i class="fas fa-search search-icon" [class.hidden]="searching"></i>
+      <i
+        class="fas fa-spinner fa-spin spinner-icon"
+        [class.hidden]="!searching"
+      ></i>
+      <input
+        #searchInput
+        type="text"
+        placeholder="Search your stories..."
+        class="search-input w-64"
+        [(ngModel)]="searchDisplayValue"
+        (input)="onSearchInput($event)"
+      />
+      <button
+        *ngIf="searchDisplayValue && !searching"
+        class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+        (click)="clearSearch()"
+        type="button"
+      >
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Stories List -->
+  <div
+    class="bg-white border border-gray-200 rounded-lg relative"
+    *ngIf="!loading"
+  >
+    <!-- Search Overlay -->
+    <div
+      *ngIf="searching"
+      class="absolute inset-0 bg-white bg-opacity-80 flex items-center justify-center z-10 backdrop-blur-sm"
+    >
+      <div class="text-center">
+        <i class="fas fa-spinner fa-spin text-gray-400 text-2xl mb-2"></i>
+        <p class="text-gray-500">Searching your stories...</p>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div
+      *ngIf="posts.length === 0 && !searching && !loading"
+      class="p-12 text-center"
+    >
+      <i class="fas fa-pen-nib text-gray-300 text-6xl mb-4"></i>
+      <h3 class="text-xl font-semibold text-gray-900 mb-2">No stories found</h3>
+      <p
+        class="text-gray-500 mb-6"
+        *ngIf="filter.search || filter.status !== 'all'"
+      >
+        Try adjusting your search or filters
+      </p>
+      <p
+        class="text-gray-500 mb-6"
+        *ngIf="!filter.search && filter.status === 'all'"
+      >
+        Start writing your first story
+      </p>
+      <button
+        class="px-6 py-2 bg-green-600 text-white rounded-full hover:bg-green-700 font-medium transition-colors"
+        (click)="createNewPost()"
+      >
+        <i class="fas fa-plus mr-2"></i>
+        Write Your First Story
+      </button>
+    </div>
+
+    <!-- Story Cards -->
+    <div *ngIf="posts.length > 0">
+      <div
+        *ngFor="let post of posts; trackBy: trackByPostId"
+        class="story-card border-b border-gray-100 p-6 transition-colors duration-150"
+        [class.dropdown-active]="activeActionMenu === post.postid"
+        (click)="$event.stopPropagation()"
+      >
+        <div class="flex items-start justify-between">
+          <div class="flex-1">
+            <div class="flex items-center mb-2">
+              <span
+                class="px-2 py-1 text-xs font-medium rounded-full"
+                [class]="getStatusClass(post.status)"
+              >
+                {{ getStatusLabel(post.status) }}
+              </span>
+              <span class="text-sm text-gray-500 ml-3">
+                {{ formatDate(post.created_at) }}
+              </span>
+            </div>
+            <h3
+              class="text-xl font-bold text-gray-900 mb-2 transition-colors story-title break-words"
+              [class.hover:text-green-600]="canViewPost(post)"
+              [class.cursor-pointer]="canViewPost(post)"
+              [class.cursor-not-allowed]="!canViewPost(post)"
+              [class.text-gray-500]="!canViewPost(post)"
+              (click)="canViewPost(post) ? viewPost(post) : null"
+              [title]="
+                !canViewPost(post) ? 'This post is not published yet' : ''
+              "
+            >
+              {{ post.title }}
+            </h3>
+            <p
+              class="text-gray-600 mb-4 leading-relaxed story-content break-words overflow-wrap-anywhere"
+              [innerHTML]="truncateContent(post.content)"
+            ></p>
+            <div class="flex items-center space-x-6 text-sm text-gray-500">
+              <div class="flex items-center">
+                <i class="fas fa-clock mr-1"></i>
+                <span
+                  >{{ "mystories.last_edited" | translate }}
+                  {{ formatDate(post.updated_at) }}</span
+                >
+              </div>
+            </div>
+          </div>
+          <div class="flex items-center space-x-2 ml-6">
+            <div class="dropdown-container">
+              <button
+                class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-all"
+                (click)="toggleActionMenu(post.postid)"
+                title="More options"
+              >
+                <i class="fas fa-ellipsis-h"></i>
+              </button>
+              <div
+                class="dropdown-menu"
+                [class.show]="activeActionMenu === post.postid"
+                [class.hide]="activeActionMenu !== post.postid"
+                style="
+                  width: 12rem;
+                  min-width: 12rem;
+                  max-width: 12rem;
+                  position: absolute;
+                  right: 0;
+                  top: calc(100% + 0.5rem);
+                "
+              >
+                <div class="py-2">
+                  <!-- View option - chỉ hiện khi post được publish -->
+                  <button
+                    *ngIf="canViewPost(post)"
+                    class="dropdown-item"
+                    (click)="viewPost(post)"
+                  >
+                    <i class="fas fa-eye mr-3 text-gray-400"></i>
+                    {{ "mystories.view_story" | translate }}
+                  </button>
+
+                  <!-- Disabled view option cho post chưa publish -->
+                  <button
+                    *ngIf="!canViewPost(post)"
+                    class="dropdown-item opacity-50 cursor-not-allowed"
+                    disabled
+                    title="Post is not published yet"
+                  >
+                    <i class="fas fa-eye mr-3 text-gray-400"></i>
+                    {{ "mystories.view_story" | translate }}
+                    <span class="text-xs text-gray-500 ml-auto"
+                      >(Not published)</span
+                    >
+                  </button>
+
+                  <!-- Edit option - luôn hiện -->
+                  <button class="dropdown-item" (click)="editPost(post)">
+                    <i class="fas fa-edit mr-3 text-gray-400"></i>
+                    {{ "mystories.edit_story" | translate }}
+                  </button>
+
+                  <hr class="my-2 border-gray-200" />
+
+                  <button
+                    class="dropdown-item danger"
+                    (click)="confirmDeletePost(post)"
+                  >
+                    <i class="fas fa-trash mr-3"></i>
+                    {{ "mystories.delete_story" | translate }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  <div
+    class="flex items-center justify-between mt-8"
+    *ngIf="!loading && posts.length > 0"
+  >
+    <p class="text-sm text-gray-700">
+      Showing
+      <span class="font-medium">{{
+        (pagination.page - 1) * pagination.limit + 1
+      }}</span>
+      to
+      <span class="font-medium">{{
+        Math.min(pagination.page * pagination.limit, pagination.total)
+      }}</span>
+      of <span class="font-medium">{{ pagination.total }}</span> stories
+    </p>
+    <div class="flex items-center space-x-2">
+      <button
+        class="px-3 py-2 text-sm text-gray-500 hover:text-gray-700 disabled:opacity-50 transition-colors"
+        [disabled]="pagination.page === 1"
+        (click)="previousPage()"
+      >
+        Previous
+      </button>
+      <button
+        *ngFor="let page of getPageNumbers()"
+        class="px-3 py-2 text-sm rounded transition-colors"
+        [class.bg-green-600]="page === pagination.page"
+        [class.text-white]="page === pagination.page"
+        [class.text-gray-700]="page !== pagination.page"
+        [class.hover:text-gray-900]="page !== pagination.page"
+        (click)="goToPage(page)"
+      >
+        {{ page }}
+      </button>
+      <button
+        class="px-3 py-2 text-sm text-gray-700 hover:text-gray-900 disabled:opacity-50 transition-colors"
+        [disabled]="pagination.page === pagination.totalPages"
+        (click)="nextPage()"
+      >
+        Next
+      </button>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div
+    *ngIf="showDeleteModal"
+    class="modal-overlay"
+    (click)="cancelDelete()"
+    style="
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    "
+  >
+    <div
+      class="modal-content"
+      (click)="$event.stopPropagation()"
+      style="
+        background: white;
+        border-radius: 8px;
+        max-width: 500px;
+        width: 90%;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      "
+    >
+      <div
+        style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 1.5rem;
+          border-bottom: 1px solid #e5e7eb;
+        "
+      >
+        <h3
+          style="
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #111827;
+          "
+        >
+          {{ "mystories.confirm_delete" | translate }}
+        </h3>
+        <button
+          (click)="cancelDelete()"
+          style="
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6b7280;
+            padding: 0.25rem;
+          "
+        >
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div style="padding: 1.5rem">
+        <div style="display: flex; align-items: center; margin-bottom: 1rem">
+          <div
+            style="
+              background: #fef2f2;
+              border-radius: 50%;
+              padding: 0.75rem;
+              margin-right: 1rem;
+            "
+          >
+            <i
+              class="fas fa-exclamation-triangle"
+              style="color: #dc2626; font-size: 1.25rem"
+            ></i>
+          </div>
+          <div>
+            <h4
+              style="
+                margin: 0;
+                font-size: 1.125rem;
+                font-weight: 600;
+                color: #111827;
+              "
+            >
+              {{ "mystories.delete_story" | translate }}
+            </h4>
+            <p style="margin: 0; color: #6b7280; font-size: 0.875rem">
+              {{ "mystories.cannot_undo" | translate }}
+            </p>
+          </div>
+        </div>
+        <p style="margin-bottom: 1rem; color: #374151">
+          {{ "mystories.delete_warning" | translate }}
+        </p>
+        <div
+          style="
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+          "
+        >
+          <p style="margin: 0; font-weight: 600; color: #111827">
+            "{{ postToDelete?.title }}"
+          </p>
+        </div>
+        <p
+          style="
+            margin: 0;
+            color: #dc2626;
+            font-size: 0.875rem;
+            font-weight: 500;
+          "
+        >
+          <i class="fas fa-info-circle" style="margin-right: 0.5rem"></i>
+          {{ "mystories.delete_info" | translate }}
+        </p>
+      </div>
+      <div
+        style="
+          display: flex;
+          justify-content: flex-end;
+          gap: 0.75rem;
+          padding: 1rem 1.5rem;
+          border-top: 1px solid #e5e7eb;
+          background: #f9fafb;
+        "
+      >
+        <button
+          (click)="cancelDelete()"
+          style="
+            padding: 0.5rem 1rem;
+            border: 1px solid #d1d5db;
+            background: white;
+            color: #374151;
+            border-radius: 0.375rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+          "
+        >
+          {{ "common.cancel" | translate }}
+        </button>
+        <button
+          (click)="deletePost()"
+          style="
+            padding: 0.5rem 1rem;
+            background: #dc2626;
+            color: white;
+            border: none;
+            border-radius: 0.375rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+          "
+        >
+          <i class="fas fa-trash"></i>
+          {{ "mystories.delete_story" | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

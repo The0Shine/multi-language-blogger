@@ -21,7 +21,7 @@ const postService = {
   async getPostsForAdmin(params) {
     const {
       page = 1,
-      limit = 50,
+      limit = 10,
       status,
       categoryid,
       search,
@@ -137,122 +137,141 @@ const postService = {
    * @returns {Object} - Posts with pagination info
    */
   async getPosts(params) {
-    const {
-      page = 1,
-      limit = 10,
-      status,
-      categoryid,
-      search,
-      sortBy = "created_at",
-      sortOrder = "DESC",
-      startDate,
-      endDate,
-      languageid,
-    } = params;
+    try {
+      console.log("📄 PostService.getPosts called with params:", params);
 
-    const offset = (page - 1) * limit;
+      const {
+        page = 1,
+        limit = 10,
+        status,
+        categoryid,
+        search,
+        sortBy = "created_at",
+        sortOrder = "DESC",
+        startDate,
+        endDate,
+        languageid,
+      } = params;
 
-    // Build where clause - Only show published posts in public feed
-    const whereClause = {
-      status: 1, // 1 = published, 0 = draft, 2 = rejected
-    };
+      const offset = (page - 1) * limit;
 
-    // Override status filter if explicitly provided (for admin/moderation)
-    if (status !== undefined) {
-      whereClause.status = status;
-    }
+      // Build where clause - Only show published posts in public feed
+      const whereClause = {
+        status: 1, // 1 = published, 0 = draft, 2 = rejected
+      };
 
-    // Category filter
-    if (categoryid) {
-      whereClause["$categories.categoryid$"] = categoryid;
-    }
+      // Override status filter if explicitly provided (for admin/moderation)
+      if (status !== undefined) {
+        whereClause.status = status;
+      }
 
-    // Language filter - default to English if not specified
-    if (languageid) {
-      whereClause.languageid = languageid;
-    }
-    // } else {
-    //   whereClause.languageid = 1; // Default to English
-    // }
+      // Category filter - will be handled in include
+      let categoryFilter = null;
+      if (categoryid) {
+        categoryFilter = categoryid;
+      }
 
-    // Search filter
-    if (search) {
-      whereClause[Op.or] = [
-        { title: { [Op.like]: `%${search}%` } },
-        { content: { [Op.like]: `%${search}%` } },
+      // Language filter - default to English if not specified
+      if (languageid) {
+        whereClause.languageid = languageid;
+      }
+      // } else {
+      //   whereClause.languageid = 1; // Default to English
+      // }
+
+      // Search filter
+      if (search) {
+        whereClause[Op.or] = [
+          { title: { [Op.like]: `%${search}%` } },
+          { content: { [Op.like]: `%${search}%` } },
+        ];
+      }
+
+      // Date range filter
+      if (startDate || endDate) {
+        whereClause.created_at = {};
+        if (startDate) {
+          whereClause.created_at[Op.gte] = new Date(startDate);
+        }
+        if (endDate) {
+          whereClause.created_at[Op.lte] = new Date(endDate);
+        }
+      }
+
+      // Include associations
+      const include = [
+        {
+          model: User,
+          as: "author",
+          attributes: ["userid", "first_name", "last_name", "username"],
+          where: { status: 1 },
+          paranoid: true,
+        },
+        {
+          model: Language,
+          as: "language",
+          attributes: ["languageid", "language_name", "locale_code"],
+        },
+        {
+          model: Category,
+          as: "categories",
+          attributes: ["categoryid", "category_name"],
+          through: { attributes: [] },
+          // Add category filter if specified
+          ...(categoryFilter && {
+            where: { categoryid: categoryFilter },
+            required: true, // INNER JOIN to filter posts by category
+          }),
+        },
       ];
-    }
 
-    // Date range filter
-    if (startDate || endDate) {
-      whereClause.created_at = {};
-      if (startDate) {
-        whereClause.created_at[Op.gte] = new Date(startDate);
-      }
-      if (endDate) {
-        whereClause.created_at[Op.lte] = new Date(endDate);
-      }
-    }
+      // Get total count
+      const totalCount = await Post.count({
+        where: whereClause,
+        include,
+        distinct: true,
+      });
 
-    // Include associations
-    const include = [
-      {
-        model: User,
-        as: "author",
-        attributes: ["userid", "first_name", "last_name", "username"],
-        where: { status: 1 },
-        paranoid: true,
-      },
-      {
-        model: Language,
-        as: "language",
-        attributes: ["languageid", "language_name", "locale_code"],
-      },
-      {
-        model: Category,
-        as: "categories",
-        attributes: ["categoryid", "category_name"],
-        through: { attributes: [] },
-      },
-    ];
-
-    // Get total count
-    const totalCount = await Post.count({
-      where: whereClause,
-      include,
-      distinct: true,
-    });
-
-    // Get posts
-    const posts = await Post.findAll({
-      where: whereClause,
-      include,
-      limit: Number.parseInt(limit),
-      offset: Number.parseInt(offset),
-      order: [[sortBy, sortOrder.toUpperCase()]],
-      attributes: {
-        include: [
-          [
-            Post.sequelize.literal(
-              `(SELECT COUNT(*) FROM comment WHERE comment.postid = IFNULL(Post.originalid, Post.postid))`
-            ),
-            "comment_count",
+      // Get posts
+      const posts = await Post.findAll({
+        where: whereClause,
+        include,
+        limit: Number.parseInt(limit),
+        offset: Number.parseInt(offset),
+        order: [[sortBy, sortOrder.toUpperCase()]],
+        attributes: {
+          include: [
+            [
+              Post.sequelize.literal(
+                `(SELECT COUNT(*) FROM comment WHERE comment.postid = IFNULL(Post.originalid, Post.postid))`
+              ),
+              "comment_count",
+            ],
           ],
-        ],
-      },
-    });
+        },
+      });
 
-    return {
-      posts,
-      pagination: {
-        currentPage: Number.parseInt(page),
-        totalPages: Math.ceil(totalCount / limit),
-        totalItems: totalCount,
-        itemsPerPage: Number.parseInt(limit),
-        hasNextPage: page * limit < totalCount,
-        hasPrevPage: page > 1,
-      },
-    };
+      console.log("📄 PostService.getPosts completed successfully");
+      console.log("📄 Posts found:", posts.length);
+      console.log("📄 Total count:", totalCount);
+
+      return {
+        posts,
+        pagination: {
+          currentPage: Number.parseInt(page),
+          totalPages: Math.ceil(totalCount / limit),
+          totalItems: totalCount,
+          itemsPerPage: Number.parseInt(limit),
+          hasNextPage: page * limit < totalCount,
+          hasPrevPage: page > 1,
+        },
+      };
+    } catch (error) {
+      console.error("📄 PostService.getPosts error:", error);
+      console.error("📄 Error details:", error.message);
+      console.error("📄 Stack trace:", error.stack);
+      throw error;
+    }
   },
 
   /**
@@ -267,7 +286,7 @@ const postService = {
       content,
       languageid,
       categoryids,
-      status = 0,
+      status = 0, // Default to pending status (0 = pending, 1 = approved, -1 = rejected)
       create_for_all_languages = false,
     } = postData;
 
@@ -347,7 +366,7 @@ const postService = {
               content: validatedTranslatedContent,
               languageid: language.languageid,
               originalid: post.postid, // Link to original post
-              status: 1, // Published status for translations
+              status: 0, // Default to pending status for translations
             });
 
             return translatedPost;
@@ -452,7 +471,6 @@ const postService = {
     const post = await Post.scope("full").findOne({
       where: {
         postid,
-        status: 1, // Only show published posts
       },
       include: [
         {
@@ -492,7 +510,7 @@ const postService = {
 
     const { title, content, languageid, categoryids, status } = updateData;
 
-    // Update post fields
+    // Update post fields - only update fields that are explicitly provided
     const updateFields = {};
     if (title !== undefined) updateFields.title = title;
     if (content !== undefined) {
@@ -500,6 +518,7 @@ const postService = {
       updateFields.content = validateContent(content);
     }
     if (languageid !== undefined) updateFields.languageid = languageid;
+    // Only update status if explicitly provided (not undefined)
     if (status !== undefined) updateFields.status = status;
 
     await post.update(updateFields);

@@ -2,7 +2,7 @@ const roleService = require('modules/role/services/roleService');
 const responseUtils = require('utils/responseUtils');
 
 const roleController = {
-  // Create new role
+  // Create new role with permissions
   create: async (req, res) => {
     try {
       const role = await roleService.create(req.body);
@@ -48,7 +48,7 @@ const roleController = {
     }
   },
 
-  // Update role
+  // Update role + sync permissions
   update: async (req, res) => {
     try {
       const updatedRole = await roleService.update(req.params.roleid, req.body);
@@ -96,8 +96,7 @@ const roleController = {
       return responseUtils.badRequest(res, error.message);
     }
   },
-
-  // Restore role from soft delete
+// Restore role
   restore: async (req, res) => {
     try {
       const restored = await roleService.restore(req.params.roleid);

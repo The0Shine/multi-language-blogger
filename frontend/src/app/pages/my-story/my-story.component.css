@@ -1,0 +1,316 @@
+/* Custom styles for the Medium stories page */
+
+/* Status badges */
+.status-published {
+  background-color: #dcfce7;
+  color: #16a34a;
+}
+
+.status-pending {
+  background-color: #fef3c7;
+  color: #d97706;
+}
+
+.status-rejected {
+  background-color: #fee2e2;
+  color: #dc2626;
+}
+
+/* Story cards hover effect */
+.story-card:hover {
+  background-color: #f9fafb;
+}
+
+/* Text wrapping for story titles and content */
+.story-title {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  hyphens: auto;
+}
+
+.story-content {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  hyphens: auto;
+  line-height: 1.6;
+}
+
+/* Utility classes for text wrapping */
+.break-words {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  hyphens: auto;
+}
+
+.overflow-wrap-anywhere {
+  overflow-wrap: anywhere;
+}
+
+/* Ensure all text content wraps properly */
+.story-card * {
+  max-width: 100%;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Handle long URLs and code snippets */
+.story-card a,
+.story-card code {
+  word-break: break-all;
+  overflow-wrap: anywhere;
+}
+
+/* Dropdown menu styling */
+.dropdown-menu {
+  position: absolute !important;
+  right: 0 !important;
+  top: 100% !important;
+  margin-top: 0.5rem !important;
+  width: 12rem !important;
+  min-width: 12rem !important;
+  max-width: 12rem !important;
+  background: white !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 0.5rem !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+  z-index: 50 !important;
+  transform-origin: top right !important;
+  transition: all 0.15s ease-in-out !important;
+  white-space: nowrap !important;
+}
+
+.dropdown-menu.show {
+  opacity: 1;
+  visibility: visible;
+  transform: scale(1);
+}
+
+.dropdown-menu.hide {
+  opacity: 0;
+  visibility: hidden;
+  transform: scale(0.95);
+}
+
+/* Dropdown menu items */
+.dropdown-item {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  text-align: left !important;
+  padding: 0.5rem 1rem !important;
+  color: #374151 !important;
+  transition: background-color 0.15s ease-in-out !important;
+  border: none !important;
+  background: none !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+.dropdown-item:hover {
+  background-color: #f3f4f6 !important;
+  transition: background-color 0.15s ease-in-out !important;
+}
+
+.dropdown-item.danger {
+  color: #dc2626 !important;
+}
+
+.dropdown-item.danger:hover {
+  background-color: #fef2f2 !important;
+  color: #b91c1c !important;
+}
+
+.dropdown-item.danger i {
+  color: #dc2626 !important;
+}
+
+.dropdown-item.danger:hover i {
+  color: #b91c1c !important;
+}
+
+/* Dropdown container */
+.dropdown-container {
+  position: relative;
+  display: inline-block;
+  z-index: 10;
+}
+
+/* Ensure dropdown appears above other elements */
+.story-card {
+  position: relative;
+  z-index: 1;
+}
+
+.story-card:has(.dropdown-menu.show) {
+  z-index: 20;
+}
+
+/* Fix for browsers that don't support :has() */
+.story-card.dropdown-active {
+  z-index: 20;
+}
+
+/* Override any Tailwind CSS conflicts */
+:host ::ng-deep .dropdown-menu {
+  width: 12rem !important;
+  min-width: 12rem !important;
+  max-width: 12rem !important;
+}
+
+:host ::ng-deep .dropdown-item {
+  width: 100% !important;
+  white-space: nowrap !important;
+}
+
+/* Specific override for the dropdown container */
+.dropdown-container .dropdown-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 0.5rem);
+  width: 192px; /* 12rem in px */
+  min-width: 192px;
+  max-width: 192px;
+}
+
+/* Input and Select styling */
+.form-input,
+.form-select {
+  appearance: none;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  color: #374151;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.form-input:hover,
+.form-select:hover {
+  background-color: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+.form-input:focus,
+.form-select:focus {
+  background-color: #ffffff;
+  border-color: #94a3b8;
+  box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.1);
+}
+
+.form-select {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.75rem center;
+  background-repeat: no-repeat;
+  background-size: 1rem;
+  padding-right: 2.5rem;
+  cursor: pointer;
+}
+
+.search-input {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem 0.75rem 2.5rem;
+  font-size: 0.875rem;
+  color: #374151;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.search-input:hover {
+  background-color: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+.search-input:focus {
+  background-color: #ffffff;
+  border-color: #94a3b8;
+  box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.1);
+}
+
+.search-input::placeholder {
+  color: #9ca3af;
+}
+
+/* Search icon positioning */
+.search-icon {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9ca3af;
+  z-index: 2;
+  transition: opacity 0.2s ease;
+}
+
+.spinner-icon {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9ca3af;
+  z-index: 2;
+  transition: opacity 0.2s ease;
+}
+
+.search-icon.hidden,
+.spinner-icon.hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+
+/* Clear button styling */
+.search-clear-btn {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #9ca3af;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 0.25rem;
+  transition: all 0.2s ease;
+  font-size: 0.875rem;
+}
+
+.search-clear-btn:hover {
+  color: #6b7280;
+  background-color: #f3f4f6;
+}
+
+/* Search overlay */
+.search-overlay {
+  backdrop-filter: blur(2px);
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Prevent table content from jumping */
+.story-card {
+  transition: none;
+}
+
+.story-card.searching {
+  pointer-events: none;
+  opacity: 0.7;
+}

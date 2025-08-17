@@ -1,20 +1,27 @@
+// middlewares/authMiddleware.js
 const jwtUtils = require("utils/jwtUtils");
 const responseUtils = require("utils/responseUtils");
-const { User, Role } = require("models");
+const { User, Role, Permission } = require("models");
 
 const getTokenFromHeader = (req) => {
   const authHeader = req.headers.authorization || "";
   return authHeader.startsWith("Bearer ") ? authHeader.slice(7) : null;
 };
 
+const buildUserContext = (userInstance) => {
+  const roleName = String(userInstance?.Role?.name || "").toLowerCase();
+  const permissions = Array.isArray(userInstance?.Role?.permissions)
+    ? userInstance.Role.permissions.map((p) => String(p.name).toLowerCase())
+    : [];
+  return { roleName, permissions };
+};
+
+const hasAnyPermission = (userPerms, requiredPerms) =>
+  requiredPerms.some((perm) => userPerms.includes(String(perm).toLowerCase()));
+
 const authMiddleware = {
   authenticate: async (req, res, next) => {
     const token = getTokenFromHeader(req);
-    console.log("🔍 Auth Debug - URL:", req.url);
-    console.log(
-      "🔍 Auth Debug - Token:",
-      token ? `${token.substring(0, 20)}...` : "null"
-    );
 
     if (!token)
       return responseUtils.unauthorized(res, "Access token is missing.");
@@ -31,8 +38,16 @@ const authMiddleware = {
         include: [
           {
             model: Role,
-            as: "Role", // 🔁 alias phải khớp association
+            as: "role", // 🔁 alias phải khớp association (lowercase)
             attributes: ["roleid", "name", "status", "deleted_at"],
+            include: [
+              {
+                model: Permission,
+                as: "permissions",
+                attributes: ["name"],
+                through: { attributes: [] },
+              },
+            ],
           },
         ],
       });
@@ -40,18 +55,21 @@ const authMiddleware = {
       // Chặn user/role không hợp lệ hoặc role inactive/soft-deleted
       if (
         !user ||
-        !user.Role ||
-        user.Role.deleted_at ||
-        user.Role.status === 0
+        !user.role ||
+        user.role.deleted_at ||
+        user.role.status === 0
       ) {
         return responseUtils.unauthorized(res, "Invalid user or role.");
       }
+
+      const { roleName, permissions } = buildUserContext(user);
 
       req.user = {
         userid: user.userid,
         roleid: user.roleid,
         username: user.username,
-        roleName: String(user.Role.name || "").toLowerCase(),
+        roleName: String(user.role.name || "").toLowerCase(),
+        permissions,
       };
 
       next();
@@ -73,7 +91,10 @@ const authMiddleware = {
       if (!req.user)
         return responseUtils.unauthorized(res, "Authentication required.");
       if (normalized.includes(String(req.user.roleName))) return next();
-      // 👉 Nếu có responseUtils.forbidden thì dùng cái này thay vì unauthorized
+      console.log(req.user);
+
+      console.log(req.user.roleName, "111111111");
+
       return responseUtils.unauthorized(res, "You do not have permission.");
     };
   },
@@ -100,7 +121,38 @@ const authMiddleware = {
         res,
         "Access denied: not owner or insufficient role."
       );
+      return responseUtils.unauthorized(
+        res,
+        "Access denied: not owner or insufficient role."
+      );
     };
+  },
+
+  requireRoleOrPermission: (roles = [], permissions = []) => {
+    const normRoles = roles.map((r) => String(r).toLowerCase());
+    const normPerms = permissions.map((p) => String(p).toLowerCase());
+
+    return (req, res, next) => {
+      if (!req.user)
+        return responseUtils.unauthorized(res, "Authentication required.");
+
+      if (normRoles.length && normRoles.includes(String(req.user.roleName))) {
+        return next();
+      }
+
+      if (
+        normPerms.length &&
+        hasAnyPermission(req.user.permissions || [], normPerms)
+      ) {
+        return next();
+      }
+
+      return responseUtils.unauthorized(res, "You do not have permission.");
+    };
+  },
+
+  requirePermissions: (...permissions) => {
+    return authMiddleware.requireRoleOrPermission([], permissions);
   },
 };
 

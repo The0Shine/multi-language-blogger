@@ -3,6 +3,7 @@ const router = express.Router();
 
 const uploadController = require("../modules/upload/controllers/uploadController");
 const authMiddleware = require("../middlewares/authMiddleware");
+const uploadMiddleware = require("../middlewares/uploadMiddleware");
 
 // Require login for all routes
 router.use(authMiddleware.authenticate);
@@ -11,7 +12,11 @@ router.use(authMiddleware.authenticate);
 router.get("/signature", uploadController.getUploadSignature);
 
 // Upload image file
-router.post("/image", uploadController.uploadImage);
+router.post(
+  "/image",
+  uploadMiddleware.uploadSingle,
+  uploadController.uploadImage
+);
 
 // Upload image by URL
 router.post("/image-by-url", uploadController.uploadByUrl);

@@ -20,9 +20,11 @@ router.get(
 // Public routes
 router.get("/", postController.index);
 router.get("/search", postController.search);
+router.get("/search/suggestions", postController.searchSuggestions);
 router.get("/my-posts", authenticate, postController.getMyPosts);
 router.get("/:postid", postController.show);
 router.get("/:postid/translations", postController.getTranslations);
+
 router.post(
   "/",
   authenticate,
@@ -74,5 +76,13 @@ router.patch(
 
 // Comments routes for posts
 router.use("/:postid/comments", postCommentRouter);
+
+// Get a post by ID (accessible to authenticated users)
+router.get(
+  "/:postid",
+  authMiddleware.authenticate,
+  validateMiddleware,
+  postController.show
+);
 
 module.exports = router;

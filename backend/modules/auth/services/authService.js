@@ -14,7 +14,12 @@ const authService = {
     // unique email
     const existingUser = await User.findOne({ where: { email: emailNorm } });
     if (existingUser) throw new Error("Email already in use.");
-
+    const existingUsername = await User.unscoped().findOne({
+      where: { username },
+    });
+    if (existingUsername) {
+      throw new Error("Username already exists");
+    }
     // default role = "User"
     const defaultRole = await Role.findOne({
       where: { name: "User" }, // + có thể thêm status:1, deleted_at:null nếu bạn dùng soft-delete
@@ -74,17 +79,33 @@ const authService = {
   login: async (data) => {
     const { username, password } = data;
 
-    const user = await User.findOne({ where: { username } });
+    const user = await User.findOne({
+      where: { username },
+      include: [
+        {
+          model: Role,
+          as: "role",
+          attributes: ["name", "discription"], // Fix: use correct column name
+        },
+      ],
+      attributes: { exclude: ["password"] },
+    });
+
     if (!user) throw new Error("User not found.");
 
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    // Need to get user with password for validation
+    const userWithPassword = await User.findOne({ where: { username } });
+    const isPasswordValid = await bcrypt.compare(
+      password,
+      userWithPassword.password
+    );
     if (!isPasswordValid) throw new Error("Invalid credentials.");
 
     const payload = { userid: user.userid, roleid: user.roleid };
     const accessToken = jwtUtils.generateToken(payload);
     const refreshToken = jwtUtils.generateRefreshToken(payload);
 
-    return { accessToken, refreshToken };
+    return { accessToken, refreshToken, user };
   },
 
   refreshToken: async (refreshToken) => {

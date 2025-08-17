@@ -15,7 +15,53 @@ const userController = {
       });
     } catch (error) {
       console.error("Get all users error:", error);
-      return responseUtils.internalServerError(res, error.message);
+      return responseUtils.serverError(res, error.message);
+    }
+  },
+
+  // Get current user's own profile
+  getCurrentUserProfile: async (req, res) => {
+    try {
+      const userid = req.user.userid; // From auth middleware
+
+      console.log(`🔍 Getting current user profile for userid: ${userid}`);
+
+      const user = await userService.getUserById(userid);
+
+      return responseUtils.ok(res, {
+        message: "Current user profile retrieved successfully",
+        data: user,
+      });
+    } catch (error) {
+      console.error("Get current user profile error:", error);
+      if (error.message === "User not found") {
+        return responseUtils.notFound(res, error.message);
+      }
+      return responseUtils.serverError(res, error.message);
+    }
+  },
+
+  // Update current user's own profile
+  updateCurrentUserProfile: async (req, res) => {
+    try {
+      const userid = req.user.userid; // From auth middleware
+      const updateData = req.body;
+
+      console.log(`🔄 Updating current user profile for userid: ${userid}`);
+      console.log(`🔄 Update data:`, updateData);
+
+      const updatedUser = await userService.updateUser(userid, updateData);
+
+      return responseUtils.ok(res, {
+        message: "Profile updated successfully",
+        data: updatedUser,
+      });
+    } catch (error) {
+      console.error("Update current user profile error:", error);
+      if (error.message === "User not found") {
+        return responseUtils.notFound(res, error.message);
+      }
+      return responseUtils.serverError(res, error.message);
     }
   },
 
@@ -35,7 +81,7 @@ const userController = {
       if (error.message === "User not found") {
         return responseUtils.notFound(res, error.message);
       }
-      return responseUtils.internalServerError(res, error.message);
+      return responseUtils.serverError(res, error.message);
     }
   },
 
@@ -89,7 +135,7 @@ const userController = {
       if (error.message === "User not found") {
         return responseUtils.notFound(res, error.message);
       }
-      return responseUtils.internalServerError(res, error.message);
+      return responseUtils.serverError(res, error.message);
     }
   },
 
@@ -136,7 +182,7 @@ const userController = {
       if (error.message === "User not found") {
         return responseUtils.notFound(res, error.message);
       }
-      return responseUtils.internalServerError(res, error.message);
+      return responseUtils.serverError(res, error.message);
     }
   },
 

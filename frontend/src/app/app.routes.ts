@@ -1,51 +1,49 @@
 import { Routes } from '@angular/router';
-import { LayoutComponent } from './layout/layout.component';
+import { HomeComponent } from './pages/home/home.component';
+import { WriteComponent } from './pages/write/write.component';
+import { RegisterComponent } from './pages/auth/register/register.component';
+import { LoginComponent } from './pages/auth/login/login.component';
+import { ProfileComponent } from './pages/profile/profile.component';
+import { MyStoryComponent } from './pages/my-story/my-story.component';
+import { PostDetailComponent } from './pages/post-detail/post-detail.component';
+import { adminGuard, adminOrUserGuard } from './guards/role.guard';
+import { redirectGuard } from './guards/redirect.guard';
+import { ForgotPasswordComponent } from './pages/auth/forgot-password/forgot-password.component';
+import { ResetPasswordComponent } from './pages/auth/reset-password/reset-password.component';
 
-import { HomeComponent } from './home/home.component';
-import { AuthGuard } from './modules/auth/auth.guard';
-// Import các component standalone
-import { AdminUserListComponent } from './modules/admin/components/user/list/list.component';
-import { AdminRoleListComponent } from './modules/admin/components/role/list/list.component';
-import { AdminLanguageListComponent } from './modules/admin/components/language/list/list.component';
-import { AdminCategorieListComponent } from './modules/admin/components/categories/list/list.component';
-import { AdminPostListComponent } from './modules/admin/components/post/list/list.component';
-// import { AdminPostCreateComponent } from './modules/admin/components/post/create/create.component';
-import { LoginComponent } from './modules/auth/login/login.component';
-import { RegisterComponent } from './modules/auth/register/register.component';
-
-import { ProfileComponent } from './profile/profile.component';
-import { ForgotPasswordComponent } from './modules/auth/forgot-password/forgot-password.component';
-import { ResetPasswordComponent } from './modules/auth/reset-password/reset-password.component';
+// Admin imports
 
 export const routes: Routes = [
-  // Route login
+  // Public routes
+  { path: '', component: HomeComponent },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'forgot-password', component: ForgotPasswordComponent },
   { path: 'reset-password', component: ResetPasswordComponent },
+  { path: 'post/:id', component: PostDetailComponent },
 
-  // Route admin
+  // User routes (accessible by both admin and user)
+  { path: 'write', component: WriteComponent, canActivate: [adminOrUserGuard] },
   {
-    path: 'admin',
-    component: LayoutComponent,
-     canActivate: [AuthGuard],
-    children: [
-      { path: 'home', component: HomeComponent },
-      { path: 'user/list', component: AdminUserListComponent },
-      { path: 'role/list', component: AdminRoleListComponent },
-      { path: 'language/list', component: AdminLanguageListComponent },
-      { path: 'category/list', component: AdminCategorieListComponent },
-      { path: 'post/list', component: AdminPostListComponent },
-      // { path: 'post/create', component: AdminPostCreateComponent },
-          { path: 'profile', component: ProfileComponent }, // ✅ thêm dòng này
-      { path: '', redirectTo: 'home', pathMatch: 'full' }
-    ]
+    path: 'write/:id',
+    component: WriteComponent,
+    canActivate: [adminOrUserGuard],
+  },
+  {
+    path: 'profile',
+    component: ProfileComponent,
+    canActivate: [adminOrUserGuard],
+  },
+  {
+    path: 'my-story',
+    component: MyStoryComponent,
+    canActivate: [adminOrUserGuard],
   },
 
+  // Admin routes (require admin role)
 
-  // Mặc định vào login
-  { path: '', redirectTo: 'login', pathMatch: 'full' },
+  // Redirect route for authenticated users
+  { path: 'dashboard', canActivate: [redirectGuard], children: [] },
 
-  // Nếu không khớp route nào thì về login
-  { path: '**', redirectTo: 'login' }
+  { path: '**', redirectTo: '' },
 ];

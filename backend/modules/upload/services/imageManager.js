@@ -15,13 +15,33 @@ class ImageManager {
 
   /**
    * Upload image to temporary storage
-   * @param {string} filePath - Local file path
+   * @param {string|Buffer} fileInput - Local file path or buffer
    * @param {Object} options - Upload options
    * @returns {Promise<Object>} Upload result
    */
-  async uploadToTemp(filePath, options = {}) {
+  async uploadToTemp(fileInput, options = {}) {
     try {
-      const result = await cloudinary.uploader.upload(filePath, {
+      console.log("🔄 ImageManager: Starting upload to temp storage");
+      console.log(
+        "🔄 Input type:",
+        Buffer.isBuffer(fileInput) ? "Buffer" : "File path"
+      );
+
+      // Handle both file path and buffer input
+      let uploadInput;
+      if (Buffer.isBuffer(fileInput)) {
+        // For memory storage (buffer)
+        uploadInput = `data:${
+          options.mimetype || "image/jpeg"
+        };base64,${fileInput.toString("base64")}`;
+        console.log("🔄 Using buffer input with base64 encoding");
+      } else {
+        // For file path (traditional)
+        uploadInput = fileInput;
+        console.log("🔄 Using file path input:", fileInput);
+      }
+
+      const result = await cloudinary.uploader.upload(uploadInput, {
         folder: this.tempFolder,
         resource_type: "image",
         transformation: this.getOptimizedTransformations(options),
@@ -29,11 +49,21 @@ class ImageManager {
         context: {
           uploaded_at: new Date().toISOString(),
           user_id: options.userId || "unknown",
+          filename: options.filename || "unknown",
         },
       });
 
-      // Clean up local temp file
-      await this.cleanupLocalFile(filePath);
+      console.log("✅ ImageManager: Upload successful:", {
+        public_id: result.public_id,
+        url: result.secure_url,
+        format: result.format,
+        bytes: result.bytes,
+      });
+
+      // Clean up local temp file only if it's a file path
+      if (!Buffer.isBuffer(fileInput)) {
+        await this.cleanupLocalFile(fileInput);
+      }
 
       return {
         success: 1,

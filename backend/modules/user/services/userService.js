@@ -21,7 +21,7 @@ const userService = {
       include: [
         {
           model: Role,
-          as: "Role",
+          as: "role",
           attributes: ["name"],
         },
       ],
@@ -48,7 +48,7 @@ const userService = {
       include: [
         {
           model: Role,
-          as: "Role",
+          as: "role",
           attributes: ["name"],
         },
       ],
@@ -88,7 +88,7 @@ const userService = {
       include: [
         {
           model: Role,
-          as: "Role",
+          as: "role", // Fix: use lowercase 'role' to match association alias
           attributes: ["name"],
         },
       ],
@@ -119,7 +119,7 @@ const userService = {
       include: [
         {
           model: Role,
-          as: "Role",
+          as: "role",
           attributes: ["name"],
         },
       ],
@@ -182,7 +182,7 @@ const userService = {
       include: [
         {
           model: Role,
-          as: "Role",
+          as: "role",
           attributes: ["name"],
         },
       ],
@@ -191,7 +191,7 @@ const userService = {
 
     return usersByRole.map((entry) => ({
       roleid: entry.roleid,
-      roleName: entry["Role.name"],
+      roleName: entry["role.name"],
       count: parseInt(entry.count),
     }));
   },
