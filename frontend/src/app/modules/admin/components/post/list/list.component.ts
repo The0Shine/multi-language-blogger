@@ -65,39 +65,40 @@ export class AdminPostListComponent implements OnInit {
   }
 
   loadPosts(page: number = 1): void {
+  this.postService.getAllPosts().subscribe((res: any) => {
+    const postsArray = res?.data?.posts || [];
+    this.pagination = res?.data?.pagination || {}; // Lấy cả thông tin phân trang
 
-    this.postService.getAllPosts().subscribe((res: any) => {
-      // SỬA LẠI DÒNG NÀY
-      const postsArray = res?.data?.posts || [];
-      this.pagination = res?.data?.pagination || {}; // Lấy cả thông tin phân trang
+    // ✅ Chỉ lấy các bài viết có languageid = 2 (English)
+    this.posts = postsArray
+      .filter((post: any) => String(post.languageid) === "2")
+      .map((post: any) => {
+        const user = this.users.find(
+          (u: any) => String(u.userid) === String(post.userid)
+        );
+        const lang = this.languages.find(
+          (l: any) => String(l.languageid) === String(post.languageid)
+        );
 
-      this.posts = postsArray
-        .map((post: any) => {
-          const user = this.users.find(
-            (u: any) => String(u.userid) === String(post.userid)
-          );
-          const lang = this.languages.find(
-            (l: any) => String(l.languageid) === String(post.languageid)
-          );
+        return {
+          ...post,
+          status: Number(post.status),
+          created_at: post.created_at ? new Date(post.created_at) : null,
+          username: user?.username || 'Unknown',
+          language_name: lang?.language_name || 'Unknown',
+          original_id: post.originalid || null,
+        };
+      })
+      .sort((a: any, b: any) => a.postid - b.postid);
 
-          return {
-            ...post,
-            status: Number(post.status),
-            created_at: post.created_at ? new Date(post.created_at) : null,
-            username: user?.username || 'Unknown',
-            language_name: lang?.language_name || 'Unknown',
-            original_id: post.originalid || null,
-          };
-        })
-        .sort((a: any, b: any) => a.postid - b.postid);
+    // ✅ Sau khi load xong posts, nếu có viewId thì mở modal
+    if (this.viewId) {
+      this.openPostDetail(this.viewId);
+      this.viewId = null; // reset tránh mở lại khi phân trang
+    }
+  });
+}
 
-      // ✅ Sau khi load xong posts, nếu có viewId thì mở modal
-      if (this.viewId) {
-        this.openPostDetail(this.viewId);
-        this.viewId = null; // reset tránh mở lại khi phân trang
-      }
-    });
-  }
 
 openPostDetail(postId: number): void {
   // Tìm post trong mảng this.posts đã được load và xử lý trước đó
