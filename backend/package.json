@@ -4,6 +4,7 @@
     "start": "node app.js"
   },
   "dependencies": {
+    "@sendgrid/mail": "^8.1.5",
     "bcrypt": "^6.0.0",
     "cloudinary": "^2.7.0",
     "crypto": "^1.0.1",
