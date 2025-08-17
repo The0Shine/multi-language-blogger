@@ -111,5 +111,4 @@ const userValidation = {
       .normalizeEmail(),
   ],
 };
-
 module.exports = userValidation;

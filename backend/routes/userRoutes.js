@@ -30,8 +30,9 @@ router.get(
 // Owner hoặc Admin: cập nhật thông tin
 router.put(
   "/users/:userid",
-  authMiddleware.requireOwnershipOrRoles((req) => req.params.userid, "admin"),
-  userValidation.updateProfile,
+
+  authMiddleware.requireRoleOrPermission(["Admin"], ["manage_users"]),
+  userValidation.updateUser,
   validate,
   userController.updateUser
 );
@@ -46,14 +47,16 @@ router.patch(
 // Admin: danh sách user
 router.get(
   "/admin/users",
-  authMiddleware.requireRoles("admin"),
+
+  authMiddleware.requireRoleOrPermission(["Admin"], ["manage_users"]),
   userController.getAllUsers
 );
 
 // Owner hoặc Admin: soft delete
 router.delete(
   "/users/:userid",
-  authMiddleware.requireOwnershipOrRoles((req) => req.params.userid, "admin"),
+
+  authMiddleware.requireRoleOrPermission(["Admin"], ["manage_users"]),
   userController.deleteUser
 );
 
@@ -67,13 +70,14 @@ router.delete(
 // Admin: stats
 router.get(
   "/admin/users/stats",
-  authMiddleware.requireRoles("admin"),
+  authMiddleware.requireRoleOrPermission(["Admin"], ["view_user_stats"]),
   userController.getUserStats
 );
 
 router.get(
   "/admin/users/stats/detailed",
-  authMiddleware.requireRoles("admin"),
+
+  authMiddleware.requireRoleOrPermission(["Admin"], ["view_user_stats"]),
   userController.getDetailedUserStats
 );
 

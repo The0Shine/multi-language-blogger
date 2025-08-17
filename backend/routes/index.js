@@ -11,7 +11,9 @@ const categoryRoutes = require("routes/categoryRoutes");
 const postRoutes = require("routes/postRoutes");
 const roleRoutes = require("routes/roleRoutes");
 const languageRoutes = require("routes/languageRoutes");
+
 const rolePermissionRoutes = require("routes/rolePermissionRoutes");
+
 // Add other routes as needed
 
 // Mount routes
@@ -23,7 +25,7 @@ router.use("/comments", commentRouter);
 router.use("/upload", uploadRoutes);
 router.use("/roles", roleRoutes);
 router.use("/", userRoutes); // Mount user routes at root level
+
 router.use("/role-permissions", rolePermissionRoutes);
-// // Add other routes as needed
 
 module.exports = router;

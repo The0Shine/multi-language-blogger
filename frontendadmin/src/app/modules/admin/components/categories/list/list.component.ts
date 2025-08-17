@@ -128,12 +128,31 @@ saveCategory() {
   this.validateField('category_name');
   if (this.validationErrors.category_name) return;
 
+<<<<<<< HEAD
   const payload = {
     category_name: this.modalCategory.category_name?.trim() || '',
+=======
+  const name = this.modalCategory.category_name?.trim() || '';
+
+  // 🔎 check trùng category_name
+  const isDuplicate = this.categories.some(
+    (c) =>
+      c.category_name.trim().toLowerCase() === name.toLowerCase()
+  );
+
+  if (isDuplicate) {
+    this.validationErrors.category_name = 'Tên Category đã tồn tại';
+    return;
+  }
+
+  const payload = {
+    category_name: name,
+>>>>>>> origin/dev/dangvh
     status: this.modalCategory.status ?? 1
   };
 
   const reloadList = () => {
+<<<<<<< HEAD
     this.loadCategories(); // đảm bảo list mới nhất từ server
     this.closeModal();
   };
@@ -143,6 +162,16 @@ saveCategory() {
   return;
 }
  else {
+=======
+    this.loadCategories();
+    this.closeModal();
+  };
+
+  if (this.editingCategory) {
+    this.openEditConfirmModal(this.modalCategory);
+    return;
+  } else {
+>>>>>>> origin/dev/dangvh
     this.categoryService.createCategory(payload).subscribe({
       next: (res) => {
         if (res?.success && res.data) {
@@ -159,6 +188,10 @@ saveCategory() {
   }
 }
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/dev/dangvh
 confirmEditCategory() {
   const payload = {
     category_name: this.modalCategory.category_name?.trim() || '',

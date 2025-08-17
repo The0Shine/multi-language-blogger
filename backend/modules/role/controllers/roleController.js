@@ -2,7 +2,11 @@ const roleService = require('modules/role/services/roleService');
 const responseUtils = require('utils/responseUtils');
 
 const roleController = {
+<<<<<<< HEAD
   // Create new role
+=======
+  // Create new role with permissions
+>>>>>>> origin/dev/dangvh
   create: async (req, res) => {
     try {
       const role = await roleService.create(req.body);
@@ -48,7 +52,11 @@ const roleController = {
     }
   },
 
+<<<<<<< HEAD
   // Update role
+=======
+  // Update role + sync permissions
+>>>>>>> origin/dev/dangvh
   update: async (req, res) => {
     try {
       const updatedRole = await roleService.update(req.params.roleid, req.body);
@@ -84,7 +92,11 @@ const roleController = {
   // Hard delete role
   permanentDelete: async (req, res) => {
     try {
+<<<<<<< HEAD
       const deleted = await roleService.hardDelete(req.params.roleid);
+=======
+      const deleted = await roleService.permanentDelete(req.params.roleid);
+>>>>>>> origin/dev/dangvh
       if (!deleted) {
         return responseUtils.notFound(res, 'Role not found for permanent delete');
       }
@@ -96,8 +108,12 @@ const roleController = {
       return responseUtils.badRequest(res, error.message);
     }
   },
+<<<<<<< HEAD
 
   // Restore role from soft delete
+=======
+// Restore role
+>>>>>>> origin/dev/dangvh
   restore: async (req, res) => {
     try {
       const restored = await roleService.restore(req.params.roleid);
@@ -114,4 +130,8 @@ const roleController = {
   }
 };
 
+<<<<<<< HEAD
 module.exports = roleController;
+=======
+module.exports = roleController;
+>>>>>>> origin/dev/dangvh

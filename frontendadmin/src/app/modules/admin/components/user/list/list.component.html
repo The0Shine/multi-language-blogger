@@ -41,6 +41,24 @@
     </div>
   </ng-container>
 </div>
+<<<<<<< HEAD
+=======
+<div *ngIf="updateRoleSuccess"
+  class="alert alert-success alert-dismissible bg-success text-white alert-label-icon fade show material-shadow"
+  role="alert">
+  <i class="ri-checkbox-circle-line label-icon"></i>
+  <strong>Thành công!</strong> - {{ alertMessage }}
+  <button type="button" class="btn-close btn-close-white" (click)="updateRoleSuccess = false" aria-label="Close"></button>
+</div>
+
+<div *ngIf="updateRoleError"
+  class="alert alert-danger alert-dismissible bg-danger text-white alert-label-icon fade show material-shadow"
+  role="alert">
+  <i class="ri-error-warning-line label-icon"></i>
+  <strong>Thất bại!</strong> - {{ alertMessage }}
+  <button type="button" class="btn-close btn-close-white" (click)="updateRoleError = false" aria-label="Close"></button>
+</div>
+>>>>>>> origin/dev/dangvh
 
 
 <div class="card">
@@ -75,7 +93,22 @@
         <td>{{ user.userid }}</td>
         <td>{{ user.username }}</td>
         <td>{{ user.email }}</td>
+<<<<<<< HEAD
         <td>{{ roleMap[+user.roleid] || 'Unknown' }}</td>
+=======
+     <td>
+  <select [(ngModel)]="user.roleid"
+          (change)="updateUserRole(user)"
+          class="form-select form-select-sm w-auto">
+    <option *ngFor="let role of roles" [value]="role.roleid">
+      {{ role.name }}
+    </option>
+  </select>
+</td>
+
+
+
+>>>>>>> origin/dev/dangvh
 
         <td>
           <span class="badge" [ngClass]="{
@@ -170,6 +203,7 @@
             </div>
           </div>
 
+<<<<<<< HEAD
           <div class="form-group">
             <label for="role">Role:<span class="text-danger">*</span></label>
             <select class="form-select" [(ngModel)]="newUser.roleid" name="roleid" required
@@ -184,6 +218,8 @@
           </div>
 
 
+=======
+>>>>>>> origin/dev/dangvh
 
           <div class="form-group" style="margin-top: 10px;">
             <label for="status">Status: </label>
@@ -255,4 +291,15 @@
     </div>
   </div>
 </div>
+<<<<<<< HEAD
 
+=======
+<div *ngIf="showSuccessModal" class="custom-modal-backdrop">
+  <div class="custom-modal-content">
+    <p>{{ modalMessage }}</p>
+    <button (click)="showSuccessModal = false" class="btn btn-primary btn-sm">
+      Đã hiểu
+    </button>
+  </div>
+</div>
+>>>>>>> origin/dev/dangvh

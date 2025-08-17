@@ -28,11 +28,25 @@ export class AdminUserListComponent implements OnInit {
   selectedUser: any = null;
   showDeleteModal = false;
 
+<<<<<<< HEAD
+=======
+  // THÊM CÁC BIẾN MỚI NÀY VÀO
+  updateRoleSuccess: boolean = false;
+  updateRoleError: boolean = false;
+  alertMessage: string = '';
+
+>>>>>>> origin/dev/dangvh
   editSuccess: boolean | null = null;
   editError: boolean | null = null;
 
   roleMap: { [key: number]: string } = {};
 
+<<<<<<< HEAD
+=======
+    showSuccessModal = false;
+  modalMessage = '';
+
+>>>>>>> origin/dev/dangvh
   newUser = this.getEmptyUser();
 showSaveUserConfirmModal = false;
 confirmingEditUser = false;
@@ -464,4 +478,40 @@ confirmDeleteUser() {
     this.showDeleteModal = false;
     this.selectedUser = null;
   }
+<<<<<<< HEAD
+=======
+updateUserRole(user: any) {
+  // Lấy tên role để hiển thị trong thông báo
+  const roleName = this.roles.find(r => r.roleid === user.roleid)?.name || '';
+
+  this.userService.updateUserRole(user.userid, user.roleid).subscribe({
+    next: (res) => {
+      // 1. Set nội dung thông báo
+      this.alertMessage = `Đã đổi vai trò thành công`;
+      // 2. Bật cờ để hiện alert thành công
+      this.updateRoleSuccess = true;
+      // 3. Tự động ẩn alert sau 3 giây
+      setTimeout(() => {
+        this.updateRoleSuccess = false;
+      }, 3000);
+    },
+    error: (err) => {
+      // 1. Set nội dung lỗi
+      this.alertMessage = 'Cập nhật vai trò thất bại, vui lòng thử lại.';
+      // 2. Bật cờ để hiện alert lỗi
+      this.updateRoleError = true;
+      // 3. Tự động ẩn alert sau 3 giây
+      setTimeout(() => {
+        this.updateRoleError = false;
+      }, 3000);
+
+      console.error('Update role failed', err);
+      // Quan trọng: Phục hồi lại role cũ trên giao diện nếu thất bại
+      this.loadUsers(); // Tải lại danh sách user để đảm bảo dữ liệu đúng
+    }
+  });
+}
+
+
+>>>>>>> origin/dev/dangvh
 }

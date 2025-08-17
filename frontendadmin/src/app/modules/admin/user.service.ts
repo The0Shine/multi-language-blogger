@@ -36,10 +36,11 @@ export class UserService {
   }
 
   // Admin: đổi role
-  updateUserRole(userid: number, roleId: number): Observable<any> {
-    return this.http.patch<any>(`${this.apiUrl}/admin/users/${userid}/role`, {
-      roleId,
-    });
+  updateUserRole(userid: number, roleid: number): Observable<any> {
+    return this.http.patch<any>(
+      `${this.apiUrl}/admin/users/${userid}/role`,
+      { roleid } // key phải trùng với backend
+    );
   }
 
   // Admin: tạo user

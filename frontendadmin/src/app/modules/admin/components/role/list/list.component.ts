@@ -31,12 +31,34 @@ deleteError: boolean | null = null;
   editSuccess: boolean | null = null;
   editError: boolean | null = null;
 
+<<<<<<< HEAD
   roles: any[] = [];
   modalRole = { roleid: 0, name: '', discription: '', status: 1 };
 
 showSaveConfirmModal = false;
 
 
+=======
+
+
+  roles: any[] = [];
+ modalRole: { roleid: number; name: string; discription: string; permissionid: number[]; status: number } = {
+  roleid: 0,
+  name: '',
+  discription: '',
+  permissionid: [],
+  status: 1
+};
+
+  permissions = [
+  { permissionid: 1, name: 'moderate_posts', description: 'Permission to accept or reject posts' },
+  { permissionid: 2, name: 'manage_users', description: 'Manage Users' }
+];
+showSaveConfirmModal = false;
+
+
+
+>>>>>>> origin/dev/dangvh
   constructor(
     private roleService: RoleService,
     private router: Router,
@@ -70,18 +92,42 @@ loadRoles() {
       roleid: 0,
       name: '',
       discription: '',
+<<<<<<< HEAD
+=======
+      permissionid: [],
+>>>>>>> origin/dev/dangvh
       status: 1,
     };
     this.showModal = true;
   }
 
+<<<<<<< HEAD
  editRole(role: any) {
   this.editingRole = true;
   this.modalRole = { ...role }; // đảm bảo role có roleid chứ không phải id
+=======
+editRole(role: any) {
+   console.log('Dữ liệu role nhận được:', role); // <-- THÊM DÒNG NÀY
+  this.editingRole = true;
+
+  this.modalRole = {
+    roleid: role.roleid,
+    name: role.name,
+    discription: role.discription,
+    status: role.status,
+    // convert permissions[] -> [id, id, ...]
+    permissionid: role.permissions ? role.permissions.map((p: any) => p.permissionid) : []
+  };
+
+>>>>>>> origin/dev/dangvh
   this.showModal = true;
 }
 
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/dev/dangvh
   deleteRole(role: any) {
     const roleid = role.roleid;
 
@@ -131,17 +177,30 @@ saveRole(confirm: boolean = false) {
   }
 
   // Chỉ hiện popup confirm khi đang edit
+<<<<<<< HEAD
 if (this.editingRole && !confirm) {
   this.selectedRole = { ...this.modalRole }; // copy dữ liệu hiện tại của form
   this.showSaveConfirmModal = true;
   return;
 }
 
+=======
+  if (this.editingRole && !confirm) {
+    this.selectedRole = { ...this.modalRole }; // copy dữ liệu hiện tại của form
+    this.showSaveConfirmModal = true;
+    return;
+  }
+>>>>>>> origin/dev/dangvh
 
   const payload = {
     name: this.modalRole.name,
     discription: this.modalRole.discription,
+<<<<<<< HEAD
     status: this.modalRole.status
+=======
+    status: this.modalRole.status,
+     permissionid: this.modalRole.permissionid
+>>>>>>> origin/dev/dangvh
   };
 
   if (this.editingRole) {
@@ -175,6 +234,20 @@ if (this.editingRole && !confirm) {
     });
   }
 }
+<<<<<<< HEAD
+=======
+onPermissionChange(event: any, permissionid: number) {
+  if (event.target.checked) {
+    this.modalRole.permissionid.push(permissionid);
+  } else {
+    this.modalRole.permissionid = this.modalRole.permissionid.filter(
+      (id) => id !== permissionid
+    );
+  }
+}
+
+
+>>>>>>> origin/dev/dangvh
 
 confirmEditRole() {
   this.saveRole(true);
@@ -193,6 +266,10 @@ closeSaveConfirmModal() {
       roleid: 0,
       name: '',
       discription: '',
+<<<<<<< HEAD
+=======
+      permissionid: [],
+>>>>>>> origin/dev/dangvh
       status: 1,
     };
   }
