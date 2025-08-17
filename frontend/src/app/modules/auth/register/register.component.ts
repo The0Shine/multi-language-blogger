@@ -36,6 +36,7 @@ export class RegisterComponent {
           Validators.required,
           Validators.minLength(3),
           Validators.maxLength(30),
+          Validators.pattern('^[a-z0-9._]+$'), // ✅ chỉ chữ thường, số, ., _
         ],
       ],
       password: ['', [Validators.required, Validators.minLength(6)]],
