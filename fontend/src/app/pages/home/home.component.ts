@@ -122,6 +122,9 @@ export class HomeComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.selectTab(Number(categoryId));
       this.clearLoadingFlag();
+
+      // ✨ THÊM DÒNG NÀY: Đảm bảo scroll tới tab khi load từ URL
+      this.scrollToActiveTab(Number(categoryId));
     }, 150);
   }
 
@@ -378,17 +381,6 @@ export class HomeComponent implements OnInit, OnDestroy {
     console.log('🔄 selectTab called with categoryId:', categoryId);
 
     // Prevent multiple simultaneous category changes
-    if (this.isProcessingCategoryChange) {
-      console.log('⚠️ Category change already in progress, ignoring');
-      return;
-    }
-
-    // Don't reload if same category
-    if (this.activeCategory === categoryId) {
-      console.log('ℹ️ Same category selected, no action needed');
-      return;
-    }
-
     this.isProcessingCategoryChange = true;
     this.activeCategory = categoryId;
 
@@ -406,6 +398,9 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     // Update URL without triggering navigation
     this.updateUrlParams(categoryId);
+
+    // ✨ THÊM DÒNG NÀY: Auto scroll to active tab
+    this.scrollToActiveTab(categoryId);
   }
 
   private updateUrlParams(categoryId: string | number) {
@@ -604,7 +599,72 @@ export class HomeComponent implements OnInit, OnDestroy {
         : textContent;
     }
   }
+  // Thêm method này vào HomeComponent
 
+  private scrollToActiveTab(categoryId: string | number) {
+    // Đợi DOM update trước
+    setTimeout(() => {
+      const tabsContainer = document.getElementById('tabsContainer');
+      if (!tabsContainer) return;
+
+      // Tìm tab element đang active
+      const activeTabButton = Array.from(
+        tabsContainer.querySelectorAll('button')
+      ).find((button) => {
+        const category = this.categories.find(
+          (cat) =>
+            button.textContent?.trim().includes(cat.label) &&
+            cat.categoryid === categoryId
+        );
+        return category?.active;
+      });
+
+      if (!activeTabButton) return;
+
+      // Tính toán vị trí scroll
+      const containerRect = tabsContainer.getBoundingClientRect();
+      const buttonRect = activeTabButton.getBoundingClientRect();
+
+      // Vị trí relative của button so với container
+      const buttonLeft =
+        buttonRect.left - containerRect.left + tabsContainer.scrollLeft;
+      const buttonWidth = buttonRect.width;
+      const containerWidth = containerRect.width;
+
+      // Tính toán scroll position để center button (hoặc hiển thị đầy đủ)
+      let targetScrollLeft;
+
+      // Nếu button nằm ngoài view bên trái
+      if (buttonLeft < tabsContainer.scrollLeft) {
+        targetScrollLeft = buttonLeft - 50; // Thêm padding 50px
+      }
+      // Nếu button nằm ngoài view bên phải
+      else if (
+        buttonLeft + buttonWidth >
+        tabsContainer.scrollLeft + containerWidth
+      ) {
+        targetScrollLeft = buttonLeft + buttonWidth - containerWidth + 50; // Thêm padding 50px
+      }
+      // Nếu button đã visible, không cần scroll
+      else {
+        return;
+      }
+
+      // Đảm bảo scroll position không âm
+      targetScrollLeft = Math.max(0, targetScrollLeft);
+
+      // Smooth scroll đến vị trí
+      tabsContainer.scrollTo({
+        left: targetScrollLeft,
+        behavior: 'smooth',
+      });
+
+      // Cập nhật scroll buttons sau khi scroll
+      setTimeout(() => {
+        this.updateScrollButtons();
+      }, 300);
+    }, 200); // Đợi DOM render và animation
+  }
   // Helper method to truncate HTML content without breaking tags
   private truncateHtml(html: string, maxLength: number): string {
     const tempDiv = document.createElement('div');

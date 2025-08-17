@@ -1,6 +1,8 @@
 <div class="home-container">
   <!-- Add padding-top for fixed header -->
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 content-wrapper">
+  <div
+    class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 content-wrapper pt-[100px]"
+  >
     <div class="flex">
       <!-- Main Content -->
       <main class="flex-1 max-w-4xl main-content">
@@ -19,11 +21,9 @@
         <nav
           *ngIf="!isSearching"
           id="navTabs"
-          class="sticky flex top-[57px] left-0 right-0 z-40 bg-white transition-transform duration-100 ease-out border-b border-gray-200"
+          class=".nav-sticky flex top-[57px] mb-3 bg-white"
         >
-          <div
-            class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full relative mb-3"
-          >
+          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full relative">
             <!-- Nút scroll trái -->
             <button
               id="scrollLeft"
@@ -85,7 +85,7 @@
         >
           <article
             *ngFor="let post of filteredPosts; trackBy: trackByPostId"
-            class="flex items-start space-x-4 pb-8 border-b border-gray-100 cursor-pointer post-card transition-all duration-200 mt-1 hover:bg-gray-50"
+            class="flex items-start space-x-4 pt-8 pb-2 border-b border-gray-100 cursor-pointer post-card transition-all duration-200 mt-1 hover:bg-gray-50"
             (click)="navigateToPost(post.postid)"
           >
             <div class="flex-1">
