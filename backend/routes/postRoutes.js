@@ -17,7 +17,6 @@ router.get(
   postController.getAllForAdmin
 );
 
-<<<<<<< HEAD
 // Public routes
 router.get("/", postController.index);
 router.get("/search", postController.search);
@@ -25,39 +24,7 @@ router.get("/search/suggestions", postController.searchSuggestions);
 router.get("/my-posts", authenticate, postController.getMyPosts);
 router.get("/:postid", postController.show);
 router.get("/:postid/translations", postController.getTranslations);
-=======
-// Admin-only routes
-// Cho phép Admin HOẶC bất kỳ role nào có 'moderate_posts'
-router.get('/',
-  authMiddleware.authenticate,
-  authMiddleware.requireRoleOrPermission(['Admin'], ['moderate_posts']),
-  postController.getAll
-);
 
-router.patch('/:postid/accept',
-  authMiddleware.authenticate,
-  authMiddleware.requireRoleOrPermission(['Admin'], ['moderate_posts']),
-  validateMiddleware,
-  postController.accept
-);
-
-router.patch('/:postid/reject',
-  authMiddleware.authenticate,
-  authMiddleware.requireRoleOrPermission(['Admin'], ['moderate_posts']),
-  validateMiddleware,
-  postController.reject
-);
-
-router.delete('/:postid',
-  authMiddleware.authenticate,
-  authMiddleware.requireRoleOrPermission(['Admin'], ['moderate_posts']),
-  validateMiddleware,
-  postController.delete
-);
-
-
-// Upload for authenticated users (both admin & user)
->>>>>>> origin/develop
 router.post(
   "/",
   authenticate,
@@ -111,10 +78,11 @@ router.patch(
 router.use("/:postid/comments", postCommentRouter);
 
 // Get a post by ID (accessible to authenticated users)
-router.get('/:postid',
-    authMiddleware.authenticate, 
-    validateMiddleware,          
-    postController.getById       
+router.get(
+  "/:postid",
+  authMiddleware.authenticate,
+  validateMiddleware,
+  postController.show
 );
 
 module.exports = router;

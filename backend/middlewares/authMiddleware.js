@@ -22,11 +22,6 @@ const hasAnyPermission = (userPerms, requiredPerms) =>
 const authMiddleware = {
   authenticate: async (req, res, next) => {
     const token = getTokenFromHeader(req);
-    console.log("🔍 Auth Debug - URL:", req.url);
-    console.log(
-      "🔍 Auth Debug - Token:",
-      token ? `${token.substring(0, 20)}...` : "null"
-    );
 
     if (!token)
       return responseUtils.unauthorized(res, "Access token is missing.");
@@ -49,7 +44,7 @@ const authMiddleware = {
               {
                 model: Permission,
                 as: "permissions",
-                attributes: ["name"], 
+                attributes: ["name"],
                 through: { attributes: [] },
               },
             ],
@@ -57,7 +52,6 @@ const authMiddleware = {
         ],
       });
 
-      
       // Chặn user/role không hợp lệ hoặc role inactive/soft-deleted
       if (
         !user ||
@@ -69,13 +63,13 @@ const authMiddleware = {
       }
 
       const { roleName, permissions } = buildUserContext(user);
+
       req.user = {
         userid: user.userid,
         roleid: user.roleid,
         username: user.username,
         roleName: String(user.role.name || "").toLowerCase(),
-        roleName,        
-        permissions,     
+        permissions,
       };
 
       next();
@@ -97,6 +91,10 @@ const authMiddleware = {
       if (!req.user)
         return responseUtils.unauthorized(res, "Authentication required.");
       if (normalized.includes(String(req.user.roleName))) return next();
+      console.log(req.user);
+
+      console.log(req.user.roleName, "111111111");
+
       return responseUtils.unauthorized(res, "You do not have permission.");
     };
   },
@@ -123,25 +121,29 @@ const authMiddleware = {
         res,
         "Access denied: not owner or insufficient role."
       );
-      return responseUtils.unauthorized(res, "Access denied: not owner or insufficient role.");
+      return responseUtils.unauthorized(
+        res,
+        "Access denied: not owner or insufficient role."
+      );
     };
   },
-
 
   requireRoleOrPermission: (roles = [], permissions = []) => {
     const normRoles = roles.map((r) => String(r).toLowerCase());
     const normPerms = permissions.map((p) => String(p).toLowerCase());
 
     return (req, res, next) => {
-      if (!req.user) return responseUtils.unauthorized(res, "Authentication required.");
+      if (!req.user)
+        return responseUtils.unauthorized(res, "Authentication required.");
 
-    
       if (normRoles.length && normRoles.includes(String(req.user.roleName))) {
         return next();
       }
 
-      
-      if (normPerms.length && hasAnyPermission(req.user.permissions || [], normPerms)) {
+      if (
+        normPerms.length &&
+        hasAnyPermission(req.user.permissions || [], normPerms)
+      ) {
         return next();
       }
 

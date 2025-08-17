@@ -1,7 +1,7 @@
-'use strict';
+"use strict";
 
 module.exports = {
-  async up (queryInterface, Sequelize) {
+  async up(queryInterface, Sequelize) {
     // Lấy hoặc tạo role moderator
     const [roles] = await queryInterface.sequelize.query(
       `SELECT roleid FROM role WHERE name = 'moderator' LIMIT 1;`
@@ -9,13 +9,19 @@ module.exports = {
 
     let moderatorRoleId;
     if (!roles.length) {
-      await queryInterface.bulkInsert('role', [{
-        name: 'moderator',
-        status: 1,
-        discription: 'Role to moderate posts',
-        created_at: new Date(),
-        updated_at: new Date()
-      }], {});
+      await queryInterface.bulkInsert(
+        "role",
+        [
+          {
+            name: "moderator",
+            status: 1,
+            discription: "Role to moderate posts",
+            created_at: new Date(),
+            updated_at: new Date(),
+          },
+        ],
+        {}
+      );
       const [newRole] = await queryInterface.sequelize.query(
         `SELECT roleid FROM role WHERE name = 'moderator' LIMIT 1;`
       );
@@ -30,7 +36,7 @@ module.exports = {
     );
 
     if (!permissions.length) {
-      throw new Error('Permission moderate_posts not found');
+      throw new Error("Permission moderate_posts not found");
     }
 
     // Gán quyền cho moderator nếu chưa có
@@ -39,17 +45,23 @@ module.exports = {
     );
 
     if (!existing.length) {
-      await queryInterface.bulkInsert('role_permission', [{
-        roleid: moderatorRoleId,
-        permissionid: permissions[0].permissionid,
-        created_at: new Date(),
-        updated_at: new Date()
-      }], {});
+      await queryInterface.bulkInsert(
+        "role_permission",
+        [
+          {
+            roleid: moderatorRoleId,
+            permissionid: permissions[0].permissionid,
+            created_at: new Date(),
+            updated_at: new Date(),
+          },
+        ],
+        {}
+      );
     }
   },
 
-  async down (queryInterface) {
-    await queryInterface.bulkDelete('role_permission', null, {});
-    await queryInterface.bulkDelete('role', { name: 'moderator' }, {});
-  }
+  async down(queryInterface) {
+    await queryInterface.bulkDelete("role_permission", null, {});
+    await queryInterface.bulkDelete("role", { name: "moderator" }, {});
+  },
 };
