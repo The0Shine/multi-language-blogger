@@ -32,12 +32,10 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit() {
-    // 🔹 Xóa token khi vào trang login
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('user');
 
-    // 🔹 Nếu đã lưu username → điền vào form
     const savedUsername = localStorage.getItem('savedUsername');
     if (savedUsername) {
       this.loginForm.patchValue({
@@ -51,8 +49,9 @@ export class LoginComponent implements OnInit {
     this.showPassword = !this.showPassword;
   }
 
-  onSubmit(): void {
+ onSubmit(): void {
     if (this.isLoading) return;
+
     if (this.loginForm.invalid) {
       this.loginForm.markAllAsTouched();
       return;
@@ -63,61 +62,62 @@ export class LoginComponent implements OnInit {
 
     const { username, password, rememberMe } = this.loginForm.value;
 
-    this.authService.login(username, password).subscribe({
+    const formattedUsername = username.charAt(0).toUpperCase() + username.slice(1);
+    if (username !== formattedUsername) {
+      this.errorMessage = 'Username must be capitalized.';
+      this.isLoading = false;
+      return;
+    }
+
+    this.authService.login(formattedUsername, password).subscribe({
       next: (res) => {
-        console.log('📌 Login API response:', res);
-
+        this.isLoading = false;
         if (res && res.success) {
-          const { accessToken, refreshToken, message } = res.data;
-
+          const { accessToken, refreshToken } = res.data;
           const decoded: any = jwtDecode(accessToken);
 
-          if (+decoded.roleid !== 2) {
-            this.errorMessage = 'Bạn không có quyền truy cập!';
-            this.isLoading = false;
-            return;
-          }
-
           if (rememberMe) {
-            localStorage.setItem('savedUsername', username);
+            localStorage.setItem('savedUsername', formattedUsername);
           } else {
             localStorage.removeItem('savedUsername');
           }
 
           localStorage.setItem('accessToken', accessToken);
           localStorage.setItem('refreshToken', refreshToken);
-
-          // ✅ Lưu username kèm vào user object
           localStorage.setItem(
             'user',
             JSON.stringify({
               userid: decoded.userid,
               roleid: decoded.roleid,
-              username: username, // lấy từ form login
+              username: formattedUsername,
             })
           );
-
           this.router.navigate(['/admin/home']);
         } else {
-          this.errorMessage = 'Invalid username or password.';
+          this.errorMessage = res.message || 'Incorrect login information.';
         }
-
-        this.isLoading = false;
       },
+      // ✅ SỬA LOGIC TRONG KHỐI NÀY
       error: (err) => {
-        console.error('Login error:', err);
-
-        // Xóa token và user nếu login fail
+        this.isLoading = false;
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
         localStorage.removeItem('user');
+        console.error('Login error:', err);
 
-        this.errorMessage = err.error?.message || 'Login failed';
-        this.isLoading = false;
+        // Lấy thông báo lỗi từ server
+        const serverMessage = err.error?.message;
+
+        // Kiểm tra nếu lỗi là "Invalid credentials." thì đổi thành "Sai mật khẩu"
+        if (serverMessage === 'Invalid credentials.') {
+          this.errorMessage = 'Password is incorrect.';
+        } else {
+          // Với các lỗi khác, giữ nguyên thông báo từ server hoặc báo lỗi chung
+          this.errorMessage = serverMessage || 'Login failed, please try again';
+        }
       },
     });
   }
-
   goToRegister() {
     this.router.navigate(['/register']);
   }
