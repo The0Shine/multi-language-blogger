@@ -13,7 +13,12 @@ router.use(authMiddleware.authenticate);
 router.get("/users/profile", userController.getCurrentUserProfile);
 
 // Current user: update own profile
-router.put("/users/profile", userController.updateCurrentUserProfile);
+router.put(
+  "/users/profile",
+  userValidation.updateProfile,
+  validate,
+  userController.updateCurrentUserProfile
+);
 
 // Owner hoặc Admin: xem profile
 router.get(
@@ -26,7 +31,7 @@ router.get(
 router.put(
   "/users/:userid",
   authMiddleware.requireOwnershipOrRoles((req) => req.params.userid, "admin"),
-  userValidation.updateUser,
+  userValidation.updateProfile,
   validate,
   userController.updateUser
 );

@@ -151,6 +151,7 @@ export class LanguageService {
       vi: 'vi_VN',
       fr: 'fr_FR',
       zh: 'zh_CN',
+      de: 'de',
     };
 
     const mappedLocale = localeMapping[localeCode] || localeCode;
@@ -398,7 +399,7 @@ export class LanguageService {
       },
 
       // ===== de_DE =====
-      de_DE: {
+      de: {
         // Navigation
         'nav.home': 'Startseite',
         'nav.write': 'Schreiben',
@@ -560,7 +561,7 @@ export class LanguageService {
       },
 
       // ===== zh_CN =====
-      zh_CN: {
+      'zh-CN': {
         // Navigation
         'nav.home': '首页',
         'nav.write': '写文章',
