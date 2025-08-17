@@ -8,6 +8,17 @@ const authController = {
       console.log("Registration request body:", req.body);
       const { user } = await authService.register(req.body);
 
+      // Generate tokens for the new user
+      const accessToken = jwtUtils.generateToken({
+        userid: user.userid,
+        email: user.email,
+        roleid: user.roleid,
+      });
+
+      const refreshToken = jwtUtils.generateRefreshToken({
+        userid: user.userid,
+      });
+
       return responseUtils.ok(res, {
         message: "User registered successfully.",
         user: {
@@ -18,6 +29,8 @@ const authController = {
           username: user.username,
           roleid: user.roleid,
         },
+        token: accessToken,
+        refreshToken: refreshToken,
       });
     } catch (error) {
       console.error("Registration error:", error);

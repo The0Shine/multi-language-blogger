@@ -16,8 +16,8 @@ app.use(express.urlencoded({ extended: true }));
 // Middleware CORS cho Angular
 app.use(
   cors({
-    origin: "http://localhost:4200", // Cho phép Angular gọi
-    credentials: true, // Cho phép gửi cookie/token
+    origin: "*", // Cho phép Angular gọi
+    credentials: false, // Cho phép gửi cookie/token
   })
 );
 

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Role</title>
+    <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+    <div class="admin-content" style="max-width: 600px; margin: 40px auto;">
+<div class="card">
+    <div class="card-title">Add User</div>
+    <form id="add-user-form">
+        <label>First Name:</label>
+        <input type="text" name="first_name" required><br>
+
+        <label>Last Name:</label>
+        <input type="text" name="last_name" required><br>
+
+        <label>Username:</label>
+        <input type="text" name="username" required><br>
+
+        <label>Password:</label>
+        <input type="password" name="password" required><br>
+
+        <label>Email:</label>
+        <input type="email" name="email" required><br>
+
+        <label>Role:</label>
+        <input type="text" name="role" required><br>
+
+        <div style="margin-top: 16px;">
+            <button type="submit" class="btn btn-success">Add User</button>
+            <button type="button" class="btn btn-secondary" onclick="goBackOrDefault('users.html')">Cancel</button>
+        </div>
+    </form>
+</div>
+
+
+<script>
+document.getElementById('add-user-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const formData = Object.fromEntries(new FormData(this).entries());
+    alert('User added:\n' + JSON.stringify(formData, null, 2));
+     goBackOrDefault('users.html');
+});
+function goBackOrDefault(fallbackUrl){
+        if(document.referrer && document.referrer !== window.location.href){
+            history.back();
+        } else {
+            location.href = fallbackUrl;
+        }
+    }
+</script>
+</body>

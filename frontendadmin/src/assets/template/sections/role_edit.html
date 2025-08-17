@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Role</title>
+    <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+    <div class="admin-content" style="max-width: 600px; margin: 40px auto;">
+<div class="card">
+    <div class="card-title">Edit Role</div>
+    <form id="edit-role-form">
+        <input type="hidden" name="id">
+
+        <label>Name:</label>
+        <input type="text" name="name" required><br>
+
+        <label>Description:</label>
+        <input type="text" name="description" required><br>
+
+        <label>Status:</label>
+        <input type="number" name="status" required><br>
+
+        <div style="margin-top: 16px;">
+            <button type="submit" class="btn btn-success">Save Changes</button>
+            <button type="button" class="btn btn-secondary" onclick="goBackOrDefault('roles.html')">Cancel</button>
+        </div>
+    </form>
+</div>
+
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const roleId = params.get('id');
+const form = document.getElementById('edit-role-form');
+
+// Fake data for demo
+const fakeRoles = {
+    1: { name: 'Administrator', description: 'Full access', status: 1 },
+    2: { name: 'Editor', description: 'Edit posts', status: 1 },
+};
+
+if (roleId && fakeRoles[roleId]) {
+    form.id.value = roleId;
+    form.name.value = fakeRoles[roleId].name;
+    form.description.value = fakeRoles[roleId].description;
+    form.status.value = fakeRoles[roleId].status;
+}
+
+form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const formData = Object.fromEntries(new FormData(this).entries());
+    alert('Role updated:\n' + JSON.stringify(formData, null, 2));
+     goBackOrDefault('roles.html');
+});
+function goBackOrDefault(fallbackUrl){
+        if(document.referrer && document.referrer !== window.location.href){
+            history.back();
+        } else {
+            location.href = fallbackUrl;
+        }
+    }
+</script>
+</body>

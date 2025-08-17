@@ -1,0 +1,24 @@
+.editor-content {
+  min-height: 500px;
+}
+.editor-content:focus {
+  outline: none;
+}
+.editor-content p {
+  margin-bottom: 1rem;
+}
+.editor-content h1 {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+.editor-content h2 {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+.editor-content h3 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}

@@ -1,0 +1,43 @@
+<div class="card">
+    <div class="section-header">
+        <div class="card-title">Manage Languages</div>
+        <button class="btn btn-primary" onclick="location.href='sections/language_add.html'">
+            <i class="fa fa-plus"></i> Add Language
+        </button>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Language</th>
+                <th>Code</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="language-table">
+            <tr>
+                <td>English</td>
+                <td>en</td>
+                <td>
+                    <button class="btn btn-info" onclick="location.href='sections/language_edit.html?id=1'">
+                        <i class="fa fa-edit"></i> Edit
+                    </button>
+                    <button class="btn btn-danger" onclick="deleteLanguage(this)">
+                        <i class="fa fa-trash"></i> Delete
+                    </button>
+                </td>
+            </tr>
+            <tr>
+                <td>Vietnamese</td>
+                <td>vi</td>
+                <td>
+                    <button class="btn btn-info" onclick="location.href='sections/language_edit.html?id=2'">
+                        <i class="fa fa-edit"></i> Edit
+                    </button>
+                    <button class="btn btn-danger" onclick="deleteLanguage(this)">
+                        <i class="fa fa-trash"></i> Delete
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

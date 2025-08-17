@@ -14,7 +14,12 @@ const authService = {
     // unique email
     const existingUser = await User.findOne({ where: { email: emailNorm } });
     if (existingUser) throw new Error("Email already in use.");
-
+    const existingUsername = await User.unscoped().findOne({
+      where: { username },
+    });
+    if (existingUsername) {
+      throw new Error("Username already exists");
+    }
     // default role = "User"
     const defaultRole = await Role.findOne({
       where: { name: "User" }, // + có thể thêm status:1, deleted_at:null nếu bạn dùng soft-delete

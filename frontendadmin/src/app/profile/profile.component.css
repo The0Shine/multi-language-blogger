@@ -1,0 +1,35 @@
+.profile-container {
+  max-width: 1100px;
+  margin: 100px auto;
+}
+
+.profile-container .p-4 {
+  font-size: 1.05rem;
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+}
+
+.profile-container h3 {
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: #343a40;
+}
+
+.profile-container .row.mb-3 {
+  padding-top: 6px;
+  padding-bottom: 6px;
+  font-size: 1.1rem;
+}
+
+.profile-container .fw-bold {
+  color: #495057;
+}
+
+
+#editProfileModal .modal-content {
+  max-width: 500px;
+  margin: auto;
+}
+

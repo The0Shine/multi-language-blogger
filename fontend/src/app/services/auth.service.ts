@@ -322,4 +322,20 @@ export class AuthService {
       color: colors[Math.min(strength, 4)],
     };
   }
+  forgotPassword(email: string): Observable<any> {
+    return this.httpService.post('/auth/forgot-password', { email });
+  }
+
+  // Reset password
+  resetPassword(
+    email: string,
+    resetCode: string,
+    newPassword: string
+  ): Observable<any> {
+    return this.httpService.post('/auth/reset-password', {
+      email,
+      resetCode,
+      newPassword,
+    });
+  }
 }

@@ -1,0 +1,393 @@
+body {
+    margin: 0;
+    font-family: 'Roboto', Arial, sans-serif;
+    background: #f5f6fa;
+}
+.admin-header {
+    background: #fff;
+    padding: 16px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #e5e5e5;
+}
+.admin-header .title {
+    font-size: 1.5rem;
+    color: #4f5fa3;
+    font-weight: bold;
+    letter-spacing: 2px;
+}
+.admin-header .user {
+    font-size: 1rem;
+    color: #555;
+}
+.admin-container {
+    display: flex;
+    min-height: 100vh;
+}
+.admin-sidebar {
+    width: 220px;
+    background: #4f5fa3;
+    color: #fff;
+    padding-top: 24px;
+    flex-shrink: 0;
+    min-height: 100vh;
+}
+.admin-sidebar nav {
+    display: flex;
+    flex-direction: column;
+}
+.admin-sidebar a {
+    color: #fff;
+    text-decoration: none;
+    padding: 12px 32px;
+    display: flex;
+    align-items: center;
+    font-size: 1rem;
+    transition: background 0.2s;
+}
+.admin-sidebar a.active, .admin-sidebar a:hover {
+    background: #3b4780;
+}
+.admin-sidebar i {
+    margin-right: 12px;
+    font-size: 1.2em;
+}
+.admin-content {
+    flex: 1;
+    padding: 32px;
+    background: #f5f6fa;
+}
+.card {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(79,95,163,0.07);
+    padding: 24px;
+    margin-bottom: 24px;
+}
+.card-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 16px;
+    color: #4f5fa3;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 16px;
+}
+th, td {
+    padding: 10px 8px;
+    border-bottom: 1px solid #e5e5e5;
+    text-align: left;
+}
+th {
+    background: #f0f2fa;
+    color: #4f5fa3;
+}
+.btn {
+    background: #4f5fa3;
+    color: #fff;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    margin-right: 8px;
+}
+.btn-primary { background: #4f5fa3; color: #fff; }
+.btn-info    { background: #5bc0de; color: #fff; }
+.btn-success { background: #5cb85c; color: #fff; }
+.btn-warning { background: #f0ad4e; color: #fff; }
+.btn-danger  { background: #d9534f; color: #fff; }
+.btn + .btn  { margin-left: 4px; }
+.btn:active {
+    background: #3b4780;
+}
+.stats-row {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+.stat-card {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(79,95,163,0.07);
+    padding: 16px 24px;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    cursor: pointer;
+}
+.stat-card i {
+    font-size: 2em;
+    color: #4f5fa3;
+}
+.stat-card .stat-value {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #4f5fa3;
+}
+.stat-card .stat-label {
+    font-size: 1em;
+    color: #888;
+}
+/* Dropdown styles */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+.dropdown-toggle {
+    color: #4f5fa3;
+    cursor: pointer;
+    padding: 4px;
+}
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 28px;
+    background: #fff;
+    min-width: 120px;
+    box-shadow: 0 2px 8px rgba(79,95,163,0.15);
+    border-radius: 6px;
+    z-index: 10;
+    padding: 8px 0;
+}
+.dropdown-menu li {
+    list-style: none;
+}
+.dropdown-menu a {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #4f5fa3;
+    text-decoration: none;
+    padding: 8px 16px;
+    transition: background 0.2s;
+}
+.dropdown-menu a:hover {
+    background: #f0f2fa;
+}
+.dropdown.show .dropdown-menu {
+    display: block;
+}
+.modal {
+    position: fixed;
+    z-index: 1000;
+    left: 0; top: 0;
+    width: 100%; height: 100%;
+    overflow: auto;
+    background: rgba(0,0,0,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.modal-content {
+    background: #fff;
+    padding: 32px;
+    border-radius: 8px;
+    width: 400px;
+    position: relative;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.15);
+}
+.close {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    font-size: 2em;
+    color: #888;
+    cursor: pointer;
+}
+/* Input styling for admin forms */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+select,
+textarea {
+    width: 100%;
+    padding: 8px 12px;
+    margin-bottom: 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+    box-sizing: border-box;
+    transition: border 0.2s, box-shadow 0.2s;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="number"]:focus,
+select:focus,
+textarea:focus {
+    border-color: #4f5fa3;
+    box-shadow: 0 0 4px rgba(79,95,163,0.4);
+    outline: none;
+}
+
+/* Button hover states */
+.btn:hover {
+    opacity: 0.9;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .admin-container {
+        flex-direction: column;
+    }
+    .admin-sidebar {
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        padding: 12px;
+    }
+    .admin-sidebar a {
+        padding: 8px 12px;
+        font-size: 0.95rem;
+    }
+    .admin-content {
+        padding: 16px;
+    }
+    .modal-content {
+        width: 90%;
+        padding: 24px;
+    }
+}
+
+/* Form label styling */
+label {
+    font-weight: 500;
+    color: #4f5fa3;
+    margin-bottom: 4px;
+    display: block;
+}
+
+/* Modal close hover */
+.close:hover {
+    color: #4f5fa3;
+}
+
+.filter-bar {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+}
+
+.filter-bar input[type="text"] {
+    flex: 1;
+    min-width: 250px;
+    padding: 8px 12px;
+}
+
+.filter-bar select {
+    padding: 8px 12px;
+}
+.section-controls {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+    margin-bottom: 16px;
+}
+
+.section-controls input[type="text"] {
+    flex: 2;
+    padding: 8px 12px;
+}
+
+.section-controls select {
+    flex: 1;
+    padding: 8px 12px;
+}
+
+.section-controls .btn {
+    flex-shrink: 0;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+/* ===========================
+   Responsive Sidebar & Layout
+   =========================== */
+
+@media (max-width: 992px) {
+    .admin-container {
+        flex-direction: column;
+    }
+    .admin-sidebar {
+        position: fixed;
+        left: -220px;
+        top: 0;
+        height: 100%;
+        z-index: 1000;
+        transition: left 0.3s ease;
+    }
+    .admin-sidebar.open {
+        left: 0;
+    }
+    .admin-header {
+        position: sticky;
+        top: 0;
+        z-index: 1100;
+        background: #fff;
+    }
+    .admin-content {
+        padding: 16px;
+    }
+}
+
+@media (max-width: 768px) {
+    .admin-header .title {
+        font-size: 1.2rem;
+    }
+    .admin-sidebar a {
+        font-size: 0.95rem;
+        padding: 10px 20px;
+    }
+    .section-controls,
+    .filter-bar {
+        flex-direction: column;
+        gap: 8px;
+    }
+    .section-controls input[type="text"],
+    .filter-bar input[type="text"],
+    .section-controls select,
+    .filter-bar select {
+        width: 100%;
+    }
+    .section-controls .btn,
+    .filter-bar .btn {
+        width: 100%;
+    }
+    table {
+        font-size: 0.95rem;
+    }
+    .modal-content {
+        width: 95%;
+    }
+}
+
+/* Hamburger Menu Button */
+.hamburger {
+    display: none;
+    cursor: pointer;
+    font-size: 1.5rem;
+    color: #4f5fa3;
+    background: none;
+    border: none;
+}
+
+@media (max-width: 992px) {
+    .hamburger {
+        display: block;       
+    }
+}

@@ -8,6 +8,8 @@ import { MyStoryComponent } from './pages/my-story/my-story.component';
 import { PostDetailComponent } from './pages/post-detail/post-detail.component';
 import { adminGuard, adminOrUserGuard } from './guards/role.guard';
 import { redirectGuard } from './guards/redirect.guard';
+import { ForgotPasswordComponent } from './pages/auth/forgot-password/forgot-password.component';
+import { ResetPasswordComponent } from './pages/auth/reset-password/reset-password.component';
 
 // Admin imports
 
@@ -16,6 +18,8 @@ export const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
+  { path: 'forgot-password', component: ForgotPasswordComponent },
+  { path: 'reset-password', component: ResetPasswordComponent },
   { path: 'post/:id', component: PostDetailComponent },
 
   // User routes (accessible by both admin and user)

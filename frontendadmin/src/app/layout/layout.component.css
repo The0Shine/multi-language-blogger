@@ -1,0 +1,81 @@
+.admin-header {
+  display: flex;
+  align-items: center;
+  height: 60px;
+  background-color: #f8f8f8;
+  padding: 0 20px;
+  border-bottom: 1px solid #ddd;
+}
+
+.admin-header .hamburger {
+  font-size: 24px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.admin-header .title {
+  font-weight: bold;
+  font-size: 20px;
+  text-align: center;
+  flex-grow: 1;
+}
+
+.header-profile-user {
+  object-fit: cover;
+  width: 36px;
+  height: 36px;
+}
+
+.user-name-text {
+  font-weight: 500;
+}
+
+.user-name-sub-text {
+  font-size: 12px;
+  color: gray;
+}
+
+/* Container wrapper */
+.user-dropdown-wrapper {
+  background: #c7e6f3; /* xanh biển đậm hơn */
+  padding: 6px 12px;
+  border-radius: 12px;
+  display: inline-block;
+  transition: background 0.3s ease-in-out;
+}
+
+.user-dropdown-wrapper:hover {
+  background: #b0dced; /* hover nhạt hơn chút */
+}
+
+/* Nút dropdown */
+.user-dropdown-btn {
+  background: transparent !important;
+  border: none !important;
+  color: #084298;
+  font-weight: 500;
+  font-size: 14px;
+  padding: 4px 8px;
+  justify-content: center;
+}
+
+.user-dropdown-btn:hover {
+  color: #052c65;
+}
+
+/* Dropdown menu custom */
+.custom-dropdown-menu {
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  min-width: 150px;
+}
+
+.custom-dropdown-menu .dropdown-item {
+  font-size: 14px;
+  padding: 8px 12px;
+}
+
+.custom-dropdown-menu .dropdown-item:hover {
+  background-color: #c7e6f3;
+}

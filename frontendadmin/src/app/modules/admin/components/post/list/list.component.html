@@ -1,0 +1,217 @@
+<div class="row mb-3">
+  <ng-container *ngIf="isSuccess === true">
+    <div class="col-xl-12">
+      <div
+        class="alert alert-success alert-dismissible bg-success text-white alert-label-icon fade show material-shadow"
+        role="alert">
+        <i class="ri-checkbox-circle-line label-icon"></i>
+        <strong>Thành công!</strong> - Bạn đã xóa bài viết thành công.
+        <button type="button" class="btn-close btn-close-white" (click)="isSuccess = null" aria-label="Close"></button>
+      </div>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="isSuccess === false">
+    <div class="col-xl-12">
+      <div class="alert alert-danger alert-dismissible bg-danger text-white alert-label-icon fade show material-shadow"
+        role="alert">
+        <i class="ri-error-warning-line label-icon"></i>
+        <strong>Thất bại!</strong> - Xóa bài viết không thành công.
+        <button type="button" class="btn-close btn-close-white" (click)="isSuccess = null" aria-label="Close"></button>
+      </div>
+    </div>
+  </ng-container>
+</div>
+
+<div class="card">
+  <div class="section-header d-flex justify-content-between align-items-center p-3">
+    <div class="card-title m-0">Manage Posts</div>
+
+  </div>
+
+  <!-- Search & Filter -->
+  <div class="section-controls">
+    <input type="text" [(ngModel)]="searchText" (ngModelChange)="onSearchOrFilterChange()" placeholder="Search post...">
+
+    <select [(ngModel)]="statusFilter" (ngModelChange)="onSearchOrFilterChange()">
+      <option value="">All Status</option>
+      <option [value]="1">Published</option>
+      <option [value]="0">Pending Review</option>
+      <option [value]="-1">Rejected</option>
+    </select>
+  </div>
+
+
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 5%;">ID</th>
+        <th style="width: 35%;">Title</th>
+        <th style="width: 15%;">Author</th>
+        <th style="width: 15%;">Language</th>
+        <th style="width: 15%;">Original</th>
+        <th style="width: 15%;">Status</th>
+        <th style="width: 10%; padding-left: 25px;">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let post of paginatedPosts()">
+        <td>{{ post.postid }}</td>
+        <td>
+          <span class="link" (click)="showPostDetail(post)">
+            {{ truncateTitle(post.title) }}
+          </span>
+        </td>
+        <td>{{ post.username }}</td>
+        <td>{{ post.language_name }}</td>
+
+        <td>{{ post.originalid || 'Original' }}</td>
+
+        <td>
+          <span class="badge" [ngClass]="{
+              'bg-danger': post.status === -1,
+              'bg-success': post.status === 1,
+              'bg-warning': post.status === 0
+            }">
+            {{ getStatusText(post.status) }}
+          </span>
+        </td>
+        <td class="text-end">
+          <div class="d-inline-flex gap-2 post-actions">
+
+            <button class="btn btn-danger" (click)="openDeleteModal(post)">
+              <i class="fa fa-trash"></i> Delete
+            </button>
+
+          </div>
+
+        </td>
+      </tr>
+    </tbody>
+  </table>
+    <!-- Dropdown chọn số bài/trang -->
+  <div class="page-size-selector">
+    <label for="pageSize" class="me-2 fw-bold">Posts per page:</label>
+    <select id="pageSize" [(ngModel)]="pageSize" (change)="onPageSizeChange($event)">
+      <option *ngFor="let size of pageSizes" [value]="size">{{ size }}</option>
+    </select>
+  </div>
+
+</div>
+
+
+<div class="pagination" *ngIf="totalPages() > 1">
+  <!-- Về trang đầu -->
+  <button (click)="changePage(1)" [disabled]="currentPage === 1"> «« </button>
+
+  <!-- Về trang trước -->
+  <button (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">«</button>
+
+  <!-- Các nút số trang -->
+  <button *ngFor="let page of [].constructor(totalPages()); let i = index" (click)="changePage(i + 1)"
+    [class.active]="currentPage === i + 1">
+    {{ i + 1 }}
+  </button>
+
+  <!-- Tới trang sau -->
+  <button (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages()">»</button>
+
+  <!-- Tới trang cuối -->
+  <button (click)="changePage(totalPages())" [disabled]="currentPage === totalPages()">»»</button>
+</div>
+
+
+<!-- Modal for post detail -->
+<div class="modal fade show d-block" *ngIf="selectedPost" style="background: rgba(0, 0, 0, 0.5); z-index: 1050;">
+  <div class="modal-dialog modal-xxl modal-dialog-centered custom-modal">
+    <div class="modal-content position-relative" style="animation: fadeIn 0.3s ease;">
+
+      <!-- Nút đóng -->
+      <span class="close" (click)="closePostModal()">&times;</span>
+
+      <!-- Header -->
+      <div class="modal-header border-0 pb-0">
+        <h2 class="modal-title">Chi tiết bài viết</h2>
+      </div>
+
+      <!-- Nội dung -->
+      <div class="modal-body">
+        <div class="d-flex justify-content-between flex-wrap mb-3 border-bottom pb-2">
+          <div><strong>Người tạo:</strong> {{ selectedPost?.username || 'Không rõ' }}</div>
+      <div><strong>Ngày tạo:</strong> {{ (selectedPost?.created_at || selectedPost?.createdAt) | date: 'dd/MM/yyyy HH:mm' }}</div>
+
+
+          <div>
+            <strong>Trạng thái:</strong>
+            <span style="margin-left: 10px;" class="badge" [ngClass]="{
+              'bg-warning text-dark': selectedPost?.status === 0,
+              'bg-success': selectedPost?.status === 1,
+              'bg-danger': selectedPost?.status === -1
+            }">
+              {{ selectedPost?.status === 0 ? 'Pending Review' : (selectedPost?.status === 1 ? 'Published' : 'Rejected')
+              }}
+
+            </span>
+
+          </div>
+        </div>
+
+        <!-- Tiêu đề -->
+        <div class="mb-3">
+          <label class="danger-label">Tiêu đề:</label>
+          <h2 class="fw-bold mt-2 post-title">
+            {{ selectedPost?.title }}
+          </h2>
+        </div>
+
+        <!-- Gạch ngang phân cách -->
+        <hr class="divider">
+
+        <!-- Nội dung -->
+       <div class="mt-3">
+    <label class="danger-label">Nội dung:</label>
+
+    <div class="content-html mt-2" [innerHTML]="selectedPost?.content"></div>
+
+</div>
+      </div>
+
+      <!-- Gạch ngang phân cách dưới -->
+      <hr class="divider">
+
+      <!-- Footer -->
+      <div class="modal-footer border-0 justify-content-end" style="margin-top: 10px;">
+        <button class="btn btn-danger me-2" style="opacity: 0.6; font-weight: normal;" (click)="rejectPostFromModal()">
+          <i class="fa fa-times"></i> Reject
+        </button>
+        <button class="btn btn-success" (click)="approvePostFromModal()">
+          <i class="fa fa-check"></i> Approve
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Xóa Post -->
+<div class="modal" [class.show]="showDeleteModal" style="display: block;" *ngIf="showDeleteModal">
+  <div class="modal-dialog" style="max-width: 700px; padding-left: 100px;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title custom-title">Xóa Bài viết</h5>
+        <button type="button" class="btn-close" (click)="closeDeleteModal()"></button>
+      </div>
+      <div class="modal-body">
+        <p class="fw-bold">
+          Bạn có chắc chắn muốn xóa bài Post
+
+          không?
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="closeDeleteModal()">Hủy</button>
+        <button class="btn btn-danger" (click)="confirmDeletePost()">Xóa</button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -209,19 +209,12 @@
               </svg>
             </button>
           </div>
-          <!-- Password Strength Indicator -->
-          <div class="mt-2">
-            <div class="password-strength bg-gray-200 rounded-full h-2">
-              <div
-                class="h-full rounded-full transition-all duration-300"
-                [style.width.%]="passwordStrength.strength"
-                [style.background-color]="passwordStrength.color"
-              ></div>
-            </div>
-            <p class="mt-1 text-xs" [style.color]="passwordStrength.color">
-              {{ passwordStrength.label }}
-            </p>
-          </div>
+          <!-- Password Strength Component -->
+          <app-password-strength
+            #passwordStrength
+            [password]="userData.password"
+          >
+          </app-password-strength>
         </div>
 
         <!-- Confirm Password Field -->
