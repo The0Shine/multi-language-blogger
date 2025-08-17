@@ -161,3 +161,28 @@
     </div>
   </div>
 </div>
+<!-- Modal thông báo thành công -->
+<div
+  class="modal fade"
+  tabindex="-1"
+  [class.show]="isSuccess"
+  [style.display]="isSuccess ? 'block' : 'none'"
+>
+  <div class="modal-dialog" style="margin-top: 80px;"> <!-- 🔼 đẩy lên cao -->
+    <div class="modal-content">
+      <div class="modal-header bg-success text-white">
+        <h5 class="modal-title">Thành công</h5>
+        <button
+          type="button"
+          class="btn-close"
+          (click)="isSuccess = false"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <p>BẠN ĐÃ TẠO TÀI KHOẢN THÀNH CÔNG </p>
+        <small class="text-muted">Tự động chuyển sang đăng nhập trong 5 giây...</small>
+      </div>
+    </div>
+  </div>
+</div>
+

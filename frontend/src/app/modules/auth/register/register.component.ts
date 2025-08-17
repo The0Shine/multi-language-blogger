@@ -18,6 +18,9 @@ export class RegisterComponent {
   errorMessage: string | null = null;
   showConfirmPassword = false;
 
+  // ✅ thêm biến để điều khiển modal
+  isSuccess = false;
+
   constructor(
     private fb: FormBuilder,
     private router: Router,
@@ -49,8 +52,8 @@ export class RegisterComponent {
     this.errorMessage = null;
   }
   toggleConfirmPassword() {
-  this.showConfirmPassword = !this.showConfirmPassword;
-}
+    this.showConfirmPassword = !this.showConfirmPassword;
+  }
 
   private passwordsMatch(password: string, confirmPassword: string): boolean {
     return password === confirmPassword;
@@ -82,9 +85,15 @@ export class RegisterComponent {
       .post('http://localhost:4000/api/auth/register-admin', newAdmin)
       .subscribe({
         next: () => {
-          alert('Bạn đã tạo tài khoản admin thành công!');
-          this.router.navigate(['/login']);
+          this.isSuccess = true; // bật modal
+
+          // Sau 5s tự động chuyển sang login
+          setTimeout(() => {
+            this.isSuccess = false;
+            this.goToLogin();
+          }, 5000);
         },
+
         error: (err) => {
           console.error(err);
           this.errorMessage = err.error?.message || 'Có lỗi xảy ra';
