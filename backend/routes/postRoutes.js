@@ -61,7 +61,7 @@ router.delete("/:postid", authenticate, postController.destroy);
 // Approve post (Admin only)
 router.patch(
   "/:postid/approve",
-  authMiddleware.requireRoles(['Admin'], ['moderate_posts']),
+  authMiddleware.requireRoleOrPermission(['Admin'], ['moderate_posts']),
   validateMiddleware,
   postController.approve
 );
@@ -69,7 +69,7 @@ router.patch(
 // Reject post (Admin only)
 router.patch(
   "/:postid/reject",
-  authMiddleware.requireRoles(['Admin'], ['moderate_posts']),
+  authMiddleware.requireRoleOrPermission(['Admin'], ['moderate_posts']),
   validateMiddleware,
   postController.reject
 );

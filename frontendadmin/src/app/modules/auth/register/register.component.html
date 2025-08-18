@@ -166,17 +166,24 @@
   </div>
 </div>
 <!-- Modal thông báo thành công -->
-<div class="modal fade" tabindex="-1" [class.show]="isSuccess" [style.display]="isSuccess ? 'block' : 'none'">
-  <div class="modal-dialog" style="margin-top: 80px;"> <!-- 🔼 đẩy lên cao -->
-    <div class="modal-content">
-      <div class="modal-header bg-success text-white">
-        <h5 class="modal-title">Thành công</h5>
-        <button type="button" class="btn-close" (click)="isSuccess = false"></button>
+<div class="modal fade fade-in" tabindex="-1" [class.show]="isSuccess" [style.display]="isSuccess ? 'block' : 'none'">
+  <div class="modal-dialog" style="margin-top: 80px; max-width: 450px;">
+    <div class="modal-content glass-effect shadow-lg rounded-3 border-0">
+
+      <!-- Header tím gradient -->
+      <div class="modal-header gradient-bg text-white rounded-top-3">
+        <h5 class="modal-title fw-bold">
+          <i class="bi bi-check-circle-fill me-2"></i> Thành công
+        </h5>
+        <button type="button" class="btn-close btn-close-white" (click)="isSuccess = false"></button>
       </div>
-      <div class="modal-body">
-        <p>BẠN ĐÃ TẠO TÀI KHOẢN THÀNH CÔNG </p>
+
+      <!-- Body -->
+      <div class="modal-body text-center">
+        <p class="fs-5 fw-semibold text-dark mb-2">Bạn đã tạo tài khoản thành công 🎉</p>
         <small class="text-muted">Tự động chuyển sang đăng nhập trong 5 giây...</small>
       </div>
+
     </div>
   </div>
 </div>

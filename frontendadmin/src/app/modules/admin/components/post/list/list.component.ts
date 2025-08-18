@@ -68,41 +68,53 @@ export class AdminPostListComponent implements OnInit {
   }
 
     // Hàm tải dữ liệu ban đầu (users, languages)
-  loadInitialData(): void {
-    // Tải users và languages trước, sau đó mới tải posts
-    // (Đây là ví dụ, bạn hãy điều chỉnh cho khớp với hàm `loadUsersLanguagesAndPosts` của bạn)
-    this.userService.getAllUsers().subscribe(users => {
-      this.users = users;
+loadInitialData(): void {
+  this.userService.getAllUsers().subscribe(users => {
+    this.users = users;
+
+    // ✅ Kiểm tra quyền manage_languages trước khi gọi API
+    if (this.authService.hasPermission('manage_languages')) {
       this.languageService.getLanguages().subscribe(languages => {
-        this.languages = languages.data.data; // Giả sử cấu trúc API
-        this.loadPosts(this.currentPage); // Tải posts sau khi đã có users và languages
+        this.languages = languages.data?.data || [];
+        this.loadPosts(this.currentPage);
       });
-    });
-  }
+    } else {
+      // ❌ Không có quyền -> bỏ qua, set rỗng
+      this.languages = [];
+      this.loadPosts(this.currentPage);
+    }
+  });
+}
+
 
 loadPosts(page: number = 1): void {
-    // ... Logic của hàm loadPosts giữ nguyên ...
-    this.postService.getAllPosts({ limit: 9999, page: 1 }).subscribe((res: any) => {
-      const postsArray = res?.data?.posts || [];
-      this.posts = postsArray
-        .filter((post: any) => String(post.languageid) === "1")
-        .map((post: any) => {
-          const user = this.users.find((u: any) => String(u.userid) === String(post.userid));
-          const lang = this.languages.find((l: any) => String(l.languageid) === String(post.languageid));
-          return {
-            ...post,
-            status: Number(post.status),
-            created_at: post.created_at ? new Date(post.created_at) : null,
-            username: user?.username || 'Unknown',
-            language_name: lang?.language_name || 'Unknown',
-            original_id: post.originalid || null,
-          };
-        })
-        .sort((a: any, b: any) => a.postid - b.postid);
+  this.postService.getAllPosts({ limit: 9999, page: 1 }).subscribe((res: any) => {
+    let postsArray = res?.data?.posts || [];
 
-      this.pagination = null;
-    });
-  }
+    // ✅ Chỉ lấy post tiếng Anh (languageid = 1) cho tất cả user
+    postsArray = postsArray.filter((post: any) => Number(post.languageid) === 1);
+
+    this.posts = postsArray
+      .map((post: any) => {
+        const user = this.users.find((u: any) => String(u.userid) === String(post.userid));
+        const lang = this.languages.find((l: any) => String(l.languageid) === String(post.languageid));
+
+        return {
+          ...post,
+          status: Number(post.status),
+          created_at: post.created_at ? new Date(post.created_at) : null,
+          username: user?.username || 'Unknown',
+          language_name: lang?.language_name || '',
+          original_id: post.originalid || null,
+        };
+      })
+      .sort((a: any, b: any) => a.postid - b.postid);
+
+    this.pagination = null;
+  });
+}
+
+
 
 
   loadUsersLanguagesAndPosts(page: number) {

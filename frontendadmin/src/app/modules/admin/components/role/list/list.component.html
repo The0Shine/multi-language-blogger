@@ -111,7 +111,10 @@
 
         <td class="text-end">
           <div class="d-inline-flex gap-2">
-            <button class="btn btn-info me-2" (click)="editRole(role)">
+            <button class="btn btn-info me-2"
+            (click)="editRole(role)"
+              *ngIf="role.name !== 'User' && role.name !== 'admin'"
+            >
               <i class="fa fa-edit"></i> Edit
             </button>
             <button class="btn btn-danger" (click)="openDeleteModal(role)">
