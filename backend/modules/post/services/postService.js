@@ -647,55 +647,38 @@ const postService = {
    * @param {number} userid - User ID (for authorization)
    * @returns {boolean} - Success status
    */
-  async deletePost(postid, userid) {
-    const post = await Post.findByPk(postid);
+async deletePost(postid, userid = null) {
+  const post = await Post.findByPk(postid);
 
-    if (!post) {
-      throw new Error("Post not found");
-    }
+  if (!post) {
+    throw new Error("Post not found");
+  }
 
-    // Check if user owns the post (basic authorization)
-    if (post.userid !== userid) {
-      throw new Error("Unauthorized to delete this post");
-    }
+  // Nếu có userid (tức user thường) thì mới check chủ sở hữu
+  if (userid && post.userid !== userid) {
+    throw new Error("Unauthorized to delete this post");
+  }
 
-    console.log(`🗑️ Deleting post ${postid} and all its translations`);
+  console.log(`🗑️ Deleting post ${postid} and all its translations`);
 
-    // Determine if this is the original post or a translation
-    const originalPostId = post.originalid || post.postid;
+  const originalPostId = post.originalid || post.postid;
 
-    console.log(`📝 Original post ID: ${originalPostId}`);
+  const relatedPosts = await Post.findAll({
+    where: {
+      [Op.or]: [
+        { postid: originalPostId },
+        { originalid: originalPostId },
+      ],
+    },
+  });
 
-    // Find all posts related to this original post (including the original itself)
-    const relatedPosts = await Post.findAll({
-      where: {
-        [Op.or]: [
-          { postid: originalPostId }, // The original post
-          { originalid: originalPostId }, // All translations
-        ],
-      },
-    });
+  for (const relatedPost of relatedPosts) {
+    await relatedPost.destroy();
+  }
 
-    console.log(
-      `🔍 Found ${relatedPosts.length} related posts to delete:`,
-      relatedPosts.map((p) => ({
-        postid: p.postid,
-        originalid: p.originalid,
-        title: p.title,
-      }))
-    );
-
-    // Soft delete all related posts (original + translations)
-    for (const relatedPost of relatedPosts) {
-      console.log(
-        `🗑️ Soft deleting post ${relatedPost.postid}: "${relatedPost.title}"`
-      );
-      await relatedPost.destroy(); // Sequelize soft delete with paranoid: true
-    }
-
-    console.log(`✅ Successfully soft deleted ${relatedPosts.length} posts`);
-    return true;
-  },
+  return true;
+}
+,
 
   /**
    * Approve post (admin only)

@@ -91,8 +91,8 @@ loadPosts(page: number = 1): void {
   this.postService.getAllPosts({ limit: 9999, page: 1 }).subscribe((res: any) => {
     let postsArray = res?.data?.posts || [];
 
-    // ✅ Chỉ lấy post tiếng Anh (languageid = 1) cho tất cả user
-    postsArray = postsArray.filter((post: any) => Number(post.languageid) === 1);
+    // // ✅ Chỉ lấy post tiếng Anh (languageid = 1) cho tất cả user
+    // postsArray = postsArray.filter((post: any) => Number(post.languageid) === 1);
 
     this.posts = postsArray
       .map((post: any) => {
