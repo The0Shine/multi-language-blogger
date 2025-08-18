@@ -33,14 +33,19 @@
           </div>
         </div>
 
-        <!-- Username Field -->
         <div class="mb-4">
           <label for="username" class="block text-sm font-medium text-gray-700 mb-2">Username</label>
-          <input type="text" id="username" formControlName="username" placeholder="Choose a unique username"
-            class="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition duration-200" />
-          <p class="mt-1 text-xs text-gray-500">Username must be 3-30 characters</p>
-          <p *ngIf="registerForm.get('username')?.touched && registerForm.get('username')?.invalid"
-            class="text-red-500 text-xs mt-1">Username is required (3–30 characters)</p>
+          <input type="text" id="username" formControlName="username" placeholder="Ví dụ: Admin, Vuhaidang"
+            class="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition duration-200"
+            [ngClass]="{ 'border-red-500': f['username'].invalid && f['username'].touched }" />
+
+          <div *ngIf="f['username'].invalid && f['username'].touched" class="text-red-500 text-xs mt-1">
+            <p *ngIf="f['username'].hasError('required')">Please enter a username.</p>
+            <p *ngIf="f['username'].hasError('minlength')">Username must be at least 3 characters long.</p>
+            <p *ngIf="f['username'].hasError('maxlength')">Username cannot exceed 30 characters.</p>
+            <p *ngIf="f['username'].hasError('whitespace')">Username cannot contain whitespace.</p>
+            <p *ngIf="f['username'].hasError('notCapitalized')">Username must start with a capital letter.</p>
+          </div>
         </div>
 
 
@@ -72,40 +77,39 @@
         </div>
 
         <!-- Confirm Password Field -->
-       <!-- Confirm Password Field -->
-<div>
-  <label for="confirmPassword" class="block text-sm font-medium text-gray-700 mb-2">
-    Confirm Password
-  </label>
-  <div class="relative">
-    <input [type]="showConfirmPassword ? 'text' : 'password'" id="confirmPassword"
-      formControlName="confirmPassword"
-      placeholder="Confirm your password"
-      class="input-focus block w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition duration-200" />
+        <div>
+          <label for="confirmPassword" class="block text-sm font-medium text-gray-700 mb-2">
+            Confirm Password
+          </label>
+          <div class="relative">
+            <input [type]="showConfirmPassword ? 'text' : 'password'" id="confirmPassword"
+              formControlName="confirmPassword" placeholder="Confirm your password"
+              class="input-focus block w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition duration-200"
+              [ngClass]="{ 'border-red-500': f['confirmPassword'].invalid && f['confirmPassword'].touched }" />
 
-    <button type="button" (click)="toggleConfirmPassword()" class="absolute inset-y-0 right-0 pr-3 flex items-center">
-      <!-- Icon khi đang ẩn -->
-      <svg *ngIf="!showConfirmPassword" class="h-5 w-5 text-gray-400 hover:text-gray-600" fill="none"
-        stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-      </svg>
-      <!-- Icon khi đang hiện -->
-      <svg *ngIf="showConfirmPassword" class="h-5 w-5 text-gray-400 hover:text-gray-600" fill="none"
-        stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-          d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a9.97 9.97 0 012.586-4.042M6.223 6.223A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.542 7a9.97 9.97 0 01-4.294 5.19M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3l18 18" />
-      </svg>
-    </button>
-  </div>
+            <button type="button" (click)="toggleConfirmPassword()"
+              class="absolute inset-y-0 right-0 pr-3 flex items-center">
+              <svg *ngIf="!showConfirmPassword" class="h-5 w-5 text-gray-400 hover:text-gray-600" fill="none"
+                stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+              <svg *ngIf="showConfirmPassword" class="h-5 w-5 text-gray-400 hover:text-gray-600" fill="none"
+                stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a9.97 9.97 0 012.586-4.042M6.223 6.223A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.542 7a9.97 9.97 0 01-4.294 5.19M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3l18 18" />
+              </svg>
+            </button>
+          </div>
 
-  <p *ngIf="errorMessage === 'Passwords do not match'" class="text-red-500 text-xs mt-1">
-    Passwords do not match
-  </p>
-</div>
+          <div *ngIf="f['confirmPassword'].invalid && f['confirmPassword'].touched" class="text-red-500 text-xs mt-1">
+            <p *ngIf="f['confirmPassword'].hasError('required')">Please confirm password.</p>
+            <p *ngIf="f['confirmPassword'].hasError('mismatch')">Confirmation password does not match.</p>
+          </div>
+        </div>
 
 
         <!-- Email Field -->
@@ -162,21 +166,12 @@
   </div>
 </div>
 <!-- Modal thông báo thành công -->
-<div
-  class="modal fade"
-  tabindex="-1"
-  [class.show]="isSuccess"
-  [style.display]="isSuccess ? 'block' : 'none'"
->
+<div class="modal fade" tabindex="-1" [class.show]="isSuccess" [style.display]="isSuccess ? 'block' : 'none'">
   <div class="modal-dialog" style="margin-top: 80px;"> <!-- 🔼 đẩy lên cao -->
     <div class="modal-content">
       <div class="modal-header bg-success text-white">
         <h5 class="modal-title">Thành công</h5>
-        <button
-          type="button"
-          class="btn-close"
-          (click)="isSuccess = false"
-        ></button>
+        <button type="button" class="btn-close" (click)="isSuccess = false"></button>
       </div>
       <div class="modal-body">
         <p>BẠN ĐÃ TẠO TÀI KHOẢN THÀNH CÔNG </p>
@@ -185,4 +180,3 @@
     </div>
   </div>
 </div>
-

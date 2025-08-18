@@ -24,9 +24,17 @@ export class LoginComponent implements OnInit {
     private router: Router,
     private authService: AuthService
   ) {
-    this.loginForm = this.fb.group({
-      username: ['', Validators.required],
-      password: ['', Validators.required],
+   this.loginForm = this.fb.group({
+      username: ['', [
+        Validators.required,
+        Validators.minLength(3),
+        Validators.maxLength(50)
+      ]],
+      password: ['', [
+        Validators.required,
+        Validators.minLength(3),
+        Validators.maxLength(50)
+      ]],
       rememberMe: [false],
     });
   }
@@ -49,75 +57,65 @@ export class LoginComponent implements OnInit {
     this.showPassword = !this.showPassword;
   }
 
- onSubmit(): void {
-    if (this.isLoading) return;
+onSubmit(): void {
+  if (this.isLoading) return;
 
-    if (this.loginForm.invalid) {
-      this.loginForm.markAllAsTouched();
-      return;
-    }
-
-    this.isLoading = true;
-    this.errorMessage = null;
-
-    const { username, password, rememberMe } = this.loginForm.value;
-
-    const formattedUsername = username.charAt(0).toUpperCase() + username.slice(1);
-    if (username !== formattedUsername) {
-      this.errorMessage = 'Username must be capitalized.';
-      this.isLoading = false;
-      return;
-    }
-
-    this.authService.login(formattedUsername, password).subscribe({
-      next: (res) => {
-        this.isLoading = false;
-        if (res && res.success) {
-          const { accessToken, refreshToken } = res.data;
-          const decoded: any = jwtDecode(accessToken);
-
-          if (rememberMe) {
-            localStorage.setItem('savedUsername', formattedUsername);
-          } else {
-            localStorage.removeItem('savedUsername');
-          }
-
-          localStorage.setItem('accessToken', accessToken);
-          localStorage.setItem('refreshToken', refreshToken);
-          localStorage.setItem(
-            'user',
-            JSON.stringify({
-              userid: decoded.userid,
-              roleid: decoded.roleid,
-              username: formattedUsername,
-            })
-          );
-          this.router.navigate(['/admin/home']);
-        } else {
-          this.errorMessage = res.message || 'Incorrect login information.';
-        }
-      },
-      // ✅ SỬA LOGIC TRONG KHỐI NÀY
-      error: (err) => {
-        this.isLoading = false;
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
-        localStorage.removeItem('user');
-        console.error('Login error:', err);
-
-        // Lấy thông báo lỗi từ server
-        const serverMessage = err.error?.message;
-
-        // Kiểm tra nếu lỗi là "Invalid credentials." thì đổi thành "Sai mật khẩu"
-        if (serverMessage === 'Invalid credentials.') {
-          this.errorMessage = 'Password is incorrect.';
-        } else {
-          // Với các lỗi khác, giữ nguyên thông báo từ server hoặc báo lỗi chung
-          this.errorMessage = serverMessage || 'Login failed, please try again';
-        }
-      },
-    });
+  if (this.loginForm.invalid) {
+    this.loginForm.markAllAsTouched();
+    return;
   }
+
+  this.isLoading = true;
+  this.errorMessage = null;
+
+  const { username, password, rememberMe } = this.loginForm.value;
+
+  const formattedUsername = username.charAt(0).toUpperCase() + username.slice(1);
+  if (username !== formattedUsername) {
+    this.errorMessage = 'Username must be capitalized.';
+    this.isLoading = false;
+    return;
+  }
+
+  // AuthService sẽ tự động lưu token và user vào localStorage khi thành công
+  this.authService.login(formattedUsername, password).subscribe({
+    next: (res) => {
+      this.isLoading = false;
+
+      // Lấy thông tin user mà AuthService vừa lưu để kiểm tra
+      const user = this.authService.getUser();
+
+      // Kiểm tra roleid sau khi đã chắc chắn đăng nhập thành công
+      if (user && user.roleid === 1) {
+        this.errorMessage = 'User does not have access.';
+        // Xóa token vừa được lưu vì user này không có quyền
+        this.authService.logout();
+        return;
+      }
+
+      // Nếu mọi thứ ổn, điều hướng đến trang chủ
+      // Ghi nhớ username nếu người dùng chọn
+      if (rememberMe) {
+        localStorage.setItem('savedUsername', formattedUsername);
+      } else {
+        localStorage.removeItem('savedUsername');
+      }
+      this.router.navigate(['/admin/home']);
+    },
+    error: (err) => {
+      this.isLoading = false;
+      console.error('Login error:', err);
+
+      // Luồng xử lý lỗi của bạn được giữ nguyên
+      const serverMessage = err.error?.message;
+      if (serverMessage === 'Refresh token is required.') {
+        this.errorMessage = 'Wrong account or password';
+      } else {
+        this.errorMessage = serverMessage || 'Login failed, please try again';
+      }
+    },
+  });
+}
   goToRegister() {
     this.router.navigate(['/register']);
   }

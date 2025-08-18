@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { CategoryService } from '../../../category.service'; // chỉnh lại nếu path khác
 import { ActivatedRoute, Router } from '@angular/router';
 declare var bootstrap: any;
-
+import { AuthService } from '../../../../auth/auth.service'; // ✅ Import AuthService
 @Component({
   selector: 'app-admin-category-list',
   standalone: true,
@@ -36,7 +36,7 @@ editError: boolean | null = null;
 
 isSuccess: boolean | null = null;
 showEditConfirmModal = false;
-
+ hasAccess = false; // ✅ Thêm thuộc tính này
 
   categories: any[] = [];
   modalCategory = {
@@ -47,24 +47,38 @@ showEditConfirmModal = false;
 
   constructor(private categoryService: CategoryService,
       private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+           private authService: AuthService
   ) {}
 
-  ngOnInit() {
-    this.loadCategories();
+ngOnInit() {
+    // ✅ Kiểm tra quyền trước khi tải dữ liệu
+    // Giả sử quyền để xem trang này là 'manage_categories'
+    this.hasAccess = this.authService.hasPermission('manage_categories');
 
-      // Lấy page từ query params khi load trang
-    this.route.queryParams.subscribe((params) => {
+    if (this.hasAccess) {
+      // Nếu có quyền, mới bắt đầu tải dữ liệu
+      this.loadCategories();
 
-      this.currentPage = +params['page'] || 1;
-    });
+      this.route.queryParams.subscribe((params) => {
+        this.currentPage = +params['page'] || 1;
+      });
+    }
   }
 
-loadCategories() {
-  this.categoryService.getCategories().subscribe(res => {
-    this.categories = (res.data?.data ?? []).sort((a, b) => a.categoryid - b.categoryid);
-  });
-}
+ loadCategories() {
+    this.categoryService.getCategories().subscribe({
+      next: (res) => {
+        const categoriesData = res.data?.data ?? res.data ?? [];
+        this.categories = categoriesData.sort((a: any, b: any) => a.categoryid - b.categoryid);
+      },
+      // ✅ Thêm khối "error" để xử lý
+      error: (err) => {
+        console.error("Failed to load categories:", err.message);
+        this.categories = [];
+      }
+    });
+  }
 
 
  openCreateModal() {

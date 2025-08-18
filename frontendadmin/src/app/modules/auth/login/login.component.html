@@ -38,9 +38,17 @@
               class="flex-1 border rounded-lg px-3 py-2"
               [ngClass]="{ 'border-red-500': loginForm.get('username')?.invalid && loginForm.get('username')?.touched }" />
           </div>
-          <div *ngIf="loginForm.get('username')?.touched && loginForm.get('username')?.hasError('required')"
-               class="text-red-500 text-sm mt-1" style="margin-left: 27px;">
-            Vui lòng nhập username.
+          <div *ngIf="loginForm.get('username')?.invalid && loginForm.get('username')?.touched"
+            class="text-red-500 text-sm mt-1" style="margin-left: 27px;">
+            <div *ngIf="loginForm.get('username')?.hasError('required')">
+              Vui lòng nhập username.
+            </div>
+            <div *ngIf="loginForm.get('username')?.hasError('minlength')">
+              Username phải có ít nhất 3 ký tự.
+            </div>
+            <div *ngIf="loginForm.get('username')?.hasError('maxlength')">
+              Username không được vượt quá 50 ký tự.
+            </div>
           </div>
         </div>
 
@@ -56,19 +64,19 @@
               </svg>
             </div>
             <div class="relative w-full">
-               <input [type]="showPassword ? 'text' : 'password'" id="password" formControlName="password"
+              <input [type]="showPassword ? 'text' : 'password'" id="password" formControlName="password"
                 placeholder="Enter your password" class="flex-1 border rounded-lg px-3 py-2 w-full"
                 [ngClass]="{ 'border-red-500': loginForm.get('password')?.invalid && loginForm.get('password')?.touched }" />
               <button type="button" (click)="togglePassword()"
                 class="absolute inset-y-0 right-0 pr-3 flex items-center">
-                <svg *ngIf="!showPassword" class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" style="margin-bottom: 8px;"
-                  stroke-width="2" viewBox="0 0 24 24">
+                <svg *ngIf="!showPassword" class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor"
+                  style="margin-bottom: 8px;" stroke-width="2" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                   <path stroke-linecap="round" stroke-linejoin="round"
                     d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                 </svg>
-                <svg *ngIf="showPassword" class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" style="margin-bottom: 8px;"
-                  stroke-width="2" viewBox="0 0 24 24">
+                <svg *ngIf="showPassword" class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor"
+                  style="margin-bottom: 8px;" stroke-width="2" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round"
                     d="M13.875 18.825A10.05 10.05 0 0112 19c-4.477 0-8.268-2.943-9.542-7a9.96 9.96 0 012.36-3.993m3.143-2.507A9.953 9.953 0 0112 5c4.477 0 8.268 2.943 9.542 7a9.96 9.96 0 01-4.223 5.093M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                   <path stroke-linecap="round" stroke-linejoin="round" d="M3 3l18 18" />
@@ -76,9 +84,17 @@
               </button>
             </div>
           </div>
-          <div *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.hasError('required')"
-               class="text-red-500 text-sm mt-1" style="margin-left: 27px;">
-            Vui lòng nhập password.
+          <div *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
+            class="text-red-500 text-sm mt-1" style="margin-left: 27px;">
+            <div *ngIf="loginForm.get('password')?.hasError('required')">
+              Vui lòng nhập password.
+            </div>
+            <div *ngIf="loginForm.get('password')?.hasError('minlength')">
+              Password phải có ít nhất 3 ký tự.
+            </div>
+            <div *ngIf="loginForm.get('password')?.hasError('maxlength')">
+              Password không được vượt quá 50 ký tự.
+            </div>
           </div>
         </div>
 

@@ -1,4 +1,4 @@
-<!-- LIST USERS -->
+<ng-container *ngIf="hasAccess; else noAccessTemplate">
 <!-- Alert Edit Success -->
 <div *ngIf="editSuccess"
   class="alert alert-success alert-dismissible bg-success text-white alert-label-icon fade show material-shadow"
@@ -77,17 +77,17 @@
   <table>
     <thead>
       <tr>
-        <th style="width: 5%;">ID</th>
+
         <th style="width: 20%;">Name</th>
         <th style="width: 25%;">Email</th>
         <th style="width: 15%;">Role</th>
         <th style="width: 10%;">Status</th>
-        <th style="width: 15%; padding-left: 115px;">Actions</th>
+        <th style="width: 15%; padding-left: 150px;">Actions</th>
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let user of paginatedUsers()">
-        <td>{{ user.userid }}</td>
+
         <td>{{ user.username }}</td>
         <td>{{ user.email }}</td>
      <td>
@@ -275,3 +275,12 @@
     </button>
   </div>
 </div>
+</ng-container>
+<ng-template #noAccessTemplate>
+  <div class="card">
+    <div class="card-body text-center p-5">
+      <h3 class="text-danger">Access Denied</h3>
+      <p>Bạn không có quyền truy cập vào chức năng này.</p>
+    </div>
+  </div>
+</ng-template>

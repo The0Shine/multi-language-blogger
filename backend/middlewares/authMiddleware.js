@@ -1,4 +1,3 @@
-// middlewares/authMiddleware.js
 const jwtUtils = require("utils/jwtUtils");
 const responseUtils = require("utils/responseUtils");
 const { User, Role, Permission } = require("models");
@@ -9,10 +8,11 @@ const getTokenFromHeader = (req) => {
 };
 
 const buildUserContext = (userInstance) => {
-  const roleName = String(userInstance?.Role?.name || "").toLowerCase();
-  const permissions = Array.isArray(userInstance?.Role?.permissions)
-    ? userInstance.Role.permissions.map((p) => String(p.name).toLowerCase())
+  const roleName = String(userInstance?.role?.name || "").toLowerCase();
+  const permissions = Array.isArray(userInstance?.role?.permissions)
+    ? userInstance.role.permissions.map((p) => String(p.name).toLowerCase())
     : [];
+
   return { roleName, permissions };
 };
 
@@ -28,7 +28,7 @@ const authMiddleware = {
 
     try {
       const decoded = jwtUtils.verifyToken(token);
-      console.log("🔍 Auth Debug - Decoded:", {
+      console.log("🔍 Auth Debug - Decoded Token:", {
         userid: decoded.userid,
         roleid: decoded.roleid,
       });
@@ -38,7 +38,7 @@ const authMiddleware = {
         include: [
           {
             model: Role,
-            as: "role", // 🔁 alias phải khớp association (lowercase)
+            as: "role", // ✅ alias lowercase
             attributes: ["roleid", "name", "status", "deleted_at"],
             include: [
               {
@@ -52,13 +52,7 @@ const authMiddleware = {
         ],
       });
 
-      // Chặn user/role không hợp lệ hoặc role inactive/soft-deleted
-      if (
-        !user ||
-        !user.role ||
-        user.role.deleted_at ||
-        user.role.status === 0
-      ) {
+      if (!user || !user.role || user.role.deleted_at || user.role.status === 0) {
         return responseUtils.unauthorized(res, "Invalid user or role.");
       }
 
@@ -68,13 +62,21 @@ const authMiddleware = {
         userid: user.userid,
         roleid: user.roleid,
         username: user.username,
-        roleName: String(user.role.name || "").toLowerCase(),
+        roleName,
         permissions,
       };
 
+      // Debug user context
+      console.log("✅ Authenticated User:", {
+        userid: req.user.userid,
+        username: req.user.username,
+        role: req.user.roleName,
+        permissions: req.user.permissions,
+      });
+
       next();
     } catch (error) {
-      console.error("Auth error:", error);
+      console.error("❌ Auth error:", error);
       return responseUtils.unauthorized(res, "Invalid or expired token.");
     }
   },
@@ -90,10 +92,13 @@ const authMiddleware = {
     return (req, res, next) => {
       if (!req.user)
         return responseUtils.unauthorized(res, "Authentication required.");
-      if (normalized.includes(String(req.user.roleName))) return next();
-      console.log(req.user);
 
-      console.log(req.user.roleName, "111111111");
+      if (normalized.includes(req.user.roleName)) return next();
+
+      console.log("❌ Role check failed:", {
+        userRole: req.user.roleName,
+        allowedRoles: normalized,
+      });
 
       return responseUtils.unauthorized(res, "You do not have permission.");
     };
@@ -110,17 +115,18 @@ const authMiddleware = {
           ? getTargetUserId(req)
           : req.params.userid || req.body.userid;
 
-      const isOwner =
-        targetId != null && String(req.user.userid) === String(targetId);
-      const isAllowedRole = normalized.includes(String(req.user.roleName));
+      const isOwner = targetId && String(req.user.userid) === String(targetId);
+      const isAllowedRole = normalized.includes(req.user.roleName);
 
       if (isOwner || isAllowedRole) return next();
 
-      // 👉 Nếu có responseUtils.forbidden thì dùng cái này thay vì unauthorized
-      return responseUtils.unauthorized(
-        res,
-        "Access denied: not owner or insufficient role."
-      );
+      console.log("❌ Ownership/Role check failed:", {
+        userId: req.user.userid,
+        targetId,
+        role: req.user.roleName,
+        allowedRoles: normalized,
+      });
+
       return responseUtils.unauthorized(
         res,
         "Access denied: not owner or insufficient role."
@@ -136,16 +142,20 @@ const authMiddleware = {
       if (!req.user)
         return responseUtils.unauthorized(res, "Authentication required.");
 
-      if (normRoles.length && normRoles.includes(String(req.user.roleName))) {
+      if (normRoles.length && normRoles.includes(req.user.roleName)) {
         return next();
       }
 
-      if (
-        normPerms.length &&
-        hasAnyPermission(req.user.permissions || [], normPerms)
-      ) {
+      if (normPerms.length && hasAnyPermission(req.user.permissions || [], normPerms)) {
         return next();
       }
+
+      console.log("❌ Role/Permission check failed:", {
+        userRole: req.user.roleName,
+        userPerms: req.user.permissions,
+        requiredRoles: normRoles,
+        requiredPerms: normPerms,
+      });
 
       return responseUtils.unauthorized(res, "You do not have permission.");
     };

@@ -4,6 +4,9 @@ import { FormsModule } from '@angular/forms';
 import { UserService } from '../../../user.service';
 import { RoleService } from '../../../role.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { AuthService } from '../../../../auth/auth.service'; // ✅ Import AuthService
+import { tap } from 'rxjs/internal/operators/tap';
+import { Observable } from 'rxjs/internal/Observable';
 
 @Component({
   selector: 'app-admin-user-list',
@@ -21,8 +24,10 @@ export class AdminUserListComponent implements OnInit {
   users: any[] = [];
   roles: any[] = [];
 
+
   currentPage = 1;
   pageSize = 5;
+    hasAccess = false;
 
   isSuccess: boolean | null = null;
   selectedUser: any = null;
@@ -49,18 +54,42 @@ confirmingEditUser = false;
     private userService: UserService,
     private roleService: RoleService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private authService: AuthService // ✅ Inject AuthService
   ) {}
 
-  ngOnInit() {
-    this.loadUsers();
-    this.loadRoles();
+
+ngOnInit() {
+
+  this.hasAccess = this.authService.hasPermission('manage_users');
+
+  // ✅ BƯỚC 2: Chỉ tải dữ liệu nếu người dùng có quyền
+  if (this.hasAccess) {
+    this.loadInitialData(); // Gọi hàm điều phối tải dữ liệu
 
     // Lấy page từ query params khi load trang
     this.route.queryParams.subscribe((params) => {
       this.currentPage = +params['page'] || 1;
     });
   }
+
+}
+
+
+private loadInitialData() {
+  // Bước 1: Luôn luôn tải danh sách user vì đây là dữ liệu chính của trang.
+  this.loadUsers();
+
+  // Bước 2: KIỂM TRA - Nếu người dùng hiện tại có quyền xem danh sách roles
+  // (ví dụ: là 'admin'), thì mới tải danh sách roles cho dropdown chỉnh sửa.
+  // Giả sử quyền xem danh sách role là 'manage_roles'.
+  if (this.authService.hasPermission('manage_roles')) {
+    console.log("User has 'manage_roles' permission, loading roles for edit dropdown.");
+    // Chúng ta chỉ cần gọi hàm, không cần đợi nó hoàn thành
+    // vì nó chỉ dùng cho dropdown chỉnh sửa.
+    this.loadRoles().subscribe();
+  }
+}
 
   private getEmptyUser() {
     return {
@@ -76,53 +105,64 @@ confirmingEditUser = false;
     };
   }
 
-loadRoles() {
-  this.roleService.getRoles().subscribe({
-    next: (response) => {
-      const rolesData = response?.data?.data || response?.data || [];
-      if (response?.success && Array.isArray(rolesData)) {
-        this.roles = rolesData;
-        this.roleMap = this.roles.reduce((map, role) => {
-          map[+role.roleid] = role.name; // dùng roleid
-          return map;
-        }, {} as { [key: number]: string });
-
-        // Nếu users đã load trước đó thì cập nhật lại roleName
-        if (this.users.length) {
-          this.users = this.users.map(u => ({
-            ...u,
-            roleName: this.getRoleNameById(u.roleid)
-          }));
+loadRoles(): Observable<any> {
+  return this.roleService.getRoles().pipe(
+    tap({
+      next: (response) => {
+        const rolesData = response?.data?.data || response?.data || [];
+        if (response?.success && Array.isArray(rolesData)) {
+          this.roles = rolesData;
+          // Tạo roleMap để tra cứu nhanh hơn
+          this.roleMap = this.roles.reduce((map, role) => {
+            map[+role.roleid] = role.name;
+            return map;
+          }, {} as { [key: number]: string });
+        } else {
+          this.roles = [];
+          this.roleMap = {};
         }
-      } else {
+      },
+      error: (err) => {
+        console.error('Load roles failed:', err);
         this.roles = [];
         this.roleMap = {};
       }
-    },
-    error: (err) => {
-      console.error('Load roles failed:', err);
-      this.roles = [];
-      this.roleMap = {};
-    }
-  });
+    })
+  );
 }
 
 
 private loadUsers() {
-  this.userService.getAllUsers().subscribe((list) => {
-    this.users = list
-      .map((u: any) => ({
-        userid: u.userid ?? u.id,
-        roleid: u.roleid,
-        roleName: this.getRoleNameById(u.roleid), // luôn gọi hàm này
-        first_name: u.first_name || '',
-        last_name: u.last_name || '',
-        username: u.username || '',
-        password: '',
-        email: u.email || '',
-        status: typeof u.status === 'number' ? u.status : 1,
-      }))
-      .sort((a, b) => a.userid - b.userid);
+  this.userService.getAllUsers().subscribe({
+    next: (response: any) => {
+      // ✅ SỬA LỖI 1: Xử lý linh hoạt các dạng response từ API
+      // Kiểm tra xem response có phải là một mảng trực tiếp hay là một object chứa data
+      let userList: any[] = [];
+      if (Array.isArray(response)) {
+        userList = response; // Case 1: API trả về trực tiếp mảng user
+      } else if (response && response.data) {
+        // Case 2: API trả về { success: true, data: { data: [...] } } hoặc { success: true, data: [...] }
+        userList = response.data.data || response.data;
+      }
+
+      this.users = userList
+        .map((u: any) => ({
+          userid: u.userid ?? u.id,
+          roleid: u.roleid,
+          roleName: u.role?.name || 'Unknown',
+          first_name: u.first_name || '',
+          last_name: u.last_name || '',
+          username: u.username || '',
+          email: u.email || '',
+          status: typeof u.status === 'number' ? u.status : 1,
+        }))
+        // ✅ SỬA LỖI 2: Thêm kiểu 'any' cho tham số của hàm sort
+        .sort((a: any, b: any) => a.userid - b.userid);
+    },
+    error: (err) => {
+      console.error("Load users failed:", err);
+      this.users = []; // Đảm bảo mảng user được reset khi có lỗi
+    }
   });
 }
 

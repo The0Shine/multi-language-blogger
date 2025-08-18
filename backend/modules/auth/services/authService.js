@@ -1,17 +1,14 @@
+console.log("!!!!!!!!!! ĐANG CHẠY PHIÊN BẢN AUTH.SERVICE.JS MỚI NHẤT !!!!!!!!!!");
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
 const jwtUtils = require("utils/jwtUtils");
 const emailUtils = require("utils/emailUtils");
-const { User, Role } = require("models");
-
+const { User, Role, Permission } = require("models");
 const authService = {
   register: async (data) => {
     const { first_name, last_name, email, username, password } = data;
-    const emailNorm = String(email || "")
-      .trim()
-      .toLowerCase();
+    const emailNorm = String(email || "").trim().toLowerCase();
 
-    // unique email
     const existingUser = await User.findOne({ where: { email: emailNorm } });
     if (existingUser) throw new Error("Email already in use.");
     const existingUsername = await User.unscoped().findOne({
@@ -20,14 +17,9 @@ const authService = {
     if (existingUsername) {
       throw new Error("Username already exists");
     }
-    // default role = "User"
-    const defaultRole = await Role.findOne({
-      where: { name: "User" }, // + có thể thêm status:1, deleted_at:null nếu bạn dùng soft-delete
-    });
+    const defaultRole = await Role.findOne({ where: { name: "User" } });
     if (!defaultRole)
-      throw new Error(
-        "Default role not found. Please set up roles in the database."
-      );
+      throw new Error("Default role not found. Please set up roles in the database.");
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -46,20 +38,14 @@ const authService = {
 
   registerAdmin: async (data) => {
     const { first_name, last_name, email, username, password } = data;
-    const emailNorm = String(email || "")
-      .trim()
-      .toLowerCase();
+    const emailNorm = String(email || "").trim().toLowerCase();
 
     const existingUser = await User.findOne({ where: { email: emailNorm } });
     if (existingUser) throw new Error("Email already in use.");
 
-    const adminRole = await Role.findOne({
-      where: { name: "Admin" }, // + có thể thêm status:1, deleted_at:null
-    });
+    const adminRole = await Role.findOne({ where: { name: "Admin" } });
     if (!adminRole)
-      throw new Error(
-        "Admin role not found. Please set up roles in the database."
-      );
+      throw new Error("Admin role not found. Please set up roles in the database.");
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -85,44 +71,96 @@ const authService = {
         {
           model: Role,
           as: "role",
-          attributes: ["name", "discription"], // Fix: use correct column name
+          include: [
+            {
+              model: Permission,
+              as: "permissions",
+              attributes: ["name"],
+              through: { attributes: [] },
+            },
+          ],
         },
       ],
-      attributes: { exclude: ["password"] },
     });
 
-    if (!user) throw new Error("User not found.");
+    if (!user) {
+      throw new Error("Invalid credentials.");
+    }
 
-    // Need to get user with password for validation
-    const userWithPassword = await User.findOne({ where: { username } });
-    const isPasswordValid = await bcrypt.compare(
-      password,
-      userWithPassword.password
-    );
-    if (!isPasswordValid) throw new Error("Invalid credentials.");
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      throw new Error("Invalid credentials.");
+    }
 
-    const payload = { userid: user.userid, roleid: user.roleid };
+    const permissionNames = user.role
+      ? user.role.permissions.map((p) => p.name)
+      : [];
+    
+    // ✅ TẠO PAYLOAD ĐẦY ĐỦ THÔNG TIN
+    const payload = {
+      userid: user.userid,
+      roleid: user.roleid,
+      username: user.username,
+      roleName: user.role ? user.role.name : null,
+      permissions: permissionNames,
+    };
+
+      // ✅✅✅ THÊM DÒNG LOG CUỐI CÙNG NÀY VÀO
+    console.log("--- [LOGIN SERVICE] --- PAYLOAD TO BE SIGNED:", payload);
+
     const accessToken = jwtUtils.generateToken(payload);
-    const refreshToken = jwtUtils.generateRefreshToken(payload);
+    const refreshToken = jwtUtils.generateRefreshToken({ userid: user.userid });
+
+    delete user.dataValues.password;
 
     return { accessToken, refreshToken, user };
   },
 
-  refreshToken: async (refreshToken) => {
-    const decoded = jwtUtils.verifyRefreshToken(refreshToken);
-    const user = await User.findByPk(decoded.userid);
-    if (!user) throw new Error("User not found.");
+ refreshToken: async (refreshToken) => {
+  // Bước 1: Xác thực refresh token
+  const decoded = jwtUtils.verifyRefreshToken(refreshToken);
 
-    const payload = { userid: user.userid, roleid: user.roleid };
-    const newAccessToken = jwtUtils.generateToken(payload);
+  // Bước 2: Lấy lại đầy đủ thông tin user và permissions
+  const user = await User.findOne({
+    where: { userid: decoded.userid },
+    include: [
+      {
+        model: Role,
+        as: "role",
+        include: [
+          {
+            model: Permission,
+            as: "permissions",
+            attributes: ["name"],
+            through: { attributes: [] },
+          },
+        ],
+      },
+    ],
+  });
 
-    return { accessToken: newAccessToken };
-  },
+  if (!user) throw new Error("User not found.");
+
+  const permissionNames = user.role ? user.role.permissions.map((p) => p.name) : [];
+
+  // Bước 3: Tạo payload ĐẦY ĐỦ cho access token mới
+  const payload = {
+    userid: user.userid,
+    roleid: user.roleid,
+    username: user.username,
+    roleName: user.role ? user.role.name : null,
+    permissions: permissionNames,
+  };
+
+  // Bước 4: Tạo access token mới từ payload
+  const newAccessToken = jwtUtils.generateToken(payload);
+
+  // Bước 5: Trả về access token mới
+  return { accessToken: newAccessToken };
+},
 
   forgotPassword: async (email) => {
-    const emailNorm = String(email || "")
-      .trim()
-      .toLowerCase();
+    const emailNorm = String(email || "").trim().toLowerCase();
     const user = await User.findOne({ where: { email: emailNorm } });
     if (!user) throw new Error("User with this email does not exist.");
 
@@ -138,9 +176,7 @@ const authService = {
   },
 
   resetPassword: async (email, resetCode, newPassword) => {
-    const emailNorm = String(email || "")
-      .trim()
-      .toLowerCase();
+    const emailNorm = String(email || "").trim().toLowerCase();
     const user = await User.findOne({ where: { email: emailNorm } });
     if (!user) throw new Error("User with this email does not exist.");
 

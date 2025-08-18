@@ -1,3 +1,4 @@
+<ng-container *ngIf="hasAccess; else noAccessTemplate">
 <div class="row mb-3">
   <ng-container *ngIf="isSuccess === true">
     <div class="col-xl-12">
@@ -46,7 +47,7 @@
   <table>
     <thead>
       <tr>
-        <th style="width: 5%;">ID</th>
+
         <th style="width: 35%;">Title</th>
         <th style="width: 15%;">Author</th>
         <th style="width: 15%;">Language</th>
@@ -57,7 +58,7 @@
     </thead>
     <tbody>
       <tr *ngFor="let post of paginatedPosts()">
-        <td>{{ post.postid }}</td>
+
         <td>
           <span class="link" (click)="showPostDetail(post)">
             {{ truncateTitle(post.title) }}
@@ -217,3 +218,12 @@
     </div>
   </div>
 </div>
+</ng-container>
+<ng-template #noAccessTemplate>
+  <div class="card">
+    <div class="card-body text-center p-5">
+      <h3 class="text-danger">Access Denied</h3>
+      <p>Bạn không có quyền truy cập vào chức năng này.</p>
+    </div>
+  </div>
+</ng-template>

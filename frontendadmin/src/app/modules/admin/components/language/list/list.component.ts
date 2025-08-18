@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LanguageService } from '../../../language.service'; // đảm bảo đường dẫn đúng
 import { ActivatedRoute, Router } from '@angular/router';
+import { AuthService } from '../../../../auth/auth.service'; // ✅ Import AuthService
 @Component({
   selector: 'app-admin-language-list',
   standalone: true,
@@ -29,6 +30,7 @@ export class AdminLanguageListComponent implements OnInit {
   selectedLanguage: any = null;
   showDeleteModal = false;
 showEditConfirmModal = false; // thêm biến mới
+hasAccess = false;
 
 
   showModal = false;
@@ -43,18 +45,26 @@ showEditConfirmModal = false; // thêm biến mới
   constructor(
     private languageService: LanguageService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+     private authService: AuthService // <-- Inject AuthService
   ) {}
 
-  ngOnInit() {
-    this.loadLanguages();
+ ngOnInit() {
+    // ✅ BƯỚC 2: Kiểm tra quyền trước khi làm bất cứ điều gì
+    // Giả sử quyền để xem trang này là 'manage_languages'
+    this.hasAccess = this.authService.hasPermission('manage_languages');
 
-    // Lấy page từ query params khi load trang
-    this.route.queryParams.subscribe((params) => {
-      this.currentPage = +params['page'] || 1;
-    });
+    if (this.hasAccess) {
+      // Nếu có quyền, mới bắt đầu tải dữ liệu
+      this.loadLanguages();
+
+      this.route.queryParams.subscribe((params) => {
+        this.currentPage = +params['page'] || 1;
+      });
+    }
+    // Nếu không có quyền, component sẽ không làm gì cả,
+    // và bạn nên có một *ngIf="!hasAccess" trong HTML để hiển thị thông báo.
   }
-
 
   openCreateModal() {
     this.editingLanguage = false;
@@ -224,23 +234,26 @@ deleteLanguage(languageId: number) {
   }
 }
 
-loadLanguages(showSuccess = false) {
-  this.languageService.getLanguages().subscribe((res) => {
-    // Lấy mảng đúng chỗ
-    const langs = res.data?.data ?? [];
-    this.languages = langs.sort((a: any, b: any) => a.languageid - b.languageid);
+  loadLanguages(showSuccess = false) {
+    this.languageService.getLanguages().subscribe({
+      next: (res) => {
+        const langs = res.data?.data ?? [];
+        this.languages = langs.sort((a: any, b: any) => a.languageid - b.languageid);
 
-    const totalPages = this.totalPages();
-    if (this.currentPage > totalPages) {
-      this.changePage(totalPages || 1);
-    }
+        // ... logic phân trang ...
 
-    if (showSuccess) {
-      this.isSuccess = true;
-      setTimeout(() => (this.isSuccess = null), 1000);
-    }
-  });
-}
+        if (showSuccess) {
+          // ... logic hiển thị thông báo thành công ...
+        }
+      },
+      // ✅ BƯỚC 3: Thêm khối "error" để xử lý lỗi một cách êm đẹp
+      error: (err) => {
+        console.error("Failed to load languages:", err.message);
+        this.languages = []; // Reset mảng khi có lỗi
+        // Có thể hiển thị thông báo lỗi cho người dùng ở đây
+      }
+    });
+  }
 
 
   totalPages(): number {
