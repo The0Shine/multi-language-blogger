@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import jwt_decode from 'jwt-decode';
+import { WebSocketService } from './websocket.service'; // <<< THÊM MỚI
 
 @Injectable({
   providedIn: 'root'
@@ -12,13 +13,17 @@ export class AuthService {
   private apiUrl = 'http://localhost:4000/api/auth';
 
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient, private router: Router,
+        private websocketService: WebSocketService
+  ) {}
 
   login(username: string, password: string): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/login`, { username, password }).pipe(
       tap((res) => {
         if (res && res.success && res.data?.accessToken) {
           this.saveTokensAndUser(res.data.accessToken, res.data.refreshToken);
+           // <<< THÊM MỚI: Kết nối WebSocket sau khi đăng nhập thành công >>>
+          this.websocketService.connect();
         }
       })
     );
@@ -31,6 +36,8 @@ export class AuthService {
   }
 
   logout(): void {
+      // <<< THÊM MỚI: Ngắt kết nối WebSocket trước khi đăng xuất >>>
+    this.websocketService.disconnect();
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('user');
@@ -56,6 +63,21 @@ export class AuthService {
 
   isLoggedIn(): boolean {
     return !!this.getToken();
+  }
+  logoutAndRedirect(message: string): void {
+      // <<< THÊM MỚI: Ngắt kết nối WebSocket trước khi đăng xuất >>>
+    this.websocketService.disconnect();
+    // 1. Dọn dẹp tất cả dữ liệu xác thực
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('user');
+
+    // 2. Chuyển hướng về trang login và đính kèm thông báo
+    this.router.navigate(['/login'], {
+      queryParams: {
+        message: message
+      }
+    });
   }
 
   // Hàm này là public để Interceptor có thể gọi

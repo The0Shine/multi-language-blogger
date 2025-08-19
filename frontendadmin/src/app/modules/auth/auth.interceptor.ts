@@ -25,9 +25,20 @@ export class AuthInterceptor implements HttpInterceptor {
 
     return next.handle(req).pipe(
       catchError(error => {
-        if (error instanceof HttpErrorResponse && error.status === 401) {
-          return this.handle401Error(req, next);
+        if (error instanceof HttpErrorResponse) {
+          // Xử lý khi token hết hạn
+          if (error.status === 401) {
+            return this.handle401Error(req, next);
+          }
+
+          // <<< THÊM MỚI: Xử lý khi không có quyền >>>
+          else if (error.status === 403) {
+            // Gọi hàm đăng xuất và hiển thị thông báo mà chúng ta đã tạo
+            this.authService.logoutAndRedirect('Your permissions may have changed. Please log in again.');
+          }
         }
+
+        // Trả về các lỗi khác (ví dụ: 500 Internal Server Error)
         return throwError(() => error);
       })
     );
@@ -46,28 +57,25 @@ export class AuthInterceptor implements HttpInterceptor {
         switchMap((res: any) => {
           this.isRefreshing = false;
 
-          // ✅ THÊM LOG CHI TIẾT ĐỂ XEM RESPONSE TỪ BACKEND
-          console.log('--- [INTERCEPTOR] Refresh Token Response Received ---', res);
-
           if (res && res.success && res.data?.accessToken) {
-            console.log('✅ Refresh token success. Saving new token.');
             const newToken = res.data.accessToken;
-            this.authService.saveTokensAndUser(newToken);
+            this.authService.saveTokensAndUser(newToken); // Giả sử bạn có hàm này
             this.refreshTokenSubject.next(newToken);
             return next.handle(this.addToken(request, newToken));
           }
 
-          // Nếu refresh thất bại
-          return throwError(() => new Error('Refresh token failed or returned invalid data.'));
+          // Nếu refresh thất bại, đăng xuất
+          this.authService.logoutAndRedirect('Your session has expired. Please log in again.');
+          return throwError(() => new Error('Refresh token failed.'));
         }),
         catchError((error) => {
           this.isRefreshing = false;
-          this.authService.logout();
+          // Đảm bảo đăng xuất nếu có lỗi trong quá trình refresh
+          this.authService.logoutAndRedirect('Your session has expired. Please log in again.');
           return throwError(() => error);
         })
       );
     } else {
-      // "Xếp hàng" các request trong khi đang refresh
       return this.refreshTokenSubject.pipe(
         filter(token => token != null),
         take(1),

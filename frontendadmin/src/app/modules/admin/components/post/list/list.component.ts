@@ -67,23 +67,37 @@ export class AdminPostListComponent implements OnInit {
     // Nếu không có quyền, không làm gì cả, trang sẽ giữ nguyên trạng thái rỗng
   }
 
-    // Hàm tải dữ liệu ban đầu (users, languages)
-loadInitialData(): void {
-  this.userService.getAllUsers().subscribe(users => {
-    this.users = users;
 
-    // ✅ Kiểm tra quyền manage_languages trước khi gọi API
+loadInitialData(): void {
+  // Định nghĩa các bước tiếp theo (tải languages và posts) thành một hàm
+  // để có thể tái sử dụng, giúp code gọn hơn.
+  const loadRemainingData = () => {
+    // Kiểm tra quyền manage_languages
     if (this.authService.hasPermission('manage_languages')) {
       this.languageService.getLanguages().subscribe(languages => {
         this.languages = languages.data?.data || [];
         this.loadPosts(this.currentPage);
       });
     } else {
-      // ❌ Không có quyền -> bỏ qua, set rỗng
+      // Nếu không có quyền, vẫn tiếp tục tải posts với danh sách ngôn ngữ rỗng
       this.languages = [];
       this.loadPosts(this.currentPage);
     }
-  });
+  };
+
+  // BƯỚC QUAN TRỌNG: Kiểm tra quyền 'manage_users' trước khi gọi API
+  if (this.authService.hasPermission('manage_users')) {
+    // ✅ Nếu CÓ quyền, tải danh sách user rồi mới thực hiện các bước tiếp theo
+    this.userService.getAllUsers().subscribe(users => {
+      this.users = users;
+      loadRemainingData();
+    });
+  } else {
+    // ❌ Nếu KHÔNG có quyền, đặt danh sách user là mảng rỗng và
+    // thực hiện ngay các bước tiếp theo mà không cần gọi API user.
+    this.users = [];
+    loadRemainingData();
+  }
 }
 
 
@@ -92,11 +106,13 @@ loadPosts(page: number = 1): void {
     let postsArray = res?.data?.posts || [];
 
     // // ✅ Chỉ lấy post tiếng Anh (languageid = 1) cho tất cả user
-    // postsArray = postsArray.filter((post: any) => Number(post.languageid) === 1);
+    postsArray = postsArray.filter((post: any) => Number(post.languageid) === 1);
 
     this.posts = postsArray
       .map((post: any) => {
+        console.log('post.userid:', post.userid, 'users:', this.users);
         const user = this.users.find((u: any) => String(u.userid) === String(post.userid));
+        console.log('found user:', user);
         const lang = this.languages.find((l: any) => String(l.languageid) === String(post.languageid));
 
         return {

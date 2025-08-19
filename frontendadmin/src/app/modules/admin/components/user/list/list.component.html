@@ -1,280 +1,278 @@
 <ng-container *ngIf="hasAccess; else noAccessTemplate">
-<!-- Alert Edit Success -->
-<div *ngIf="editSuccess"
-  class="alert alert-success alert-dismissible bg-success text-white alert-label-icon fade show material-shadow"
-  role="alert">
-  <i class="ri-checkbox-circle-line label-icon"></i>
-  <strong>Thành công!</strong> - Bạn đã sửa user thành công.
-  <button type="button" class="btn-close btn-close-white" (click)="editSuccess = null" aria-label="Close"></button>
-</div>
-
-<!-- Alert Edit Error -->
-<div *ngIf="editError"
-  class="alert alert-danger alert-dismissible bg-danger text-white alert-label-icon fade show material-shadow"
-  role="alert">
-  <i class="ri-error-warning-line label-icon"></i>
-  <strong>Thất bại!</strong> - Sửa user không thành công.
-  <button type="button" class="btn-close btn-close-white" (click)="editError = null" aria-label="Close"></button>
-</div>
-
-<div class="row mb-3">
-  <ng-container *ngIf="isSuccess === true">
-    <div class="col-xl-12">
-      <div
-        class="alert alert-success alert-dismissible bg-success text-white alert-label-icon fade show material-shadow"
-        role="alert">
-        <i class="ri-checkbox-circle-line label-icon"></i>
-        <strong>Thành công!</strong> - Bạn đã xóa user thành công.
-        <button type="button" class="btn-close btn-close-white" (click)="isSuccess = null" aria-label="Close"></button>
-      </div>
-    </div>
-  </ng-container>
-
-  <ng-container *ngIf="isSuccess === false">
-    <div class="col-xl-12">
-      <div class="alert alert-danger alert-dismissible bg-danger text-white alert-label-icon fade show material-shadow"
-        role="alert">
-        <i class="ri-error-warning-line label-icon"></i>
-        <strong>Thất bại!</strong> - Xóa user không thành công.
-        <button type="button" class="btn-close btn-close-white" (click)="isSuccess = null" aria-label="Close"></button>
-      </div>
-    </div>
-  </ng-container>
-</div>
-<div *ngIf="updateRoleSuccess"
-  class="alert alert-success alert-dismissible bg-success text-white alert-label-icon fade show material-shadow"
-  role="alert">
-  <i class="ri-checkbox-circle-line label-icon"></i>
-  <strong>Thành công!</strong> - {{ alertMessage }}
-  <button type="button" class="btn-close btn-close-white" (click)="updateRoleSuccess = false" aria-label="Close"></button>
-</div>
-
-<div *ngIf="updateRoleError"
-  class="alert alert-danger alert-dismissible bg-danger text-white alert-label-icon fade show material-shadow"
-  role="alert">
-  <i class="ri-error-warning-line label-icon"></i>
-  <strong>Thất bại!</strong> - {{ alertMessage }}
-  <button type="button" class="btn-close btn-close-white" (click)="updateRoleError = false" aria-label="Close"></button>
-</div>
-
-
-<div class="card">
-   <div class="section-header d-flex justify-content-between align-items-center p-3">
-    <div class="card-title m-0">Manage Users</div>
-
-   </div>
-
-  <div class="section-controls">
-    <input type="text" [(ngModel)]="searchText" (ngModelChange)="onSearchChange()" placeholder="Search User..." />
-
-    <select [(ngModel)]="statusFilter" (change)="onStatusFilterChange()">
-      <option value="">All Status</option>
-      <option value="1">Active</option>
-      <option value="0">Inactive</option>
-    </select>
+  <!-- Alert Edit Success -->
+  <div *ngIf="editSuccess"
+    class="alert alert-success alert-dismissible bg-success text-white alert-label-icon fade show material-shadow"
+    role="alert">
+    <i class="ri-checkbox-circle-line label-icon"></i>
+    <strong>Thành công!</strong> - Bạn đã sửa user thành công.
+    <button type="button" class="btn-close btn-close-white" (click)="editSuccess = null" aria-label="Close"></button>
   </div>
 
-  <table>
-    <thead>
-      <tr>
+  <!-- Alert Edit Error -->
+  <div *ngIf="editError"
+    class="alert alert-danger alert-dismissible bg-danger text-white alert-label-icon fade show material-shadow"
+    role="alert">
+    <i class="ri-error-warning-line label-icon"></i>
+    <strong>Thất bại!</strong> - Sửa user không thành công.
+    <button type="button" class="btn-close btn-close-white" (click)="editError = null" aria-label="Close"></button>
+  </div>
 
-        <th style="width: 20%;">Name</th>
-        <th style="width: 25%;">Email</th>
-        <th style="width: 15%;">Role</th>
-        <th style="width: 10%;">Status</th>
-        <th style="width: 15%; padding-left: 150px;">Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let user of paginatedUsers()">
+  <div class="row mb-3">
+    <ng-container *ngIf="isSuccess === true">
+      <div class="col-xl-12">
+        <div
+          class="alert alert-success alert-dismissible bg-success text-white alert-label-icon fade show material-shadow"
+          role="alert">
+          <i class="ri-checkbox-circle-line label-icon"></i>
+          <strong>Thành công!</strong> - Bạn đã xóa user thành công.
+          <button type="button" class="btn-close btn-close-white" (click)="isSuccess = null"
+            aria-label="Close"></button>
+        </div>
+      </div>
+    </ng-container>
 
-        <td>{{ user.username }}</td>
-        <td>{{ user.email }}</td>
-     <td>
-  <select [(ngModel)]="user.roleid"
-          (change)="updateUserRole(user)"
-          class="form-select form-select-sm w-auto">
-    <option *ngFor="let role of roles" [value]="role.roleid">
-      {{ role.name }}
-    </option>
-  </select>
-</td>
+    <ng-container *ngIf="isSuccess === false">
+      <div class="col-xl-12">
+        <div
+          class="alert alert-danger alert-dismissible bg-danger text-white alert-label-icon fade show material-shadow"
+          role="alert">
+          <i class="ri-error-warning-line label-icon"></i>
+          <strong>Thất bại!</strong> - Xóa user không thành công.
+          <button type="button" class="btn-close btn-close-white" (click)="isSuccess = null"
+            aria-label="Close"></button>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+  <div *ngIf="updateRoleSuccess"
+    class="alert alert-success alert-dismissible bg-success text-white alert-label-icon fade show material-shadow"
+    role="alert">
+    <i class="ri-checkbox-circle-line label-icon"></i>
+    <strong>Thành công!</strong> - {{ alertMessage }}
+    <button type="button" class="btn-close btn-close-white" (click)="updateRoleSuccess = false"
+      aria-label="Close"></button>
+  </div>
+
+  <div *ngIf="updateRoleError"
+    class="alert alert-danger alert-dismissible bg-danger text-white alert-label-icon fade show material-shadow"
+    role="alert">
+    <i class="ri-error-warning-line label-icon"></i>
+    <strong>Thất bại!</strong> - {{ alertMessage }}
+    <button type="button" class="btn-close btn-close-white" (click)="updateRoleError = false"
+      aria-label="Close"></button>
+  </div>
+
+
+  <div class="card">
+    <div class="section-header d-flex justify-content-between align-items-center p-3">
+      <div class="card-title m-0">Manage Users</div>
+
+    </div>
+
+    <div class="section-controls">
+      <input type="text" [(ngModel)]="searchText" (ngModelChange)="onSearchChange()" placeholder="Search User..." />
+
+      <select [(ngModel)]="statusFilter" (change)="onStatusFilterChange()">
+        <option value="">All Status</option>
+        <option value="1">Active</option>
+        <option value="0">Inactive</option>
+      </select>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+
+          <th style="width: 20%;">Name</th>
+          <th style="width: 25%;">Email</th>
+          <th style="width: 15%;">Role</th>
+          <th style="width: 10%;">Status</th>
+          <th style="width: 15%; padding-left: 150px;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of paginatedUsers()">
+
+          <td>{{ user.username }}</td>
+          <td>{{ user.email }}</td>
+          <td>
+            <select [(ngModel)]="user.roleid" (change)="updateUserRole(user)" class="form-select form-select-sm w-auto">
+              <option *ngFor="let role of roles" [value]="role.roleid">
+                {{ role.name }}
+              </option>
+            </select>
+          </td>
 
 
 
 
-        <td>
-          <span class="badge" [ngClass]="{
+          <td>
+            <span class="badge" [ngClass]="{
             'bg-success': +user.status === 1,
             'bg-danger': +user.status === 0
           }">
-            {{ +user.status === 1 ? 'Active' : 'Inactive' }}
-          </span>
-        </td>
-        <td class="text-end">
-          <button class="btn btn-info me-2" (click)="editUser(user.userid)">
-            <i class="fa fa-edit"></i> Edit
-          </button>
-          <button class="btn btn-danger" (click)="openDeleteModal(user)">
-            <i class="fa fa-trash"></i> Delete
-          </button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-</div>
-
-<div class="pagination" *ngIf="totalPages() > 1">
-  <!-- Về trang đầu -->
-  <button (click)="changePage(1)" [disabled]="currentPage === 1"> «« </button>
-
-  <!-- Về trang trước -->
-  <button (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">«</button>
-
-  <!-- Các nút số trang -->
-  <button *ngFor="let page of [].constructor(totalPages()); let i = index"
-          (click)="changePage(i + 1)"
-          [class.active]="currentPage === i + 1">
-    {{ i + 1 }}
-  </button>
-
-  <!-- Tới trang sau -->
-  <button (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages()">»</button>
-
-  <!-- Tới trang cuối -->
-  <button (click)="changePage(totalPages())" [disabled]="currentPage === totalPages()">»»</button>
-</div>
-<!-- MODAL CREATE/EDIT USER -->
-<div *ngIf="showCreateModal" class="modal fade show d-block custom-modal" role="dialog">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content shadow-lg">
-      <div class="modal-header">
-        <h5 class="modal-title custom-title">
-          {{ isEditMode ? 'Chỉnh Sửa Người Dùng' : 'Thêm Người Dùng Mới' }}
-        </h5>
-        <button type="button" class="close custom-close" (click)="closeModal()">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-
-      <div class="modal-body">
-        <form>
-          <div class="form-group">
-            <label for="first_name">First Name: </label>
-            <input type="text" class="form-control" [(ngModel)]="newUser.first_name" name="first_name" required>
-          </div>
-
-          <div class="form-group">
-            <label for="last_name">Last Name: </label>
-            <input type="text" class="form-control" [(ngModel)]="newUser.last_name" name="last_name" required>
-          </div>
-
-          <div class="form-group">
-            <label for="username">Username: <span class="text-danger">*</span></label>
-            <input type="text" class="form-control" [(ngModel)]="newUser.username" name="username" required
-              (blur)="validateField('username')" (input)="clearError('username')">
-            <div *ngIf="validationErrors.username" class="error-message">
-              {{ validationErrors.username }}
-            </div>
-          </div>
-
-          <div class="form-group" *ngIf="!isEditMode">
-            <label for="password">Password: <span class="text-danger">*</span></label>
-            <input type="password" class="form-control" [(ngModel)]="newUser.password" name="password" required
-              (blur)="validateField('password')" (input)="clearError('password')">
-            <div *ngIf="validationErrors.password" class="error-message">
-              {{ validationErrors.password }}
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label for="email">Email: <span class="text-danger">*</span></label>
-            <input type="email" class="form-control" [(ngModel)]="newUser.email" name="extra_info" required
-              (blur)="validateField('email')" (input)="clearError('email')">
-            <div *ngIf="validationErrors.email" class="error-message">
-              {{ validationErrors.email }}
-            </div>
-          </div>
-
-
-          <div class="form-group" style="margin-top: 10px;">
-            <label for="status">Status: </label>
-            <select class="form-select" [(ngModel)]="newUser.status" name="status" required>
-              <option value="">-- Chọn Trạng thái --</option>
-              <option [value]="1">Active</option>
-              <option [value]="0">Inactive</option>
-            </select>
-          </div>
-        </form>
-
-      </div>
-
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" (click)="closeModal()">Đóng</button>
-        <button type="button" class="btn btn-success" (click)="saveUser()" [disabled]="!isFormValid()"
-          [ngClass]="{'disabled-btn': !isFormValid()}">
-          {{ isEditMode ? 'Cập Nhật' : 'Lưu' }}
-        </button>
-
-      </div>
-    </div>
+              {{ +user.status === 1 ? 'Active' : 'Inactive' }}
+            </span>
+          </td>
+          <td class="text-end">
+            <button class="btn btn-info me-2" (click)="editUser(user.userid)">
+              <i class="fa fa-edit"></i> Edit
+            </button>
+            <button class="btn btn-danger" (click)="openDeleteModal(user)">
+              <i class="fa fa-trash"></i> Delete
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 
-</div>
+  <div class="pagination" *ngIf="totalPages() > 1">
+    <!-- Về trang đầu -->
+    <button (click)="changePage(1)" [disabled]="currentPage === 1"> «« </button>
 
-<!-- Modal Xóa -->
-<div class="modal" [class.show]="showDeleteModal" style="display: block;" *ngIf="showDeleteModal">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title custom-title">Xóa User</h5>
-        <button type="button" class="btn-close" (click)="closeDeleteModal()"></button>
-      </div>
-      <div class="modal-body">
-        <p class="fw-bold">
-          Bạn có chắc chắn muốn xóa User
-          <strong>{{ selectedUser?.username || 'Không rõ' }}</strong>
+    <!-- Về trang trước -->
+    <button (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">«</button>
 
-          không?
-        </p>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary" (click)="closeDeleteModal()">Hủy</button>
-        <button class="btn btn-danger" (click)="confirmDeleteUser()">Xóa</button>
-      </div>
-    </div>
-  </div>
-</div>
-<!-- Modal Xác nhận chỉnh sửa User -->
-<div class="modal" [class.show]="showSaveUserConfirmModal" style="display: block;" *ngIf="showSaveUserConfirmModal">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title custom-title">Xác nhận chỉnh sửa User</h5>
-        <button type="button" class="btn-close" (click)="closeSaveUserConfirmModal()"></button>
-      </div>
-      <div class="modal-body">
-        <p class="fw-bold">
-          Bạn có chắc chắn muốn lưu thay đổi cho User
-          <strong>{{ selectedUser?.username || 'Không rõ' }}</strong>
-          không?
-        </p>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary" (click)="closeSaveUserConfirmModal()">Hủy</button>
-        <button class="btn btn-primary" (click)="confirmEditUser()">Lưu</button>
-      </div>
-    </div>
-  </div>
-</div>
-<div *ngIf="showSuccessModal" class="custom-modal-backdrop">
-  <div class="custom-modal-content">
-    <p>{{ modalMessage }}</p>
-    <button (click)="showSuccessModal = false" class="btn btn-primary btn-sm">
-      Đã hiểu
+    <!-- Các nút số trang -->
+    <button *ngFor="let page of [].constructor(totalPages()); let i = index" (click)="changePage(i + 1)"
+      [class.active]="currentPage === i + 1">
+      {{ i + 1 }}
     </button>
+
+    <!-- Tới trang sau -->
+    <button (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages()">»</button>
+
+    <!-- Tới trang cuối -->
+    <button (click)="changePage(totalPages())" [disabled]="currentPage === totalPages()">»»</button>
   </div>
-</div>
+  <!-- MODAL CREATE/EDIT USER -->
+  <div *ngIf="showCreateModal" class="modal fade show d-block custom-modal" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content shadow-lg">
+        <div class="modal-header">
+          <h5 class="modal-title custom-title">
+            {{ isEditMode ? 'Chỉnh Sửa Người Dùng' : 'Thêm Người Dùng Mới' }}
+          </h5>
+          <button type="button" class="close custom-close" (click)="closeModal()">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <form>
+            <div class="form-group">
+              <label for="first_name">First Name: </label>
+              <input type="text" class="form-control" [(ngModel)]="newUser.first_name" name="first_name" required>
+            </div>
+
+            <div class="form-group">
+              <label for="last_name">Last Name: </label>
+              <input type="text" class="form-control" [(ngModel)]="newUser.last_name" name="last_name" required>
+            </div>
+
+            <div class="form-group">
+              <label for="username">Username: <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" [(ngModel)]="newUser.username" name="username" required
+                (blur)="validateField('username')" (input)="clearError('username')">
+              <div *ngIf="validationErrors.username" class="error-message">
+                {{ validationErrors.username }}
+              </div>
+            </div>
+
+            <div class="form-group" *ngIf="!isEditMode">
+              <label for="password">Password: <span class="text-danger">*</span></label>
+              <input type="password" class="form-control" [(ngModel)]="newUser.password" name="password" required
+                (blur)="validateField('password')" (input)="clearError('password')">
+              <div *ngIf="validationErrors.password" class="error-message">
+                {{ validationErrors.password }}
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="email">Email: <span class="text-danger">*</span></label>
+              <input type="email" class="form-control" [value]="newUser.email" disabled>
+            </div>
+
+
+            <div class="form-group" style="margin-top: 10px;">
+              <label for="status">Status: </label>
+              <select class="form-select" [(ngModel)]="newUser.status" name="status" required>
+                <option value="">-- Chọn Trạng thái --</option>
+                <option [value]="1">Active</option>
+                <option [value]="0">Inactive</option>
+              </select>
+            </div>
+          </form>
+
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeModal()">Đóng</button>
+          <button type="button" class="btn btn-success" (click)="saveUser()" [disabled]="!isFormValid()"
+            [ngClass]="{'disabled-btn': !isFormValid()}">
+            {{ isEditMode ? 'Cập Nhật' : 'Lưu' }}
+          </button>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Modal Xóa -->
+  <div class="modal" [class.show]="showDeleteModal" style="display: block;" *ngIf="showDeleteModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title custom-title">Xóa User</h5>
+          <button type="button" class="btn-close" (click)="closeDeleteModal()"></button>
+        </div>
+        <div class="modal-body">
+          <p class="fw-bold">
+            Bạn có chắc chắn muốn xóa User
+            <strong>{{ selectedUser?.username || 'Không rõ' }}</strong>
+
+            không?
+          </p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" (click)="closeDeleteModal()">Hủy</button>
+          <button class="btn btn-danger" (click)="confirmDeleteUser()">Xóa</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Modal Xác nhận chỉnh sửa User -->
+  <div class="modal" [class.show]="showSaveUserConfirmModal" style="display: block;" *ngIf="showSaveUserConfirmModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title custom-title">Xác nhận chỉnh sửa User</h5>
+          <button type="button" class="btn-close" (click)="closeSaveUserConfirmModal()"></button>
+        </div>
+        <div class="modal-body">
+          <p class="fw-bold">
+            Bạn có chắc chắn muốn lưu thay đổi cho User
+            <strong>{{ selectedUser?.username || 'Không rõ' }}</strong>
+            không?
+          </p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" (click)="closeSaveUserConfirmModal()">Hủy</button>
+          <button class="btn btn-primary" (click)="confirmEditUser()">Lưu</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="showSuccessModal" class="custom-modal-backdrop">
+    <div class="custom-modal-content">
+      <p>{{ modalMessage }}</p>
+      <button (click)="showSuccessModal = false" class="btn btn-primary btn-sm">
+        Đã hiểu
+      </button>
+    </div>
+  </div>
 </ng-container>
 <ng-template #noAccessTemplate>
   <div class="card">

@@ -139,33 +139,45 @@ const userController = {
     }
   },
 
-  // Update user role specifically
-  updateUserRole: async (req, res) => {
-    try {
-      const { userid } = req.params;
-      const { roleid } = req.body;
+ updateUserRole: async (req, res) => {
+  try {
+    const { userid } = req.params;
+    const { roleid } = req.body;
+    
+    // <<< THÊM MỚI: Lấy io và userSocketMap từ request >>>
+    const { io, userSocketMap } = req;
 
-      if (!roleid) {
-        return responseUtils.badRequest(res, "Role ID is required");
-      }
-
-      const updatedUser = await userService.updateUserRole(userid, roleid);
-
-      return responseUtils.ok(res, {
-        message: "User role updated successfully",
-        data: updatedUser,
-      });
-    } catch (error) {
-      console.error("Update user role error:", error);
-      if (error.message === "User not found") {
-        return responseUtils.notFound(res, error.message);
-      }
-      if (error.message === "Role not found") {
-        return responseUtils.badRequest(res, error.message);
-      }
-      return responseUtils.serverError(res, error.message);
+    if (!roleid) {
+      return responseUtils.badRequest(res, "Role ID is required");
     }
-  },
+
+    // Gọi service để cập nhật database như bình thường
+    const updatedUser = await userService.updateUserRole(userid, roleid);
+
+    // <<< THÊM MỚI: Gửi sự kiện WebSocket sau khi cập nhật thành công >>>
+    const targetSocketId = userSocketMap[userid];
+    if (targetSocketId) {
+      io.to(targetSocketId).emit('permissions_changed', {
+        message: 'Your user role has been changed. Please log in again.'
+      });
+      console.log(`✅ Sent 'permissions_changed' event to user ${userid}`);
+    }
+
+    return responseUtils.ok(res, {
+      message: "User role updated successfully",
+      data: updatedUser,
+    });
+  } catch (error) {
+    console.error("Update user role error:", error);
+    if (error.message === "User not found") {
+      return responseUtils.notFound(res, error.message);
+    }
+    if (error.message === "Role not found") {
+      return responseUtils.badRequest(res, error.message);
+    }
+    return responseUtils.serverError(res, error.message);
+  }
+},
 
   // Delete user (soft delete)
   deleteUser: async (req, res) => {

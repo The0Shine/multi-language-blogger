@@ -5,6 +5,7 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../auth.service';
 import jwtDecode from 'jwt-decode';
+import { ActivatedRoute } from '@angular/router'; // Import ActivatedRoute
 
 @Component({
   selector: 'app-login',
@@ -18,11 +19,13 @@ export class LoginComponent implements OnInit {
   showPassword = false;
   isLoading = false;
   errorMessage: string | null = null;
+  loginMessage: string | null = null; // Biến để lưu thông báo
 
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private route: ActivatedRoute // Thêm ActivatedRoute vào constructor
   ) {
    this.loginForm = this.fb.group({
       username: ['', [
@@ -51,6 +54,9 @@ export class LoginComponent implements OnInit {
         rememberMe: true,
       });
     }
+     this.route.queryParams.subscribe(params => {
+      this.loginMessage = params['message'] || null;
+    });
   }
 
   togglePassword(): void {

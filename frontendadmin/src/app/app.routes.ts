@@ -3,6 +3,7 @@ import { LayoutComponent } from './layout/layout.component';
 
 import { HomeComponent } from './home/home.component';
 import { AuthGuard } from './modules/auth/auth.guard';
+
 // ✅ BƯỚC 1: Import PermissionGuard
 import { PermissionGuard } from './permission.guard';
 
@@ -24,7 +25,7 @@ export const routes: Routes = [
   { path: 'forgot-password', component: ForgotPasswordComponent },
   { path: 'reset-password', component: ResetPasswordComponent },
 
- {
+  {
     path: 'admin',
     component: LayoutComponent,
     canActivate: [AuthGuard], // AuthGuard kiểm tra đăng nhập cho toàn bộ khu vực admin
@@ -36,33 +37,31 @@ export const routes: Routes = [
       {
         path: 'user/list',
         component: AdminUserListComponent,
-        canActivate: [PermissionGuard],       // <-- BẢO VỆ BẰNG PERMISSION GUARD
-        data: { permission: 'manage_users' } // <-- ĐỊNH NGHĨA QUYỀN YÊU CẦU
+        canActivate: [PermissionGuard], // <-- BẢO VỆ BẰNG PERMISSION GUARD
+        data: { permission: 'manage_users' }, // <-- ĐỊNH NGHĨA QUYỀN YÊU CẦU
       },
       {
         path: 'role/list',
         component: AdminRoleListComponent,
-
       },
       {
         path: 'language/list',
         component: AdminLanguageListComponent,
-
       },
       {
         path: 'category/list',
         component: AdminCategorieListComponent,
-
       },
       {
         path: 'post/list',
         component: AdminPostListComponent,
-
+        canActivate: [PermissionGuard],
+        data: { permission: 'moderate_posts' },
       },
-      { path: '', redirectTo: 'home', pathMatch: 'full' }
-    ]
+      { path: '', redirectTo: 'home', pathMatch: 'full' },
+    ],
   },
 
   { path: '', redirectTo: 'login', pathMatch: 'full' },
-  { path: '**', redirectTo: 'login' }
+  { path: '**', redirectTo: 'login' },
 ];

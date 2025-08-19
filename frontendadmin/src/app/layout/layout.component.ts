@@ -2,7 +2,8 @@ import { Component } from '@angular/core';
 import { RouterOutlet, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-
+import { AuthService } from '../modules/auth/auth.service'; // Import WebSocketService
+import { WebSocketService } from '../modules/auth/websocket.service'; // Import WebSocketService
 @Component({
   selector: 'app-layout',
   standalone: true,
@@ -16,7 +17,10 @@ export class LayoutComponent {
   roleName: string = '';
   permissions: string[] = [];
 
-  constructor(private router: Router) {}
+  constructor(private router: Router,
+      private websocketService: WebSocketService,
+       private authService: AuthService
+  ) {}
 
   ngOnInit(): void {
     const userStr = localStorage.getItem('user');
@@ -36,6 +40,10 @@ export class LayoutComponent {
         );
       }
          console.log('DEBUG permissions =', this.permissions);
+    }
+      // Nếu người dùng đã đăng nhập, hãy bắt đầu kết nối WebSocket
+    if (this.authService.isLoggedIn()) {
+      this.websocketService.connect();
     }
   }
 
