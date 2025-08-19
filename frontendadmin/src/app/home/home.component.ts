@@ -18,8 +18,18 @@ export class HomeComponent implements OnInit {
   stats = [
     { section: 'post/list', icon: 'fa fa-file-alt', value: 0, label: 'Posts' },
     { section: 'user/list', icon: 'fa fa-users', value: 0, label: 'Users' },
-    { section: 'category/list', icon: 'fa fa-tags', value: 0, label: 'Categories' },
-    { section: 'language/list', icon: 'fa fa-language', value: 0, label: 'Languages' },
+    {
+      section: 'category/list',
+      icon: 'fa fa-tags',
+      value: 0,
+      label: 'Categories',
+    },
+    {
+      section: 'language/list',
+      icon: 'fa fa-language',
+      value: 0,
+      label: 'Languages',
+    },
   ];
 
   recentPosts: any[] = [];
@@ -40,9 +50,9 @@ export class HomeComponent implements OnInit {
     private authService: AuthService
   ) {}
 
-   ngOnInit() {
+  ngOnInit() {
     this.initializePermissions(); // Gán quyền vào các biến
-    this.buildStatsByRole();      // Xây dựng các ô thống kê dựa trên quyền
+    this.buildStatsByRole(); // Xây dựng các ô thống kê dựa trên quyền
     this.loadCounts();
 
     // <<< THAY ĐỔI: Chỉ tải Recent Posts nếu có quyền >>>
@@ -50,18 +60,24 @@ export class HomeComponent implements OnInit {
       this.loadRecentPosts();
     }
   }
- initializePermissions() {
+  initializePermissions() {
     const currentUser = this.authService.getUser();
-    const isAdmin = currentUser?.roleName === "admin";
+    const isAdmin = currentUser?.roleName === 'Admin';
     const permissions: string[] = currentUser?.permissions || [];
 
-      // <<< THÊM DÒNG NÀY ĐỂ DEBUG >>>
+    // <<< THÊM DÒNG NÀY ĐỂ DEBUG >>>
     console.log('DEBUG PERMISSIONS:', permissions);
 
-    this.canViewPosts = isAdmin || permissions.includes("moderate_posts") || permissions.includes("manage_posts");
-    this.canManageUsers = isAdmin || permissions.includes("manage_users");
-    this.canManageCategories = isAdmin || permissions.includes("manage_categories");
-    this.canManageLanguages = isAdmin || permissions.includes("manage_languages");
+    this.canViewPosts =
+      isAdmin ||
+      permissions.includes('moderate_posts') ||
+      permissions.includes('manage_posts');
+    this.canManageUsers = isAdmin || permissions.includes('manage_users');
+    this.canManageCategories =
+      isAdmin || permissions.includes('manage_categories');
+    this.canManageLanguages =
+      isAdmin || permissions.includes('manage_languages');
+    console.log(this.canViewPosts);
   }
 
   // <<< THAY ĐỔI: Hàm này giờ chỉ dùng các biến boolean, rất sạch sẽ >>>
@@ -70,22 +86,42 @@ export class HomeComponent implements OnInit {
 
     // Posts
     if (this.canViewPosts) {
-      this.stats.push({ section: 'post/list', icon: 'fa fa-file-alt', value: 0, label: 'Posts' });
+      this.stats.push({
+        section: 'post/list',
+        icon: 'fa fa-file-alt',
+        value: 0,
+        label: 'Posts',
+      });
     }
 
     // Users
     if (this.canManageUsers) {
-      this.stats.push({ section: 'user/list', icon: 'fa fa-users', value: 0, label: 'Users' });
+      this.stats.push({
+        section: 'user/list',
+        icon: 'fa fa-users',
+        value: 0,
+        label: 'Users',
+      });
     }
 
     // Categories
     if (this.canManageCategories) {
-      this.stats.push({ section: 'category/list', icon: 'fa fa-tags', value: 0, label: 'Categories' });
+      this.stats.push({
+        section: 'category/list',
+        icon: 'fa fa-tags',
+        value: 0,
+        label: 'Categories',
+      });
     }
 
     // Languages
     if (this.canManageLanguages) {
-      this.stats.push({ section: 'language/list', icon: 'fa fa-language', value: 0, label: 'Languages' });
+      this.stats.push({
+        section: 'language/list',
+        icon: 'fa fa-language',
+        value: 0,
+        label: 'Languages',
+      });
     }
   }
 
@@ -96,58 +132,72 @@ export class HomeComponent implements OnInit {
       this.recentPosts = postsData.map((p: any) => ({
         ...p,
         username: p.author ? p.author.username : 'Unknown',
-        date: p.created_at ? new Date(p.created_at).toLocaleString('vi-VN') : 'N/A',
+        date: p.created_at
+          ? new Date(p.created_at).toLocaleString('vi-VN')
+          : 'N/A',
       }));
     });
   }
 
+  // Trong file: home.component.ts
 
+  loadCounts() {
+    // ✅ Posts
+    // <<< SỬA LẠI: Tìm mục 'Posts' một cách an toàn thay vì dùng stats[0] >>>
+    const postStat = this.stats.find((s) => s.label === 'Posts');
+    if (postStat) {
+      this.postService.getAllPosts({ languageid: 1, limit: 1 }).subscribe({
+        next: (res) => {
+          postStat.value = res?.data?.pagination?.totalItems || 0;
+        },
+        error: () => {
+          postStat.value = 0;
+        },
+      });
+    }
 
+    // ✅ Users
+    // <<< SỬA LẠI: Tìm mục 'Users' một cách an toàn thay vì dùng stats[1] >>>
+    const userStat = this.stats.find((s) => s.label === 'Users');
+    if (userStat) {
+      this.userService.getAllUsers().subscribe({
+        next: (usersArray) => {
+          userStat.value = usersArray.length;
+        },
+        error: () => {
+          userStat.value = 0;
+        },
+      });
+    }
 
- // Trong file: home.component.ts
+    // ✅ Categories
+    // <<< SỬA LẠI: Tìm mục 'Categories' một cách an toàn thay vì dùng stats[2] >>>
+    const categoryStat = this.stats.find((s) => s.label === 'Categories');
+    if (categoryStat) {
+      this.categoryService.getCategories().subscribe({
+        next: (res) => {
+          categoryStat.value = res?.data?.data?.length || 0;
+        },
+        error: () => {
+          categoryStat.value = 0;
+        },
+      });
+    }
 
-loadCounts() {
-  // ✅ Posts
-  // <<< SỬA LẠI: Tìm mục 'Posts' một cách an toàn thay vì dùng stats[0] >>>
-  const postStat = this.stats.find(s => s.label === 'Posts');
-  if (postStat) {
-    this.postService.getAllPosts({ languageid: 1, limit: 1 }).subscribe({
-      next: (res) => { postStat.value = res?.data?.pagination?.totalItems || 0; },
-      error: () => { postStat.value = 0; }
-    });
+    // ✅ Languages
+    // <<< SỬA LẠI: Tìm mục 'Languages' một cách an toàn thay vì dùng stats[3] >>>
+    const languageStat = this.stats.find((s) => s.label === 'Languages');
+    if (languageStat) {
+      this.languageService.getLanguages().subscribe({
+        next: (res) => {
+          languageStat.value = res?.data?.data?.length || 0;
+        },
+        error: () => {
+          languageStat.value = 0;
+        },
+      });
+    }
   }
-
-  // ✅ Users
-  // <<< SỬA LẠI: Tìm mục 'Users' một cách an toàn thay vì dùng stats[1] >>>
-  const userStat = this.stats.find(s => s.label === 'Users');
-  if (userStat) {
-    this.userService.getAllUsers().subscribe({
-      next: (usersArray) => { userStat.value = usersArray.length; },
-      error: () => { userStat.value = 0; }
-    });
-  }
-
-  // ✅ Categories
-  // <<< SỬA LẠI: Tìm mục 'Categories' một cách an toàn thay vì dùng stats[2] >>>
-  const categoryStat = this.stats.find(s => s.label === 'Categories');
-  if (categoryStat) {
-    this.categoryService.getCategories().subscribe({
-      next: (res) => { categoryStat.value = res?.data?.data?.length || 0; },
-      error: () => { categoryStat.value = 0; }
-    });
-  }
-
-  // ✅ Languages
-  // <<< SỬA LẠI: Tìm mục 'Languages' một cách an toàn thay vì dùng stats[3] >>>
-  const languageStat = this.stats.find(s => s.label === 'Languages');
-  if (languageStat) {
-    this.languageService.getLanguages().subscribe({
-      next: (res) => { languageStat.value = res?.data?.data?.length || 0; },
-      error: () => { languageStat.value = 0; }
-    });
-  }
-}
-
 
   // ✅ HÀM NÀY ĐÃ ĐƯỢC SỬA LẠI
   openPostDetailFromHome(postId: number) {
@@ -179,8 +229,6 @@ loadCounts() {
   goToAllPosts(): void {
     this.router.navigate(['/admin/post/list']);
   }
-
-
 
   closePostModal() {
     this.selectedPost = null;

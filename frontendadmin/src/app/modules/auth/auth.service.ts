@@ -56,7 +56,7 @@ export class AuthService {
   hasPermission(permissionName: string): boolean {
     const user = this.getUser();
     if (!user) return false;
-    if (user.roleName === 'admin') return true;
+    if (user.roleName === 'Admin') return true;
     if (!user.permissions || !Array.isArray(user.permissions)) return false;
     return user.permissions.includes(permissionName);
   }

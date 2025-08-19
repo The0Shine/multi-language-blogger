@@ -26,8 +26,8 @@ export class ProfileComponent implements OnInit {
 
   roles = [
     { roleid: '1', name: 'User' },
-    { roleid: '2', name: 'admin' },
-    { roleid: '22', name: 'moderator'}
+    { roleid: '2', name: 'Admin' },
+    { roleid: '22', name: 'moderator' },
   ];
 
   constructor(private userService: UserService) {}
@@ -60,6 +60,8 @@ export class ProfileComponent implements OnInit {
 
   getRoleName(roleId: string | number): string {
     const role = this.roles.find((r) => r.roleid === String(roleId));
+    console.log(roleId);
+
     return role ? role.name : 'Unknown';
   }
 }

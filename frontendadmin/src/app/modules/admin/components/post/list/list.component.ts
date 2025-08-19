@@ -32,11 +32,10 @@ export class AdminPostListComponent implements OnInit {
   viewId: number | null = null;
   pageSizes = [5, 10, 20, 50];
   pagination: any = {};
-    hasAccess = false;
+  hasAccess = false;
 
-      // ✅ Biến để kiểm tra xem có phải là admin hay không
+  // ✅ Biến để kiểm tra xem có phải là admin hay không
   isAdmin: boolean = false;
-
 
   constructor(
     private router: Router,
@@ -44,7 +43,7 @@ export class AdminPostListComponent implements OnInit {
     private userService: UserService,
     private languageService: LanguageService, // ✅ inject languageService
     private route: ActivatedRoute,
-     private authService: AuthService // ✅ Inject AuthService
+    private authService: AuthService // ✅ Inject AuthService
   ) {}
 
   ngOnInit(): void {
@@ -66,71 +65,72 @@ export class AdminPostListComponent implements OnInit {
     // Nếu không có quyền, không làm gì cả, trang sẽ giữ nguyên trạng thái rỗng
   }
 
-
-loadInitialData(): void {
-  // Định nghĩa các bước tiếp theo (tải languages và posts) thành một hàm
-  // để có thể tái sử dụng, giúp code gọn hơn.
-  const loadRemainingData = () => {
-    // Kiểm tra quyền manage_languages
-    if (this.authService.hasPermission('manage_languages')) {
-      this.languageService.getLanguages().subscribe(languages => {
-        this.languages = languages.data?.data || [];
+  loadInitialData(): void {
+    // Định nghĩa các bước tiếp theo (tải languages và posts) thành một hàm
+    // để có thể tái sử dụng, giúp code gọn hơn.
+    const loadRemainingData = () => {
+      // Kiểm tra quyền manage_languages
+      if (this.authService.hasPermission('manage_languages')) {
+        this.languageService.getLanguages().subscribe((languages) => {
+          this.languages = languages.data?.data || [];
+          this.loadPosts(this.currentPage);
+        });
+      } else {
+        // Nếu không có quyền, vẫn tiếp tục tải posts với danh sách ngôn ngữ rỗng
+        this.languages = [];
         this.loadPosts(this.currentPage);
+      }
+    };
+
+    // BƯỚC QUAN TRỌNG: Kiểm tra quyền 'manage_users' trước khi gọi API
+    if (this.authService.hasPermission('manage_users')) {
+      // ✅ Nếu CÓ quyền, tải danh sách user rồi mới thực hiện các bước tiếp theo
+      this.userService.getAllUsers().subscribe((users) => {
+        this.users = users;
+        loadRemainingData();
       });
     } else {
-      // Nếu không có quyền, vẫn tiếp tục tải posts với danh sách ngôn ngữ rỗng
-      this.languages = [];
-      this.loadPosts(this.currentPage);
-    }
-  };
-
-  // BƯỚC QUAN TRỌNG: Kiểm tra quyền 'manage_users' trước khi gọi API
-  if (this.authService.hasPermission('manage_users')) {
-    // ✅ Nếu CÓ quyền, tải danh sách user rồi mới thực hiện các bước tiếp theo
-    this.userService.getAllUsers().subscribe(users => {
-      this.users = users;
+      // ❌ Nếu KHÔNG có quyền, đặt danh sách user là mảng rỗng và
+      // thực hiện ngay các bước tiếp theo mà không cần gọi API user.
+      this.users = [];
       loadRemainingData();
-    });
-  } else {
-    // ❌ Nếu KHÔNG có quyền, đặt danh sách user là mảng rỗng và
-    // thực hiện ngay các bước tiếp theo mà không cần gọi API user.
-    this.users = [];
-    loadRemainingData();
+    }
   }
-}
 
+  loadPosts(page: number = 1): void {
+    this.postService
+      .getAllPosts({ limit: 9999, page: 1 })
+      .subscribe((res: any) => {
+        let postsArray = res?.data?.posts || [];
 
-loadPosts(page: number = 1): void {
-  this.postService.getAllPosts({ limit: 9999, page: 1 }).subscribe((res: any) => {
-    let postsArray = res?.data?.posts || [];
+        // // ✅ Chỉ lấy post tiếng Anh (languageid = 1) cho tất cả user
+        postsArray = postsArray.filter(
+          (post: any) => Number(post.languageid) === 1
+        );
 
-    // // ✅ Chỉ lấy post tiếng Anh (languageid = 1) cho tất cả user
-    postsArray = postsArray.filter((post: any) => Number(post.languageid) === 1);
+        this.posts = postsArray.map((post: any) => {
+          console.log('post.userid:', post.userid, 'users:', this.users);
+          const user = this.users.find(
+            (u: any) => String(u.userid) === String(post.userid)
+          );
+          console.log('found user:', user);
+          const lang = this.languages.find(
+            (l: any) => String(l.languageid) === String(post.languageid)
+          );
 
-    this.posts = postsArray
-      .map((post: any) => {
-        console.log('post.userid:', post.userid, 'users:', this.users);
-        const user = this.users.find((u: any) => String(u.userid) === String(post.userid));
-        console.log('found user:', user);
-        const lang = this.languages.find((l: any) => String(l.languageid) === String(post.languageid));
+          return {
+            ...post,
+            status: Number(post.status),
+            created_at: post.created_at ? new Date(post.created_at) : null,
+            username: user?.username || 'Unknown',
+            language_name: lang?.language_name || '',
+            original_id: post.originalid || null,
+          };
+        });
 
-        return {
-          ...post,
-          status: Number(post.status),
-          created_at: post.created_at ? new Date(post.created_at) : null,
-          username: user?.username || 'Unknown',
-          language_name: lang?.language_name || '',
-          original_id: post.originalid || null,
-        };
-      })
-      .sort((a: any, b: any) => a.postid - b.postid);
-
-    this.pagination = null;
-  });
-}
-
-
-
+        this.pagination = null;
+      });
+  }
 
   loadUsersLanguagesAndPosts(page: number) {
     forkJoin({
@@ -145,8 +145,6 @@ loadPosts(page: number = 1): void {
       this.loadPosts(page);
     });
   }
-
-  
 
   openPostDetail(postId: number): void {
     // Tìm post trong mảng this.posts đã được load và xử lý trước đó

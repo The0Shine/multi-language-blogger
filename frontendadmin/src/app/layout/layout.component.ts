@@ -49,7 +49,7 @@ export class LayoutComponent {
 
   // ✅ admin check: theo roleid hoặc roleName
   get isAdmin(): boolean {
-    return this.roleId === 2 || this.roleName === 'admin';
+    return this.roleId === 2 || this.roleName === 'Admin';
   }
 
   hasPermission(permission: string): boolean {

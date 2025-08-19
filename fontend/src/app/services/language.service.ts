@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { HttpService } from './http.service';
 import { map } from 'rxjs/operators';
+import { HttpParams } from '@angular/common/http';
 
 export interface Language {
   languageid: number;
@@ -33,25 +34,62 @@ export class LanguageService {
   }
 
   private initializeLanguage() {
-    // Load saved language from localStorage
-    const savedLanguage = localStorage.getItem('selectedLanguage');
-    if (savedLanguage) {
-      try {
-        const language = JSON.parse(savedLanguage);
-        console.log(
-          'LanguageService: Loaded saved language:',
-          language.language_name
+    this.getAvailableLanguages().subscribe({
+      next: (languages) => {
+        const savedLanguage = localStorage.getItem('selectedLanguage');
+        if (savedLanguage) {
+          try {
+            const language = JSON.parse(savedLanguage);
+
+            // Check valid từ list vừa lấy
+            const isValid = languages.some(
+              (lang) =>
+                lang.languageid === language.languageid &&
+                lang.locale_code === language.locale_code
+            );
+
+            if (isValid) {
+              console.log(
+                'LanguageService: Loaded valid saved language:',
+                language.language_name
+              );
+              this.currentLanguageSubject.next(language);
+              this.loadTranslations(language.locale_code);
+              return;
+            }
+          } catch (error) {
+            console.error(
+              'LanguageService: Error parsing saved language:',
+              error
+            );
+          }
+        }
+
+        // Nếu không hợp lệ thì fallback mặc định
+        this.setCurrentLanguage(
+          languages[1] ?? {
+            languageid: 1,
+            language_name: 'English',
+            locale_code: 'en',
+            status: 1,
+            created_at: new Date(),
+            updated_at: new Date(),
+          }
         );
-        this.currentLanguageSubject.next(language);
-        this.loadTranslations(language.locale_code);
-      } catch (error) {
-        console.error('LanguageService: Error parsing saved language:', error);
-        this.setDefaultLanguage();
-      }
-    } else {
-      console.log('LanguageService: No saved language, setting default');
-      this.setDefaultLanguage();
-    }
+      },
+      error: (error) => {
+        console.error('LanguageService: Failed to load languages:', error);
+        // fallback hardcoded
+        this.setCurrentLanguage({
+          languageid: 1,
+          language_name: 'English',
+          locale_code: 'en',
+          status: 1,
+          created_at: new Date(),
+          updated_at: new Date(),
+        });
+      },
+    });
   }
 
   private setDefaultLanguage() {
@@ -89,22 +127,22 @@ export class LanguageService {
 
   // Get all available languages from backend
   getAvailableLanguages(): Observable<Language[]> {
-    return this.httpService.get<any>('/languages').pipe(
-      map((response: any) => {
-        if (response.success && response.data) {
-          // Handle nested data structure: response.data.data contains the array
-          const languagesArray = response.data.data || response.data;
-          this.availableLanguages = languagesArray;
-          console.log('Languages loaded:', languagesArray);
-
-          return languagesArray;
-        } else {
-          console.error('Languages API failed:', response);
-          this.availableLanguages = [];
-          return [];
-        }
-      })
-    );
+    return this.httpService
+      .get<any>('/languages', { onlyActive: 'true' }) // ✅ Bỏ wrapper "params"
+      .pipe(
+        map((response: any) => {
+          if (response.success && response.data) {
+            const languagesArray = response.data.data || response.data;
+            this.availableLanguages = languagesArray;
+            console.log('Languages loaded:', languagesArray);
+            return languagesArray;
+          } else {
+            console.error('Languages API failed:', response);
+            this.availableLanguages = [];
+            return [];
+          }
+        })
+      );
   }
 
   // Set current language
@@ -122,8 +160,6 @@ export class LanguageService {
 
   // Load translations for a specific locale
   private loadTranslations(localeCode: string) {
-    // TODO: Load translations from backend API
-    // For now, use basic hardcoded translations
     const translations = this.getTranslationsForLocale(localeCode);
     this.translationsSubject.next(translations);
   }
@@ -152,6 +188,7 @@ export class LanguageService {
       fr: 'fr_FR',
       zh: 'zh_CN',
       de: 'de',
+      ko: 'ko_KR',
     };
 
     const mappedLocale = localeMapping[localeCode] || localeCode;
@@ -173,6 +210,8 @@ export class LanguageService {
         // Common
         'common.loading': 'Loading...',
         'common.save': 'Save',
+        'common.saving': 'Saving...',
+        'common.processing': 'Processing...',
         'common.cancel': 'Cancel',
         'common.delete': 'Delete',
         'common.edit': 'Edit',
@@ -213,8 +252,9 @@ export class LanguageService {
         'profile.delete_account_info':
           'Deleting your account will remove all your posts and comments.',
         'profile.password_hint': 'Password must be at least 8 characters',
-        'profile.char_limit': 'Character limit',
+        'profile.char_limit': 'Character limit: {{max}}',
         'profile.password_strength': 'Password strength',
+
         // My Stories
         'mystories.title': 'Your stories',
         'mystories.subtitle':
@@ -253,6 +293,8 @@ export class LanguageService {
         // Common
         'common.loading': 'Đang tải...',
         'common.save': 'Lưu',
+        'common.saving': 'Đang lưu...',
+        'common.processing': 'Đang xử lý...',
         'common.cancel': 'Hủy',
         'common.delete': 'Xóa',
         'common.edit': 'Chỉnh sửa',
@@ -287,13 +329,14 @@ export class LanguageService {
         'profile.current_password': 'Mật khẩu hiện tại',
         'profile.new_password': 'Mật khẩu mới',
         'profile.confirm_password': 'Xác nhận mật khẩu',
-        'profile.danger_zone': 'Khu vực nguy hiểm',
+        'profile.danger_zone': 'Vùng nguy hiểm',
         'profile.delete_account': 'Xóa tài khoản',
         'profile.delete_my_account': 'Xóa tài khoản của tôi',
         'profile.delete_account_info':
           'Xóa tài khoản sẽ xóa tất cả bài viết và bình luận của bạn.',
         'profile.password_hint': 'Mật khẩu phải có ít nhất 8 ký tự',
-        'profile.char_limit': 'Ký tự tối đa',
+        'profile.char_limit': 'Giới hạn ký tự: {{max}}',
+        'profile.password_strength': 'Độ mạnh mật khẩu',
 
         // My Stories
         'mystories.title': 'Bài viết của bạn',
@@ -318,19 +361,22 @@ export class LanguageService {
         'message.post_updated': 'Cập nhật bài viết thành công',
         'message.post_deleted': 'Xóa bài viết thành công',
       },
+
       fr_FR: {
         // Navigation
         'nav.home': 'Accueil',
         'nav.write': 'Écrire',
         'nav.profile': 'Profil',
         'nav.login': 'Connexion',
-        'nav.register': 'S’inscrire',
+        'nav.register': "S'inscrire",
         'nav.logout': 'Déconnexion',
         'nav.my_stories': 'Mes histoires',
 
         // Common
         'common.loading': 'Chargement...',
         'common.save': 'Enregistrer',
+        'common.saving': 'Enregistrement...',
+        'common.processing': 'Traitement...',
         'common.cancel': 'Annuler',
         'common.delete': 'Supprimer',
         'common.edit': 'Modifier',
@@ -358,37 +404,39 @@ export class LanguageService {
         'profile.title': 'Informations du profil',
         'profile.first_name': 'Prénom',
         'profile.last_name': 'Nom',
-        'profile.username': 'Nom d’utilisateur',
+        'profile.username': "Nom d'utilisateur",
         'profile.email': 'Email',
         'profile.update': 'Mettre à jour le profil',
         'profile.change_password': 'Changer le mot de passe',
         'profile.current_password': 'Mot de passe actuel',
         'profile.new_password': 'Nouveau mot de passe',
         'profile.confirm_password': 'Confirmer le mot de passe',
-        'profile.danger_zone': 'Danger Zone',
-        'profile.delete_account': 'Delete Account',
-        'profile.delete_my_account': 'Delete My Account',
+        'profile.danger_zone': 'Zone dangereuse',
+        'profile.delete_account': 'Supprimer le compte',
+        'profile.delete_my_account': 'Supprimer mon compte',
         'profile.delete_account_info':
-          'Deleting your account will remove all your posts and comments.',
-        'profile.password_hint': 'Password must be at least 8 characters',
-        'profile.char_limit': 'Character limit',
+          'Supprimer votre compte supprimera tous vos articles et commentaires.',
+        'profile.password_hint':
+          'Le mot de passe doit contenir au moins 8 caractères',
+        'profile.char_limit': 'Limite de caractères: {{max}}',
+        'profile.password_strength': 'Force du mot de passe',
 
         // My Stories
-        'mystories.title': 'Your stories',
+        'mystories.title': 'Vos histoires',
         'mystories.subtitle':
-          'Manage and track your published stories and drafts',
-        'mystories.write_new': 'Write new story',
-        'mystories.view_story': 'View story',
-        'mystories.edit_story': 'Edit story',
-        'mystories.delete_story': 'Delete story',
-        'mystories.last_edited': 'Last edited',
-        'mystories.no_posts': 'No stories found',
-        'mystories.confirm_delete': 'Confirm Delete',
+          'Gérez et suivez vos histoires publiées et brouillons',
+        'mystories.write_new': 'Écrire une nouvelle histoire',
+        'mystories.view_story': "Voir l'histoire",
+        'mystories.edit_story': "Modifier l'histoire",
+        'mystories.delete_story': "Supprimer l'histoire",
+        'mystories.last_edited': 'Dernière modification',
+        'mystories.no_posts': 'Aucune histoire trouvée',
+        'mystories.confirm_delete': 'Confirmer la suppression',
         'mystories.delete_warning':
-          'Are you sure you want to delete this story?',
+          'Êtes-vous sûr de vouloir supprimer cette histoire ?',
         'mystories.delete_info':
-          'All translations of this story will also be deleted.',
-        'mystories.cannot_undo': 'This action cannot be undone',
+          'Toutes les traductions de cette histoire seront également supprimées.',
+        'mystories.cannot_undo': 'Cette action ne peut pas être annulée',
 
         // Messages
         'message.success': 'Succès !',
@@ -398,7 +446,6 @@ export class LanguageService {
         'message.post_deleted': 'Article supprimé avec succès',
       },
 
-      // ===== de_DE =====
       de: {
         // Navigation
         'nav.home': 'Startseite',
@@ -412,6 +459,8 @@ export class LanguageService {
         // Common
         'common.loading': 'Wird geladen...',
         'common.save': 'Speichern',
+        'common.saving': 'Wird gespeichert...',
+        'common.processing': 'Wird verarbeitet...',
         'common.cancel': 'Abbrechen',
         'common.delete': 'Löschen',
         'common.edit': 'Bearbeiten',
@@ -446,30 +495,32 @@ export class LanguageService {
         'profile.current_password': 'Aktuelles Passwort',
         'profile.new_password': 'Neues Passwort',
         'profile.confirm_password': 'Passwort bestätigen',
-        'profile.danger_zone': 'Danger Zone',
-        'profile.delete_account': 'Delete Account',
-        'profile.delete_my_account': 'Delete My Account',
+        'profile.danger_zone': 'Gefahrenzone',
+        'profile.delete_account': 'Konto löschen',
+        'profile.delete_my_account': 'Mein Konto löschen',
         'profile.delete_account_info':
-          'Deleting your account will remove all your posts and comments.',
-        'profile.password_hint': 'Password must be at least 8 characters',
-        'profile.char_limit': 'Character limit',
+          'Das Löschen Ihres Kontos entfernt alle Ihre Beiträge und Kommentare.',
+        'profile.password_hint': 'Passwort muss mindestens 8 Zeichen haben',
+        'profile.char_limit': 'Zeichenlimit: {{max}}',
+        'profile.password_strength': 'Passwortstärke',
 
         // My Stories
-        'mystories.title': 'Your stories',
+        'mystories.title': 'Ihre Geschichten',
         'mystories.subtitle':
-          'Manage and track your published stories and drafts',
-        'mystories.write_new': 'Write new story',
-        'mystories.view_story': 'View story',
-        'mystories.edit_story': 'Edit story',
-        'mystories.delete_story': 'Delete story',
-        'mystories.last_edited': 'Last edited',
-        'mystories.no_posts': 'No stories found',
-        'mystories.confirm_delete': 'Confirm Delete',
+          'Verwalten und verfolgen Sie Ihre veröffentlichten Geschichten und Entwürfe',
+        'mystories.write_new': 'Neue Geschichte schreiben',
+        'mystories.view_story': 'Geschichte anzeigen',
+        'mystories.edit_story': 'Geschichte bearbeiten',
+        'mystories.delete_story': 'Geschichte löschen',
+        'mystories.last_edited': 'Zuletzt bearbeitet',
+        'mystories.no_posts': 'Keine Geschichten gefunden',
+        'mystories.confirm_delete': 'Löschen bestätigen',
         'mystories.delete_warning':
-          'Are you sure you want to delete this story?',
+          'Sind Sie sicher, dass Sie diese Geschichte löschen möchten?',
         'mystories.delete_info':
-          'All translations of this story will also be deleted.',
-        'mystories.cannot_undo': 'This action cannot be undone',
+          'Alle Übersetzungen dieser Geschichte werden ebenfalls gelöscht.',
+        'mystories.cannot_undo':
+          'Diese Aktion kann nicht rückgängig gemacht werden',
 
         // Messages
         'message.success': 'Erfolg!',
@@ -479,7 +530,6 @@ export class LanguageService {
         'message.post_deleted': 'Beitrag erfolgreich gelöscht',
       },
 
-      // ===== ko_KR =====
       ko_KR: {
         // Navigation
         'nav.home': '홈',
@@ -493,6 +543,8 @@ export class LanguageService {
         // Common
         'common.loading': '로딩 중...',
         'common.save': '저장',
+        'common.saving': '저장 중...',
+        'common.processing': '처리 중...',
         'common.cancel': '취소',
         'common.delete': '삭제',
         'common.edit': '편집',
@@ -527,30 +579,28 @@ export class LanguageService {
         'profile.current_password': '현재 비밀번호',
         'profile.new_password': '새 비밀번호',
         'profile.confirm_password': '비밀번호 확인',
-        'profile.danger_zone': 'Danger Zone',
-        'profile.delete_account': 'Delete Account',
-        'profile.delete_my_account': 'Delete My Account',
+        'profile.danger_zone': '위험 구역',
+        'profile.delete_account': '계정 삭제',
+        'profile.delete_my_account': '내 계정 삭제',
         'profile.delete_account_info':
-          'Deleting your account will remove all your posts and comments.',
-        'profile.password_hint': 'Password must be at least 8 characters',
-        'profile.char_limit': 'Character limit',
+          '계정을 삭제하면 모든 게시물과 댓글이 제거됩니다.',
+        'profile.password_hint': '비밀번호는 최소 8자 이상이어야 합니다',
+        'profile.char_limit': '문자 제한: {{max}}',
+        'profile.password_strength': '비밀번호 강도',
 
         // My Stories
-        'mystories.title': 'Your stories',
-        'mystories.subtitle':
-          'Manage and track your published stories and drafts',
-        'mystories.write_new': 'Write new story',
-        'mystories.view_story': 'View story',
-        'mystories.edit_story': 'Edit story',
-        'mystories.delete_story': 'Delete story',
-        'mystories.last_edited': 'Last edited',
-        'mystories.no_posts': 'No stories found',
-        'mystories.confirm_delete': 'Confirm Delete',
-        'mystories.delete_warning':
-          'Are you sure you want to delete this story?',
-        'mystories.delete_info':
-          'All translations of this story will also be deleted.',
-        'mystories.cannot_undo': 'This action cannot be undone',
+        'mystories.title': '내 이야기',
+        'mystories.subtitle': '게시된 이야기와 초안을 관리하고 추적하세요',
+        'mystories.write_new': '새 이야기 작성',
+        'mystories.view_story': '이야기 보기',
+        'mystories.edit_story': '이야기 편집',
+        'mystories.delete_story': '이야기 삭제',
+        'mystories.last_edited': '마지막 편집',
+        'mystories.no_posts': '이야기를 찾을 수 없습니다',
+        'mystories.confirm_delete': '삭제 확인',
+        'mystories.delete_warning': '이 이야기를 삭제하시겠습니까?',
+        'mystories.delete_info': '이 이야기의 모든 번역도 삭제됩니다.',
+        'mystories.cannot_undo': '이 작업은 되돌릴 수 없습니다',
 
         // Messages
         'message.success': '성공!',
@@ -560,7 +610,6 @@ export class LanguageService {
         'message.post_deleted': '게시물이 성공적으로 삭제되었습니다',
       },
 
-      // ===== zh_CN =====
       'zh-CN': {
         // Navigation
         'nav.home': '首页',
@@ -574,6 +623,8 @@ export class LanguageService {
         // Common
         'common.loading': '加载中...',
         'common.save': '保存',
+        'common.saving': '保存中...',
+        'common.processing': '处理中...',
         'common.cancel': '取消',
         'common.delete': '删除',
         'common.edit': '编辑',
@@ -608,30 +659,27 @@ export class LanguageService {
         'profile.current_password': '当前密码',
         'profile.new_password': '新密码',
         'profile.confirm_password': '确认密码',
-        'profile.danger_zone': 'Danger Zone',
-        'profile.delete_account': 'Delete Account',
-        'profile.delete_my_account': 'Delete My Account',
-        'profile.delete_account_info':
-          'Deleting your account will remove all your posts and comments.',
-        'profile.password_hint': 'Password must be at least 8 characters',
-        'profile.char_limit': 'Character limit',
+        'profile.danger_zone': '危险区域',
+        'profile.delete_account': '删除账户',
+        'profile.delete_my_account': '删除我的账户',
+        'profile.delete_account_info': '删除您的账户将移除所有您的文章和评论。',
+        'profile.password_hint': '密码必须至少8个字符',
+        'profile.char_limit': '字符限制：{{max}}',
+        'profile.password_strength': '密码强度',
 
         // My Stories
-        'mystories.title': 'Your stories',
-        'mystories.subtitle':
-          'Manage and track your published stories and drafts',
-        'mystories.write_new': 'Write new story',
-        'mystories.view_story': 'View story',
-        'mystories.edit_story': 'Edit story',
-        'mystories.delete_story': 'Delete story',
-        'mystories.last_edited': 'Last edited',
-        'mystories.no_posts': 'No stories found',
-        'mystories.confirm_delete': 'Confirm Delete',
-        'mystories.delete_warning':
-          'Are you sure you want to delete this story?',
-        'mystories.delete_info':
-          'All translations of this story will also be deleted.',
-        'mystories.cannot_undo': 'This action cannot be undone',
+        'mystories.title': '您的文章',
+        'mystories.subtitle': '管理和跟踪您已发布的文章和草稿',
+        'mystories.write_new': '写新文章',
+        'mystories.view_story': '查看文章',
+        'mystories.edit_story': '编辑文章',
+        'mystories.delete_story': '删除文章',
+        'mystories.last_edited': '最后编辑',
+        'mystories.no_posts': '未找到文章',
+        'mystories.confirm_delete': '确认删除',
+        'mystories.delete_warning': '您确定要删除这篇文章吗？',
+        'mystories.delete_info': '这篇文章的所有翻译也将被删除。',
+        'mystories.cannot_undo': '此操作无法撤销',
 
         // Messages
         'message.success': '成功！',
@@ -640,7 +688,6 @@ export class LanguageService {
         'message.post_updated': '文章更新成功',
         'message.post_deleted': '文章删除成功',
       },
-      // TODO: de_DE, ko_KR — sẽ copy từ en_US làm mặc định để không thiếu key
     };
 
     const result = translations[mappedLocale] || translations['en_US'];

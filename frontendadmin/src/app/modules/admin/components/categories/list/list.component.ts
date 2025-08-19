@@ -33,10 +33,9 @@ export class AdminCategorieListComponent implements OnInit {
     category_name: '',
   };
 
-
-isSuccess: boolean | null = null;
-showEditConfirmModal = false;
- hasAccess = false; // ✅ Thêm thuộc tính này
+  isSuccess: boolean | null = null;
+  showEditConfirmModal = false;
+  hasAccess = false; // ✅ Thêm thuộc tính này
 
   categories: any[] = [];
   modalCategory = {
@@ -45,18 +44,17 @@ showEditConfirmModal = false;
     status: 1,
   };
 
-
-  constructor(private categoryService: CategoryService,
-      private router: Router,
+  constructor(
+    private categoryService: CategoryService,
+    private router: Router,
     private route: ActivatedRoute,
-           private authService: AuthService
+    private authService: AuthService
   ) {}
 
-ngOnInit() {
+  ngOnInit() {
     // ✅ Kiểm tra quyền trước khi tải dữ liệu
     // Giả sử quyền để xem trang này là 'manage_categories'
     this.hasAccess = this.authService.hasPermission('manage_categories');
-
 
     if (this.hasAccess) {
       // Nếu có quyền, mới bắt đầu tải dữ liệu
@@ -68,17 +66,17 @@ ngOnInit() {
     }
   }
 
- loadCategories() {
+  loadCategories() {
     this.categoryService.getCategories().subscribe({
       next: (res) => {
         const categoriesData = res.data?.data ?? res.data ?? [];
-        this.categories = categoriesData.sort((a: any, b: any) => a.categoryid - b.categoryid);
+        this.categories = categoriesData;
       },
       // ✅ Thêm khối "error" để xử lý
       error: (err) => {
-        console.error("Failed to load categories:", err.message);
+        console.error('Failed to load categories:', err.message);
         this.categories = [];
-      }
+      },
     });
   }
 
