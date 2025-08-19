@@ -34,10 +34,18 @@
               id="first_name"
               name="first_name"
               [(ngModel)]="userData.first_name"
+              (blur)="onFieldBlur('first_name')"
+              (input)="submitted && validateField('first_name')"
               required
-              class="placeholder:text-gray-400 input-focus block w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition duration-200"
+              [class]="getInputClasses('first_name')"
               placeholder="John"
             />
+            <div
+              *ngIf="submitted && fieldErrors.first_name"
+              class="mt-1 text-sm text-red-600"
+            >
+              First name is required
+            </div>
           </div>
           <div>
             <label
@@ -51,10 +59,18 @@
               id="last_name"
               name="last_name"
               [(ngModel)]="userData.last_name"
+              (blur)="onFieldBlur('last_name')"
+              (input)="submitted && validateField('last_name')"
               required
-              class="placeholder:text-gray-400 input-focus block w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition duration-200"
+              [class]="getInputClasses('last_name')"
               placeholder="Doe"
             />
+            <div
+              *ngIf="submitted && fieldErrors.last_name"
+              class="mt-1 text-sm text-red-600"
+            >
+              Last name is required
+            </div>
           </div>
         </div>
 
@@ -89,8 +105,10 @@
               id="username"
               name="username"
               [(ngModel)]="userData.username"
+              (blur)="onFieldBlur('username')"
+              (input)="submitted && validateField('username')"
               required
-              class="placeholder:text-gray-400 input-focus block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition duration-200"
+              [class]="getInputClassesWithPadding('username', true, false)"
               placeholder="Choose a unique username"
             />
           </div>
@@ -98,6 +116,12 @@
             Username must be 3-30 characters, letters, numbers, and underscores
             only
           </p>
+          <div
+            *ngIf="submitted && fieldErrors.username"
+            class="mt-1 text-sm text-red-600"
+          >
+            Username is required
+          </div>
         </div>
 
         <!-- Email Field -->
@@ -131,10 +155,21 @@
               id="email"
               name="email"
               [(ngModel)]="userData.email"
+              (blur)="onFieldBlur('email')"
+              (input)="submitted && validateField('email')"
               required
-              class="placeholder:text-gray-400 input-focus block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition duration-200"
+              [class]="getInputClassesWithPadding('email', true, false)"
               placeholder="Enter your email address"
             />
+          </div>
+          <div
+            *ngIf="submitted && fieldErrors.email"
+            class="mt-1 text-sm text-red-600"
+          >
+            <span *ngIf="!userData.email.trim()">Email is required</span>
+            <span *ngIf="userData.email.trim() && !isValidEmail(userData.email)"
+              >Please enter a valid email address</span
+            >
           </div>
         </div>
 
@@ -170,8 +205,9 @@
               name="password"
               [(ngModel)]="userData.password"
               (input)="onPasswordChange()"
+              (blur)="onFieldBlur('password')"
               required
-              class="placeholder:text-gray-400 input-focus block w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition duration-200"
+              [class]="getInputClassesWithPadding('password', true, true)"
               placeholder="Create a strong password"
             />
             <button
@@ -215,6 +251,21 @@
             [password]="userData.password"
           >
           </app-password-strength>
+          <div
+            *ngIf="submitted && fieldErrors.password"
+            class="mt-1 text-sm text-red-600"
+          >
+            <span *ngIf="!userData.password">Password is required</span>
+            <span
+              *ngIf="
+                userData.password &&
+                passwordStrengthComponent &&
+                !passwordStrengthComponent.isPasswordValid()
+              "
+            >
+              Password must be at least 6 characters long
+            </span>
+          </div>
         </div>
 
         <!-- Confirm Password Field -->
@@ -248,10 +299,30 @@
               id="password_confirmation"
               name="password_confirmation"
               [(ngModel)]="userData.password_confirmation"
+              (blur)="onFieldBlur('password_confirmation')"
+              (input)="submitted && validateField('password_confirmation')"
               required
-              class="placeholder:text-gray-400 input-focus block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition duration-200"
+              [class]="
+                getInputClassesWithPadding('password_confirmation', true, false)
+              "
               placeholder="Confirm your password"
             />
+          </div>
+          <div
+            *ngIf="submitted && fieldErrors.password_confirmation"
+            class="mt-1 text-sm text-red-600"
+          >
+            <span *ngIf="!userData.password_confirmation"
+              >Password confirmation is required</span
+            >
+            <span
+              *ngIf="
+                userData.password_confirmation &&
+                userData.password !== userData.password_confirmation
+              "
+            >
+              Passwords do not match
+            </span>
           </div>
         </div>
 

@@ -780,12 +780,21 @@ export class WriteComponent implements OnInit, OnDestroy, AfterViewInit {
 
   selectCategory(category: Category) {
     const categoryId = +category.categoryid;
-    if (
-      !this.isCategorySelected(categoryId) &&
-      this.selectedCategoryIds.length < 5
-    ) {
-      this.selectedCategoryIds.push(categoryId);
+
+    // Check if category is already selected
+    if (this.isCategorySelected(categoryId)) {
+      // If selected, remove it (toggle off)
+      this.removeCategory(categoryId);
+    } else {
+      // If not selected and we haven't reached the limit, add it
+      if (this.selectedCategoryIds.length < 5) {
+        this.selectedCategoryIds.push(categoryId);
+      } else {
+        // Optional: Show a message that maximum categories reached
+        this.toastService.warning('You can select maximum 5 categories');
+      }
     }
+
     this.categorySearchQuery = '';
     this.showCategoryDropdown = false;
     this.filteredCategories = [...this.categories];
@@ -964,7 +973,7 @@ export class WriteComponent implements OnInit, OnDestroy, AfterViewInit {
             this.isSaving = false;
             this.closePublishModal();
             this.toastService.success('Post saved successfully!');
-            this.router.navigate(['/post', post.postid]);
+            this.router.navigate(['/']);
           },
           error: (error) => {
             this.isSaving = false;
@@ -991,7 +1000,7 @@ export class WriteComponent implements OnInit, OnDestroy, AfterViewInit {
             this.isSaving = false;
             this.closePublishModal();
             this.toastService.success('Post saved successfully!');
-            this.router.navigate(['/post', post.data.postid]);
+            this.router.navigate(['/']);
           },
           error: (error) => {
             this.isSaving = false;

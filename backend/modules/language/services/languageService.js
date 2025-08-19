@@ -1,21 +1,25 @@
-const { Language, Post, Sequelize } = require('models');
+const { Language, Post, Sequelize } = require("models");
 const { Op } = Sequelize;
 
 const languageService = {
   // Create a new language
   create: async (data) => {
-    const name = String(data.language_name || '').trim();
-    const code = String(data.locale_code || '').trim();
+    const name = String(data.language_name || "").trim();
+    const code = String(data.locale_code || "").trim();
 
-    if (!name) throw new Error('language_name is required');
-    if (!code) throw new Error('locale_code is required');
+    if (!name) throw new Error("language_name is required");
+    if (!code) throw new Error("locale_code is required");
 
     // Uniqueness checks (adjust if you have unique indexes)
-    const dupCode = await Language.findOne({ where: { locale_code: code, deleted_at: null } });
-    if (dupCode) throw new Error('locale_code already exists');
+    const dupCode = await Language.findOne({
+      where: { locale_code: code, deleted_at: null },
+    });
+    if (dupCode) throw new Error("locale_code already exists");
 
-    const dupName = await Language.findOne({ where: { language_name: name, deleted_at: null } });
-    if (dupName) throw new Error('language_name already exists');
+    const dupName = await Language.findOne({
+      where: { language_name: name, deleted_at: null },
+    });
+    if (dupName) throw new Error("language_name already exists");
 
     const status = Number(data.status) === 0 ? 0 : 1;
 
@@ -27,16 +31,28 @@ const languageService = {
   },
 
   // List languages
-  getAll: async ({ onlyActive = false } = {}) => {
+  getAll: async ({ onlyActive = true } = {}) => {
     const where = {};
+    console.log(onlyActive);
+
     if (onlyActive) {
       where.status = 1;
       where.deleted_at = null;
     }
+    console.log(where, "111111111111111111111");
+
     return Language.findAll({
-      attributes: ['languageid', 'language_name', 'locale_code', 'status', 'created_at', 'updated_at', 'deleted_at'],
+      attributes: [
+        "languageid",
+        "language_name",
+        "locale_code",
+        "status",
+        "created_at",
+        "updated_at",
+        "deleted_at",
+      ],
       where,
-      order: [['language_name', 'ASC']],
+      order: [["language_name", "ASC"]],
     });
   },
 
@@ -55,16 +71,24 @@ const languageService = {
     // Duplicate checks if fields are changing
     if (payload.locale_code && payload.locale_code !== lang.locale_code) {
       const dup = await Language.findOne({
-        where: { locale_code: payload.locale_code, languageid: { [Op.ne]: id }, deleted_at: null }
+        where: {
+          locale_code: payload.locale_code,
+          languageid: { [Op.ne]: id },
+          deleted_at: null,
+        },
       });
-      if (dup) throw new Error('locale_code already exists');
+      if (dup) throw new Error("locale_code already exists");
       lang.locale_code = payload.locale_code.trim();
     }
     if (payload.language_name && payload.language_name !== lang.language_name) {
       const dup = await Language.findOne({
-        where: { language_name: payload.language_name, languageid: { [Op.ne]: id }, deleted_at: null }
+        where: {
+          language_name: payload.language_name,
+          languageid: { [Op.ne]: id },
+          deleted_at: null,
+        },
       });
-      if (dup) throw new Error('language_name already exists');
+      if (dup) throw new Error("language_name already exists");
       lang.language_name = payload.language_name.trim();
     }
     if (payload.status !== undefined) {
@@ -83,8 +107,11 @@ const languageService = {
     if (!lang) return false;
 
     // Prevent delete if in use by posts (not soft-deleted)
-    const inUse = await Post.count({ where: { languageid: id, deleted_at: null } });
-    if (inUse > 0) throw new Error('Cannot delete language that is used by posts');
+    const inUse = await Post.count({
+      where: { languageid: id, deleted_at: null },
+    });
+    if (inUse > 0)
+      throw new Error("Cannot delete language that is used by posts");
 
     lang.status = 0;
     lang.deleted_at = new Date();
@@ -99,8 +126,11 @@ const languageService = {
     const lang = await Language.findByPk(id);
     if (!lang) return false;
 
-    const inUse = await Post.count({ where: { languageid: id, deleted_at: null } });
-    if (inUse > 0) throw new Error('Cannot hard-delete language that is used by posts');
+    const inUse = await Post.count({
+      where: { languageid: id, deleted_at: null },
+    });
+    if (inUse > 0)
+      throw new Error("Cannot hard-delete language that is used by posts");
 
     await lang.destroy({ force: true });
     return true;

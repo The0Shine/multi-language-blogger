@@ -55,69 +55,42 @@ export class HomeComponent implements OnInit {
 
   // Trong file home.component.ts
 
-loadRecentPosts() {
-  this.postService.getAllPosts().subscribe((res: any) => {
-    const postsData = res?.data?.posts || [];
+  loadRecentPosts() {
+    this.postService.getAllPosts().subscribe((res: any) => {
+      const postsData = res?.data?.posts || [];
 
-<<<<<<< HEAD
-    // 👉 Lọc bài viết chỉ lấy Published (status = 1) cho recentPosts
-    const publishedPosts = postsData.filter((p: any) => p.status === 1);
+      // 👉 Tổng số post = tất cả (mọi status)
+      this.stats[0].value = postsData.length;
 
-    // 👉 Sắp xếp theo ngày tạo mới nhất rồi lấy 5 bài
-    const sorted = [...publishedPosts]
-      .sort(
-        (a, b) =>
-          new Date(b.createdAt || b.created_at || '').getTime() -
-          new Date(a.createdAt || a.created_at || '').getTime()
-      )
-      .slice(0, 5);
-
-    this.recentPosts = sorted.map((p: any) => {
-      const user = this.users.find(
-        (u) => String(u.id ?? u.userid) === String(p.user_id ?? p.userid)
+      // 👉 Chỉ lấy bài viết Published
+      const publishedPosts = postsData.filter(
+        (p: any) => Number(p.status) === 1
       );
 
-      const rawDate = p.createdAt || p.created_at || p.date;
-=======
-    // 👉 Tổng số post = tất cả (mọi status)
-    this.stats[0].value = postsData.length;
+      // 👉 Sort theo created_at mới nhất
+      const sorted = publishedPosts
+        .sort(
+          (a: any, b: any) =>
+            new Date(b.created_at || b.createdAt || '').getTime() -
+            new Date(a.created_at || a.createdAt || '').getTime()
+        )
+        .slice(0, 5);
 
-    // 👉 Chỉ lấy bài viết Published
-    const publishedPosts = postsData.filter((p: any) => Number(p.status) === 1);
+      // 👉 Map thêm username + format date
+      this.recentPosts = sorted.map((p: any) => {
+        const user = this.users.find(
+          (u) => String(u.userid ?? u.id) === String(p.userid ?? p.user_id)
+        );
+        const rawDate = p.created_at || p.createdAt || p.date;
 
-    // 👉 Sort theo created_at mới nhất
-    const sorted = publishedPosts
-      .sort(
-         (a: any, b: any) =>
-          new Date(b.created_at || b.createdAt || '').getTime() -
-          new Date(a.created_at || a.createdAt || '').getTime()
-      )
-      .slice(0, 5);
-
-    // 👉 Map thêm username + format date
-    this.recentPosts = sorted.map((p: any) => {
-      const user = this.users.find(
-        (u) => String(u.userid ?? u.id) === String(p.userid ?? p.user_id)
-      );
-      const rawDate = p.created_at || p.createdAt || p.date;
->>>>>>> origin/dev/dangvh
-
-      return {
-        ...p,
-        username: user ? user.username : 'Unknown',
-        date: rawDate ? new Date(rawDate).toLocaleString('vi-VN') : 'N/A',
-      };
+        return {
+          ...p,
+          username: user ? user.username : 'Unknown',
+          date: rawDate ? new Date(rawDate).toLocaleString('vi-VN') : 'N/A',
+        };
+      });
     });
-<<<<<<< HEAD
-
-    // 👉 Tổng số post = TẤT CẢ post (không lọc status)
-    this.stats[0].value = postsData.length;
-=======
->>>>>>> origin/dev/dangvh
-  });
-}
-
-
+  }
 
   loadCounts() {
     this.stats[1].value = this.users.length;
@@ -190,34 +163,36 @@ loadRecentPosts() {
       ? words.slice(0, wordLimit).join(' ') + '...'
       : title;
   }
-<<<<<<< HEAD
-=======
+
   renderContent(editorData: any): string {
-  if (!editorData) return '';
+    if (!editorData) return '';
 
-  // Nếu content trả về là string -> parse JSON
-  if (typeof editorData === 'string') {
-    try {
-      editorData = JSON.parse(editorData);
-    } catch {
-      return editorData; // fallback: hiển thị text thô
+    // Nếu content trả về là string -> parse JSON
+    if (typeof editorData === 'string') {
+      try {
+        editorData = JSON.parse(editorData);
+      } catch {
+        return editorData; // fallback: hiển thị text thô
+      }
     }
+
+    if (!editorData.blocks) return '';
+
+    return editorData.blocks
+      .map((block: any) => {
+        switch (block.type) {
+          case 'paragraph':
+            return `<p>${block.data.text}</p>`;
+          case 'header':
+            return `<h${block.data.level}>${block.data.text}</h${block.data.level}>`;
+          case 'image':
+            return `<img src="${block.data.file.url}" alt="${
+              block.data.caption || ''
+            }" style="max-width:100%; border-radius:8px;" />`;
+          default:
+            return '';
+        }
+      })
+      .join('');
   }
-
-  if (!editorData.blocks) return '';
-
-  return editorData.blocks.map((block: any) => {
-    switch (block.type) {
-      case 'paragraph':
-        return `<p>${block.data.text}</p>`;
-      case 'header':
-        return `<h${block.data.level}>${block.data.text}</h${block.data.level}>`;
-      case 'image':
-        return `<img src="${block.data.file.url}" alt="${block.data.caption || ''}" style="max-width:100%; border-radius:8px;" />`;
-      default:
-        return '';
-    }
-  }).join('');
-}
->>>>>>> origin/dev/dangvh
 }

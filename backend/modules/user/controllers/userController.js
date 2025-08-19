@@ -243,7 +243,7 @@ const userController = {
         newPassword: req.body.new_password,
       };
 
-      await authService.changePassword(userid, passwordData);
+      await userService.changePassword(userid, passwordData);
 
       return responseUtils.ok(res, null, "Password changed successfully");
     } catch (error) {

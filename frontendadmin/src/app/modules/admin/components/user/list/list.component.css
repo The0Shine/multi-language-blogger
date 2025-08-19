@@ -73,7 +73,7 @@
   }
 }
 .card-title {
-  font-size: 24px;       /* ✅ tăng kích thước chữ */
+  font-size: 24px; /* ✅ tăng kích thước chữ */
   font-weight: bold;
   margin-bottom: 16px;
   color: #5f6aca;
@@ -163,8 +163,7 @@ label {
   opacity: 0.6;
   cursor: not-allowed;
 }
-<<<<<<< HEAD
-=======
+
 /* Lớp phủ mờ phía sau */
 .custom-modal-backdrop {
   position: fixed;
@@ -193,4 +192,3 @@ label {
   margin-bottom: 20px; /* Khoảng cách từ chữ tới nút */
   font-size: 16px;
 }
->>>>>>> origin/dev/dangvh

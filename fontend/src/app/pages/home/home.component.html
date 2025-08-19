@@ -1,13 +1,20 @@
 <div class="home-container">
   <!-- Add padding-top for fixed header -->
-  <div
-    class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 content-wrapper pt-[100px]"
-  >
-    <div class="flex">
+  <div class="px-2 sm:px-4 lg:px-8 content-wrapper pt-[80px] sm:pt-[100px]">
+    <div class="flex flex-col lg:flex-row">
+      <!-- Sidebar moved to top on mobile, hidden on small screens -->
+      <div
+        class="order-1 lg:order-2 w-full lg:w-auto mb-6 lg:mb-0 block sm:block md:hidden lg:block"
+      >
+        <app-sidebar></app-sidebar>
+      </div>
+
       <!-- Main Content -->
-      <main class="flex-1 max-w-4xl main-content">
+      <main
+        class="flex-1 w-full lg:max-w-4xl main-content lg:pr-4 order-2 lg:order-1"
+      >
         <!-- Search Results Header -->
-        <div *ngIf="isSearching" class="py-4 border-b border-gray-200">
+        <div *ngIf="isSearching" class="border-b border-gray-200">
           <h2 class="text-xl font-semibold text-gray-900">
             Search results for "{{ searchQuery }}"
           </h2>
@@ -21,19 +28,62 @@
         <nav
           *ngIf="!isSearching"
           id="navTabs"
-          class=".nav-sticky flex top-[57px] mb-3 bg-white"
+          class="nav-sticky top-[57px] mb-3 bg-white w-full overflow-hidden"
         >
-          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full relative">
+          <!-- Mobile: Full width tabs with horizontal scroll -->
+          <div class="block lg:hidden w-full relative">
+            <!-- Gradient fade effects for mobile -->
+            <div
+              class="absolute left-0 top-0 bottom-0 w-4 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none"
+            ></div>
+            <div
+              class="absolute right-0 top-0 bottom-0 w-4 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none"
+            ></div>
+
+            <!-- Mobile tabs container -->
+            <div
+              id="tabsContainerMobile"
+              class="flex space-x-2 overflow-x-auto scroll-smooth no-scrollbar hide-scrollbar px-4"
+              style="scrollbar-width: none; -ms-overflow-style: none"
+            >
+              <button
+                *ngFor="let category of categories"
+                (click)="selectTab(category.categoryid)"
+                [class]="
+                  category.active
+                    ? 'flex items-center py-3 px-3 border-b-2 border-black text-black font-medium whitespace-nowrap text-sm bg-gray-50 rounded-t-lg flex-shrink-0'
+                    : 'py-3 px-3 text-gray-500 hover:text-black flex items-center whitespace-nowrap text-sm hover:bg-gray-50 rounded-t-lg flex-shrink-0'
+                "
+              >
+                <i
+                  *ngIf="category.icon"
+                  [class]="category.icon + ' mr-1 text-xs'"
+                ></i>
+                {{ category.label }}
+                <span
+                  *ngIf="category.badge"
+                  class="ml-1 px-1.5 py-0.5 bg-green-100 text-green-800 text-xs rounded"
+                >
+                  {{ category.badge }}
+                </span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Desktop: Original layout with scroll buttons -->
+          <div
+            class="hidden lg:block max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full relative"
+          >
             <!-- Nút scroll trái -->
             <button
               id="scrollLeft"
-              class="absolute left-0 top-0 bottom-0 z-10 px-3 pr-10 bg-white/70 text-gray-500 hover:text-black transition-opacity duration-300 hidden"
+              class="absolute left-0 top-0 bottom-0 z-10 px-3 pr-10 bg-gradient-to-r from-white via-white to-transparent text-gray-500 hover:text-black transition-opacity duration-300 hidden"
               (click)="scrollTabs('left')"
             >
               <i class="fas fa-chevron-left"></i>
             </button>
 
-            <!-- Tabs scrollable container -->
+            <!-- Desktop tabs container -->
             <div
               id="tabsContainer"
               class="flex space-x-4 overflow-x-auto scroll-smooth no-scrollbar hide-scrollbar"
@@ -61,7 +111,7 @@
             <!-- Nút scroll phải -->
             <button
               id="scrollRight"
-              class="absolute right-0 top-0 bottom-0 z-10 pl-10 px-3 bg-white/70 text-gray-500 hover:text-black transition-opacity duration-300 hidden"
+              class="absolute right-0 top-0 bottom-0 z-10 pl-10 px-3 bg-gradient-to-l from-white via-white to-transparent text-gray-500 hover:text-black transition-opacity duration-300 hidden"
               (click)="scrollTabs('right')"
             >
               <i class="fas fa-chevron-right"></i>
@@ -79,41 +129,55 @@
 
         <!-- Posts -->
         <div
-          class="space-y-8 posts-container transition-opacity duration-300"
+          class="space-y-6 sm:space-y-8 posts-container transition-opacity duration-300 pt-5 ml-4 sm:ml-10"
           [class.opacity-50]="loadingMore"
           *ngIf="!loading"
         >
           <article
             *ngFor="let post of filteredPosts; trackBy: trackByPostId"
-            class="flex items-start space-x-4 pt-8 pb-2 border-b border-gray-100 cursor-pointer post-card transition-all duration-200 mt-1 hover:bg-gray-50"
+            class="flex items-start space-x-2 sm:space-x-4 pt-6 sm:pt-8 pb-2 border-b border-gray-100 cursor-pointer post-card transition-all duration-200 mt-1"
             (click)="navigateToPost(post.postid)"
           >
             <div class="flex-1">
-              <div class="flex items-center mb-2">
-                <div
-                  class="w-6 h-6 bg-red-500 rounded-sm flex items-center justify-center mr-2"
-                >
-                  <span class="text-white text-xs font-bold">
-                    {{ getAuthorInitials(post.author.name) }}
-                  </span>
+              <!-- Author info responsive -->
+              <div class="flex flex-wrap items-center mb-2 gap-x-2 gap-y-1">
+                <div class="flex items-center">
+                  <div
+                    class="w-6 h-6 bg-red-500 rounded-sm flex items-center justify-center mr-2"
+                  >
+                    <span class="text-white text-xs font-bold">
+                      {{ getAuthorInitials(post.author.name) }}
+                    </span>
+                  </div>
+                  <span
+                    class="text-sm text-gray-600 truncate max-w-[120px] sm:max-w-none"
+                    >{{ post.author.name }}</span
+                  >
                 </div>
-                <span class="text-sm text-gray-600">{{
-                  post.author.name
-                }}</span>
-                <span class="text-sm text-gray-400 mx-1">·</span>
-                <span class="text-sm text-gray-500">{{
-                  formatDate(post.created_at)
-                }}</span>
+
+                <div class="flex items-center">
+                  <span class="text-sm text-gray-400 hidden sm:inline">·</span>
+                  <span class="text-sm text-gray-500 ml-0 sm:ml-1">{{
+                    formatDate(post.created_at)
+                  }}</span>
+                </div>
+
+                <!-- Category tag responsive -->
+                <span
+                  *ngIf="post.categories.length > 0"
+                  class="bg-gray-100 px-2 py-1 rounded text-xs whitespace-nowrap order-last sm:order-none"
+                  >{{ post.categories[0].name }}</span
+                >
               </div>
 
               <h2
-                class="text-xl font-bold text-gray-900 mb-2 hover:underline post-title break-words"
+                class="text-lg sm:text-xl font-bold text-gray-900 mb-2 hover:underline post-title break-words"
               >
                 {{ post.title }}
               </h2>
 
               <p
-                class="text-gray-600 mb-4 line-clamp-3 post-excerpt break-words overflow-wrap-anywhere"
+                class="text-gray-600 mb-3 sm:mb-4 line-clamp-3 post-excerpt break-words overflow-wrap-anywhere text-sm sm:text-base"
                 [innerHTML]="getExcerpt(post.content)"
               ></p>
 
@@ -122,14 +186,6 @@
                   <div class="flex items-center">
                     <i class="fas fa-comment mr-1"></i>
                     <span>{{ post.comment_count }}</span>
-                  </div>
-                  <div
-                    class="flex items-center"
-                    *ngIf="post.categories.length > 0"
-                  >
-                    <span class="bg-gray-100 px-2 py-1 rounded text-xs">{{
-                      post.categories[0].name
-                    }}</span>
                   </div>
                 </div>
               </div>
@@ -174,9 +230,6 @@
           Showing {{ filteredPosts.length }} posts
         </div>
       </main>
-
-      <!-- Sidebar -->
-      <app-sidebar></app-sidebar>
     </div>
   </div>
 </div>

@@ -76,11 +76,8 @@
     <input type="text" [(ngModel)]="searchText" (ngModelChange)="onSearchOrFilterChange()" placeholder="Search role...">
 
     <select [(ngModel)]="statusFilter" (ngModelChange)="onSearchOrFilterChange()">
-<<<<<<< HEAD
-   <option value="">All Status</option>
-=======
+
       <option value="">All Status</option>
->>>>>>> origin/dev/dangvh
       <option value="1">Active</option>
       <option value="0">Inactive</option>
     </select>
@@ -104,16 +101,7 @@
         <td>{{ role.roleid }}</td>
         <td>{{ role.name }}</td>
         <td>{{ role.discription }}</td>
-<<<<<<< HEAD
-     <td>
-  <span class="badge" [ngClass]="{
-    'bg-success': role.status === 1,
-    'bg-danger': role.status === 0
-  }">
-    {{ role.status === 1 ? 'Active' : 'Inactive' }}
-  </span>
-</td>
-=======
+
         <td>
           <span class="badge" [ngClass]="{
     'bg-success': role.status === 1,
@@ -122,7 +110,6 @@
             {{ role.status === 1 ? 'Active' : 'Inactive' }}
           </span>
         </td>
->>>>>>> origin/dev/dangvh
 
         <td class="text-end">
           <div class="d-inline-flex gap-2">
@@ -192,17 +179,7 @@
             </div>
           </div>
 
-<<<<<<< HEAD
 
-
-            <div class="form-group">
-              <label for="roleStatus">Status:</label>
-              <select class="form-select" name="roleStatus" [(ngModel)]="modalRole.status">
-                <option [value]="1">Active</option>
-                <option [value]="0">Inactive</option>
-              </select>
-            </div>
-=======
           <div class="form-group">
             <label for="rolePermission">Permissions:</label>
             <div class="border rounded p-2 mt-2">
@@ -226,7 +203,6 @@
               <option [value]="0">Inactive</option>
             </select>
           </div>
->>>>>>> origin/dev/dangvh
 
 
         </form>
@@ -267,11 +243,8 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-<<<<<<< HEAD
-          <h5 class="modal-title custom-title ">Chỉnh sửa Role</h5>
-=======
+
         <h5 class="modal-title custom-title ">Chỉnh sửa Role</h5>
->>>>>>> origin/dev/dangvh
         <button type="button" class="btn-close" (click)="closeSaveConfirmModal()" aria-label="Close"></button>
       </div>
       <div class="modal-body">
@@ -287,7 +260,3 @@
     </div>
   </div>
 </div>
-<<<<<<< HEAD
-
-=======
->>>>>>> origin/dev/dangvh

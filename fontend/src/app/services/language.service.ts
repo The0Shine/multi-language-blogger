@@ -214,7 +214,7 @@ export class LanguageService {
           'Deleting your account will remove all your posts and comments.',
         'profile.password_hint': 'Password must be at least 8 characters',
         'profile.char_limit': 'Character limit',
-
+        'profile.password_strength': 'Password strength',
         // My Stories
         'mystories.title': 'Your stories',
         'mystories.subtitle':

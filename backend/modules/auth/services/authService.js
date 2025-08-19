@@ -170,6 +170,28 @@ const authService = {
 
     return { message: "Password reset successfully." };
   },
+  changePassword: async (userid, passwordData) => {
+    const { currentPassword, newPassword } = passwordData;
+
+    const user = await User.findByPk(userid);
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    // Verify current password
+    const isValidPassword = await hash.check(currentPassword, user.password);
+    if (!isValidPassword) {
+      throw new Error("Current password is incorrect");
+    }
+
+    // Hash new password
+    const hashedNewPassword = await hash.make(newPassword);
+
+    // Update password
+    await user.update({ password: hashedNewPassword });
+
+    return true;
+  },
 };
 
 module.exports = authService;

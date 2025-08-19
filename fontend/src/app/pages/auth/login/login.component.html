@@ -20,7 +20,7 @@
     <!-- Login Form -->
     <div class="glass-effect rounded-2xl p-8 shadow-xl fade-in">
       <!-- Already logged in warning -->
-      <div
+      <!-- <div
         *ngIf="authService.isAuthenticated"
         class="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg"
       >
@@ -51,7 +51,7 @@
             </button>
           </div>
         </div>
-      </div>
+      </div> -->
 
       <form (ngSubmit)="onSubmit()" class="space-y-6">
         <!-- Username Field -->
@@ -85,10 +85,18 @@
               id="username"
               name="username"
               [(ngModel)]="credentials.username"
+              (blur)="onFieldBlur('username')"
+              (input)="submitted && validateField('username')"
               required
-              class="placeholder:text-gray-400 input-focus block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition duration-200"
+              [class]="getInputClassesWithPadding('username', true, false)"
               placeholder="Enter your username"
             />
+          </div>
+          <div
+            *ngIf="submitted && fieldErrors.username"
+            class="mt-1 text-sm text-red-600"
+          >
+            Username is required
           </div>
         </div>
 
@@ -123,8 +131,10 @@
               id="password"
               name="password"
               [(ngModel)]="credentials.password"
+              (blur)="onFieldBlur('password')"
+              (input)="submitted && validateField('password')"
               required
-              class="placeholder:text-gray-400 input-focus block w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition duration-200"
+              [class]="getInputClassesWithPadding('password', true, true)"
               placeholder="Enter your password"
             />
             <button
@@ -161,6 +171,12 @@
                 />
               </svg>
             </button>
+          </div>
+          <div
+            *ngIf="submitted && fieldErrors.password"
+            class="mt-1 text-sm text-red-600"
+          >
+            Password is required
           </div>
         </div>
 

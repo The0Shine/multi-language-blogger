@@ -162,6 +162,32 @@ const authController = {
       return responseUtils.badRequest(res, error.message);
     }
   },
+  changePassword: async (req, res) => {
+    try {
+      const userid = req.user.userid;
+      const passwordData = {
+        currentPassword: req.body.current_password,
+        newPassword: req.body.new_password,
+      };
+
+      await authService.changePassword(userid, passwordData);
+
+      return responseUtils.ok(res, null, "Password changed successfully");
+    } catch (error) {
+      console.error("Change password error:", error);
+      if (error.message === "User not found") {
+        return responseUtils.notFound(res, error.message);
+      }
+      if (error.message === "Current password is incorrect") {
+        return responseUtils.badRequest(res, error.message);
+      }
+      return responseUtils.error(
+        res,
+        "Failed to change password",
+        error.message
+      );
+    }
+  },
 };
 
 module.exports = authController;

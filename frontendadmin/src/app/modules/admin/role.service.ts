@@ -12,14 +12,11 @@ export interface Role {
   updated_at: string;
   deleted_at: string | null;
 }
-<<<<<<< HEAD
-=======
+
 export interface Permission {
   permissionid: number;
   description: string;
 }
-
->>>>>>> origin/dev/dangvh
 
 // Định nghĩa interface cho response của API lấy roles
 interface RoleApiResponse {
@@ -43,48 +40,60 @@ export class RoleService {
   }
 
   // Lấy 1 role theo ID (giả sử backend trả về object role)
-  getRoleById(roleid: number): Observable<{ success: boolean; data: { data: Role } }> {
-    return this.http.get<{ success: boolean; data: { data: Role } }>(`${this.adminUrl}/${roleid}`);
+  getRoleById(
+    roleid: number
+  ): Observable<{ success: boolean; data: { data: Role } }> {
+    return this.http.get<{ success: boolean; data: { data: Role } }>(
+      `${this.adminUrl}/${roleid}`
+    );
   }
 
   // Tạo role mới
-<<<<<<< HEAD
-  createRole(role: Partial<Role>): Observable<{ success: boolean; data: { data: Role } }> {
-    return this.http.post<{ success: boolean; data: { data: Role } }>(this.adminUrl, role);
+  createRole(
+    role: Partial<Role> & { permissionid?: number[] }
+  ): Observable<{ success: boolean; data: { data: Role } }> {
+    return this.http.post<{ success: boolean; data: { data: Role } }>(
+      this.adminUrl,
+      role
+    );
   }
 
   // Cập nhật role
-  updateRole(roleid: number, role: Partial<Role>): Observable<{ success: boolean; data: { data: Role } }> {
-    return this.http.put<{ success: boolean; data: { data: Role } }>(`${this.adminUrl}/${roleid}`, role);
+  updateRole(
+    roleid: number,
+    role: Partial<Role> & { permissionid?: number[] }
+  ): Observable<{ success: boolean; data: { data: Role } }> {
+    return this.http.put<{ success: boolean; data: { data: Role } }>(
+      `${this.adminUrl}/${roleid}`,
+      role
+    );
   }
-=======
-// Tạo role mới
-createRole(role: Partial<Role> & { permissionid?: number[] }):
-  Observable<{ success: boolean; data: { data: Role } }> {
-  return this.http.post<{ success: boolean; data: { data: Role } }>(this.adminUrl, role);
-}
-
-// Cập nhật role
-updateRole(roleid: number, role: Partial<Role> & { permissionid?: number[] }):
-  Observable<{ success: boolean; data: { data: Role } }> {
-  return this.http.put<{ success: boolean; data: { data: Role } }>(`${this.adminUrl}/${roleid}`, role);
-}
-
-
->>>>>>> origin/dev/dangvh
 
   // Soft delete role
-  deleteRole(roleid: number): Observable<{ success: boolean; message: string }> {
-    return this.http.delete<{ success: boolean; message: string }>(`${this.adminUrl}/${roleid}`);
+  deleteRole(
+    roleid: number
+  ): Observable<{ success: boolean; message: string }> {
+    return this.http.delete<{ success: boolean; message: string }>(
+      `${this.adminUrl}/${roleid}`
+    );
   }
 
   // Hard delete role
- permanentDeleteRole(roleid: number): Observable<{ success: boolean; message: string }> {
-  return this.http.delete<{ success: boolean; message: string }>(`${this.adminUrl}/${roleid}/hard`);
-}
+  permanentDeleteRole(
+    roleid: number
+  ): Observable<{ success: boolean; message: string }> {
+    return this.http.delete<{ success: boolean; message: string }>(
+      `${this.adminUrl}/${roleid}/hard`
+    );
+  }
 
   // Khôi phục role
-  restoreRole(roleid: number): Observable<{ success: boolean; message: string }> {
-    return this.http.post<{ success: boolean; message: string }>(`${this.adminUrl}/${roleid}/restore`, {});
+  restoreRole(
+    roleid: number
+  ): Observable<{ success: boolean; message: string }> {
+    return this.http.post<{ success: boolean; message: string }>(
+      `${this.adminUrl}/${roleid}/restore`,
+      {}
+    );
   }
 }

@@ -1,36 +1,36 @@
-const roleService = require('modules/role/services/roleService');
-const responseUtils = require('utils/responseUtils');
+const roleService = require("modules/role/services/roleService");
+const responseUtils = require("utils/responseUtils");
 
 const roleController = {
-<<<<<<< HEAD
-  // Create new role
-=======
   // Create new role with permissions
->>>>>>> origin/dev/dangvh
+
   create: async (req, res) => {
     try {
       const role = await roleService.create(req.body);
       return responseUtils.ok(res, {
-        message: 'Role created successfully',
-        data: role
+        message: "Role created successfully",
+        data: role,
       });
     } catch (error) {
-      console.error('Create role error:', error);
-      return responseUtils.badRequest(res, error.message || 'Failed to create role');
+      console.error("Create role error:", error);
+      return responseUtils.badRequest(
+        res,
+        error.message || "Failed to create role"
+      );
     }
   },
 
   // Get all roles
   getAll: async (req, res) => {
     try {
-      const onlyActive = String(req.query.onlyActive || '') === '1';
+      const onlyActive = String(req.query.onlyActive || "") === "1";
       const roles = await roleService.getAll({ onlyActive });
       return responseUtils.ok(res, {
-        message: 'Roles retrieved successfully',
-        data: roles
+        message: "Roles retrieved successfully",
+        data: roles,
       });
     } catch (error) {
-      console.error('Get all roles error:', error);
+      console.error("Get all roles error:", error);
       return responseUtils.serverError(res, error.message);
     }
   },
@@ -40,36 +40,34 @@ const roleController = {
     try {
       const role = await roleService.getById(req.params.roleid);
       if (!role) {
-        return responseUtils.notFound(res, 'Role not found');
+        return responseUtils.notFound(res, "Role not found");
       }
       return responseUtils.ok(res, {
-        message: 'Role retrieved successfully',
-        data: role
+        message: "Role retrieved successfully",
+        data: role,
       });
     } catch (error) {
-      console.error('Get role by ID error:', error);
+      console.error("Get role by ID error:", error);
       return responseUtils.serverError(res, error.message);
     }
   },
 
-<<<<<<< HEAD
-  // Update role
-=======
-  // Update role + sync permissions
->>>>>>> origin/dev/dangvh
   update: async (req, res) => {
     try {
       const updatedRole = await roleService.update(req.params.roleid, req.body);
       if (!updatedRole) {
-        return responseUtils.notFound(res, 'Role not found');
+        return responseUtils.notFound(res, "Role not found");
       }
       return responseUtils.ok(res, {
-        message: 'Role updated successfully',
-        data: updatedRole
+        message: "Role updated successfully",
+        data: updatedRole,
       });
     } catch (error) {
-      console.error('Update role error:', error);
-      return responseUtils.badRequest(res, error.message || 'Failed to update role');
+      console.error("Update role error:", error);
+      return responseUtils.badRequest(
+        res,
+        error.message || "Failed to update role"
+      );
     }
   },
 
@@ -78,13 +76,13 @@ const roleController = {
     try {
       const deleted = await roleService.softDelete(req.params.roleid);
       if (!deleted) {
-        return responseUtils.notFound(res, 'Role not found');
+        return responseUtils.notFound(res, "Role not found");
       }
       return responseUtils.ok(res, {
-        message: 'Role soft-deleted'
+        message: "Role soft-deleted",
       });
     } catch (error) {
-      console.error('Soft delete role error:', error);
+      console.error("Soft delete role error:", error);
       return responseUtils.badRequest(res, error.message);
     }
   },
@@ -92,46 +90,37 @@ const roleController = {
   // Hard delete role
   permanentDelete: async (req, res) => {
     try {
-<<<<<<< HEAD
-      const deleted = await roleService.hardDelete(req.params.roleid);
-=======
       const deleted = await roleService.permanentDelete(req.params.roleid);
->>>>>>> origin/dev/dangvh
+
       if (!deleted) {
-        return responseUtils.notFound(res, 'Role not found for permanent delete');
+        return responseUtils.notFound(
+          res,
+          "Role not found for permanent delete"
+        );
       }
       return responseUtils.ok(res, {
-        message: 'Role permanently deleted'
+        message: "Role permanently deleted",
       });
     } catch (error) {
-      console.error('Hard delete role error:', error);
+      console.error("Hard delete role error:", error);
       return responseUtils.badRequest(res, error.message);
     }
   },
-<<<<<<< HEAD
 
-  // Restore role from soft delete
-=======
-// Restore role
->>>>>>> origin/dev/dangvh
   restore: async (req, res) => {
     try {
       const restored = await roleService.restore(req.params.roleid);
       if (!restored) {
-        return responseUtils.notFound(res, 'Role not found to restore');
+        return responseUtils.notFound(res, "Role not found to restore");
       }
       return responseUtils.ok(res, {
-        message: 'Role restored successfully'
+        message: "Role restored successfully",
       });
     } catch (error) {
-      console.error('Restore role error:', error);
+      console.error("Restore role error:", error);
       return responseUtils.badRequest(res, error.message);
     }
-  }
+  },
 };
 
-<<<<<<< HEAD
 module.exports = roleController;
-=======
-module.exports = roleController;
->>>>>>> origin/dev/dangvh

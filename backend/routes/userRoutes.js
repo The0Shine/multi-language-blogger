@@ -5,13 +5,19 @@ const userController = require("modules/user/controllers/userController");
 const userValidation = require("modules/user/validations/userValidation");
 const validate = require("middlewares/validateMiddleware");
 const authMiddleware = require("middlewares/authMiddleware");
-
+const authValidation = require("../modules/auth/validations/authValidation");
 // 🔐 Require login cho toàn bộ route
 router.use(authMiddleware.authenticate);
 
 // Current user: get own profile
 router.get("/users/profile", userController.getCurrentUserProfile);
 
+router.put(
+  "/change-password",
+  authValidation.changePassword,
+  validate,
+  userController.changePassword
+);
 // Current user: update own profile
 router.put(
   "/users/profile",

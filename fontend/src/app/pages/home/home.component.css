@@ -8,7 +8,9 @@
   transform: translateY(0);
   will-change: transform;
   transition: top;
+  max-width: calc(1000px);
 }
+
 .hide-scrollbar {
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE/Edge */

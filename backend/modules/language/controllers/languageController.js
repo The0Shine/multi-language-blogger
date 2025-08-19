@@ -1,5 +1,5 @@
-const languageService = require('modules/language/services/languageService');
-const responseUtils = require('utils/responseUtils');
+const languageService = require("modules/language/services/languageService");
+const responseUtils = require("utils/responseUtils");
 
 const languageController = {
   // Create language
@@ -7,26 +7,31 @@ const languageController = {
     try {
       const language = await languageService.create(req.body);
       return responseUtils.ok(res, {
-        message: 'Language created successfully',
-        data: language
+        message: "Language created successfully",
+        data: language,
       });
     } catch (error) {
-      console.error('Create language error:', error);
-      return responseUtils.badRequest(res, error.message || 'Failed to create language');
+      console.error("Create language error:", error);
+      return responseUtils.badRequest(
+        res,
+        error.message || "Failed to create language"
+      );
     }
   },
 
   // List languages (?onlyActive=1 optional)
   getAll: async (req, res) => {
     try {
-      const onlyActive = String(req.query.onlyActive || '') === '1';
+      const onlyActive = true;
+      console.log(onlyActive, "2222222222");
+
       const languages = await languageService.getAll({ onlyActive });
       return responseUtils.ok(res, {
-        message: 'Languages retrieved successfully',
-        data: languages
+        message: "Languages retrieved successfully",
+        data: languages,
       });
     } catch (error) {
-      console.error('Get languages error:', error);
+      console.error("Get languages error:", error);
       return responseUtils.serverError(res, error.message);
     }
   },
@@ -35,13 +40,13 @@ const languageController = {
   getById: async (req, res) => {
     try {
       const language = await languageService.getById(req.params.languageid);
-      if (!language) return responseUtils.notFound(res, 'Language not found');
+      if (!language) return responseUtils.notFound(res, "Language not found");
       return responseUtils.ok(res, {
-        message: 'Language retrieved successfully',
-        data: language
+        message: "Language retrieved successfully",
+        data: language,
       });
     } catch (error) {
-      console.error('Get language by id error:', error);
+      console.error("Get language by id error:", error);
       return responseUtils.serverError(res, error.message);
     }
   },
@@ -49,15 +54,21 @@ const languageController = {
   // Update
   update: async (req, res) => {
     try {
-      const updated = await languageService.update(req.params.languageid, req.body);
-      if (!updated) return responseUtils.notFound(res, 'Language not found');
+      const updated = await languageService.update(
+        req.params.languageid,
+        req.body
+      );
+      if (!updated) return responseUtils.notFound(res, "Language not found");
       return responseUtils.ok(res, {
-        message: 'Language updated successfully',
-        data: updated
+        message: "Language updated successfully",
+        data: updated,
       });
     } catch (error) {
-      console.error('Update language error:', error);
-      return responseUtils.badRequest(res, error.message || 'Failed to update language');
+      console.error("Update language error:", error);
+      return responseUtils.badRequest(
+        res,
+        error.message || "Failed to update language"
+      );
     }
   },
 
@@ -65,10 +76,10 @@ const languageController = {
   delete: async (req, res) => {
     try {
       const ok = await languageService.softDelete(req.params.languageid);
-      if (!ok) return responseUtils.notFound(res, 'Language not found');
-      return responseUtils.ok(res, { message: 'Language soft-deleted' });
+      if (!ok) return responseUtils.notFound(res, "Language not found");
+      return responseUtils.ok(res, { message: "Language soft-deleted" });
     } catch (error) {
-      console.error('Soft delete language error:', error);
+      console.error("Soft delete language error:", error);
       return responseUtils.badRequest(res, error.message);
     }
   },
@@ -77,10 +88,14 @@ const languageController = {
   permanentDelete: async (req, res) => {
     try {
       const ok = await languageService.hardDelete(req.params.languageid);
-      if (!ok) return responseUtils.notFound(res, 'Language not found for permanent delete');
-      return responseUtils.ok(res, { message: 'Language permanently deleted' });
+      if (!ok)
+        return responseUtils.notFound(
+          res,
+          "Language not found for permanent delete"
+        );
+      return responseUtils.ok(res, { message: "Language permanently deleted" });
     } catch (error) {
-      console.error('Hard delete language error:', error);
+      console.error("Hard delete language error:", error);
       return responseUtils.badRequest(res, error.message);
     }
   },
@@ -89,10 +104,11 @@ const languageController = {
   restore: async (req, res) => {
     try {
       const ok = await languageService.restore(req.params.languageid);
-      if (!ok) return responseUtils.notFound(res, 'Language not found to restore');
-      return responseUtils.ok(res, { message: 'Language restored' });
+      if (!ok)
+        return responseUtils.notFound(res, "Language not found to restore");
+      return responseUtils.ok(res, { message: "Language restored" });
     } catch (error) {
-      console.error('Restore language error:', error);
+      console.error("Restore language error:", error);
       return responseUtils.badRequest(res, error.message);
     }
   },

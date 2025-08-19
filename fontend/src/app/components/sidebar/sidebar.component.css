@@ -46,6 +46,7 @@
 .sidebar-container {
   max-width: 100%;
   overflow: hidden;
+  background-color: white;
 }
 
 /* Staff picks styling */

@@ -1,6 +1,5 @@
 const { User, Role } = require("models");
 const bcrypt = require("bcrypt");
-
 const userService = {
   // Get all users with pagination and search
   getAllUsers: async (page = 1, limit = 10, search = "") => {
@@ -204,13 +203,16 @@ const userService = {
     }
 
     // Verify current password
-    const isValidPassword = await hash.check(currentPassword, user.password);
+    const isValidPassword = await bcrypt.compare(
+      currentPassword,
+      user.password
+    );
     if (!isValidPassword) {
       throw new Error("Current password is incorrect");
     }
 
     // Hash new password
-    const hashedNewPassword = await hash.make(newPassword);
+    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
 
     // Update password
     await user.update({ password: hashedNewPassword });

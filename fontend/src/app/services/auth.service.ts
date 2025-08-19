@@ -247,7 +247,7 @@ export class AuthService {
     new_password_confirmation: string;
   }): Observable<any> {
     return this.httpService
-      .put('/auth/change-password', passwordData)
+      .put('/change-password', passwordData)
       .pipe(map((response) => response.data));
   }
 

@@ -40,7 +40,6 @@ export class AdminPostListComponent implements OnInit {
     private route: ActivatedRoute
   ) {}
 
-
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
       this.currentPage = +params['page'] || 1;
@@ -64,83 +63,50 @@ export class AdminPostListComponent implements OnInit {
     });
   }
 
-<<<<<<< HEAD
   loadPosts(page: number = 1): void {
+    this.postService
+      .getAllPosts({ limit: 9999, page: 1 })
+      .subscribe((res: any) => {
+        const postsArray = res?.data?.posts || [];
 
-    this.postService.getAllPosts().subscribe((res: any) => {
-      // SỬA LẠI DÒNG NÀY
-      const postsArray = res?.data?.posts || [];
-      this.pagination = res?.data?.pagination || {}; // Lấy cả thông tin phân trang
+        // Lấy hết luôn, không phân trang
+        this.posts = postsArray
+          .filter((post: any) => String(post.languageid) === '1')
+          .map((post: any) => {
+            const user = this.users.find(
+              (u: any) => String(u.userid) === String(post.userid)
+            );
+            const lang = this.languages.find(
+              (l: any) => String(l.languageid) === String(post.languageid)
+            );
 
-      this.posts = postsArray
-        .map((post: any) => {
-          const user = this.users.find(
-            (u: any) => String(u.userid) === String(post.userid)
-          );
-          const lang = this.languages.find(
-            (l: any) => String(l.languageid) === String(post.languageid)
-          );
+            return {
+              ...post,
+              status: Number(post.status),
+              created_at: post.created_at ? new Date(post.created_at) : null,
+              username: user?.username || 'Unknown',
+              language_name: lang?.language_name || 'Unknown',
+              original_id: post.originalid || null,
+            };
+          })
+          .sort((a: any, b: any) => a.postid - b.postid);
 
-          return {
-            ...post,
-            status: Number(post.status),
-            created_at: post.created_at ? new Date(post.created_at) : null,
-            username: user?.username || 'Unknown',
-            language_name: lang?.language_name || 'Unknown',
-            original_id: post.originalid || null,
-          };
-        })
-        .sort((a: any, b: any) => a.postid - b.postid);
-
-      // ✅ Sau khi load xong posts, nếu có viewId thì mở modal
-      if (this.viewId) {
-        this.openPostDetail(this.viewId);
-        this.viewId = null; // reset tránh mở lại khi phân trang
-      }
-    });
+        // ❌ Không dùng phân trang trong admin nữa
+        this.pagination = null;
+      });
   }
-=======
- loadPosts(page: number = 1): void {
-  this.postService.getAllPosts({ limit: 9999, page: 1 }).subscribe((res: any) => {
-    const postsArray = res?.data?.posts || [];
 
-    // Lấy hết luôn, không phân trang
-    this.posts = postsArray
-      .filter((post: any) => String(post.languageid) === "1")
-      .map((post: any) => {
-        const user = this.users.find((u: any) => String(u.userid) === String(post.userid));
-        const lang = this.languages.find((l: any) => String(l.languageid) === String(post.languageid));
+  openPostDetail(postId: number): void {
+    // Tìm post trong mảng this.posts đã được load và xử lý trước đó
+    const postToShow = this.posts.find((p) => p.postid === postId);
 
-        return {
-          ...post,
-          status: Number(post.status),
-          created_at: post.created_at ? new Date(post.created_at) : null,
-          username: user?.username || 'Unknown',
-          language_name: lang?.language_name || 'Unknown',
-          original_id: post.originalid || null,
-        };
-      })
-      .sort((a: any, b: any) => a.postid - b.postid);
-
-    // ❌ Không dùng phân trang trong admin nữa
-    this.pagination = null;
-  });
-}
-
-
->>>>>>> origin/dev/dangvh
-
-openPostDetail(postId: number): void {
-  // Tìm post trong mảng this.posts đã được load và xử lý trước đó
-  const postToShow = this.posts.find(p => p.postid === postId);
-
-  if (postToShow) {
-    // Chỉ cần gán vào đây, *ngIf="selectedPost" trong HTML sẽ tự lo việc hiển thị modal
-    this.selectedPost = postToShow;
-  } else {
-    console.error(`Không tìm thấy post với ID: ${postId} trong danh sách.`);
+    if (postToShow) {
+      // Chỉ cần gán vào đây, *ngIf="selectedPost" trong HTML sẽ tự lo việc hiển thị modal
+      this.selectedPost = postToShow;
+    } else {
+      console.error(`Không tìm thấy post với ID: ${postId} trong danh sách.`);
+    }
   }
-}
 
   get filteredPosts() {
     return this.posts.filter(
@@ -323,35 +289,36 @@ openPostDetail(postId: number): void {
     this.showDeleteModal = false;
     this.postToDelete = null;
   }
-<<<<<<< HEAD
-=======
-renderContent(editorData: any): string {
-  if (!editorData) return '';
 
-  // Nếu content trả về là string -> parse JSON
-  if (typeof editorData === 'string') {
-    try {
-      editorData = JSON.parse(editorData);
-    } catch {
-      return editorData; // fallback: hiển thị text thô
+  renderContent(editorData: any): string {
+    if (!editorData) return '';
+
+    // Nếu content trả về là string -> parse JSON
+    if (typeof editorData === 'string') {
+      try {
+        editorData = JSON.parse(editorData);
+      } catch {
+        return editorData; // fallback: hiển thị text thô
+      }
     }
+
+    if (!editorData.blocks) return '';
+
+    return editorData.blocks
+      .map((block: any) => {
+        switch (block.type) {
+          case 'paragraph':
+            return `<p>${block.data.text}</p>`;
+          case 'header':
+            return `<h${block.data.level}>${block.data.text}</h${block.data.level}>`;
+          case 'image':
+            return `<img src="${block.data.file.url}" alt="${
+              block.data.caption || ''
+            }" style="max-width:100%; border-radius:8px;" />`;
+          default:
+            return '';
+        }
+      })
+      .join('');
   }
-
-  if (!editorData.blocks) return '';
-
-  return editorData.blocks.map((block: any) => {
-    switch (block.type) {
-      case 'paragraph':
-        return `<p>${block.data.text}</p>`;
-      case 'header':
-        return `<h${block.data.level}>${block.data.text}</h${block.data.level}>`;
-      case 'image':
-        return `<img src="${block.data.file.url}" alt="${block.data.caption || ''}" style="max-width:100%; border-radius:8px;" />`;
-      default:
-        return '';
-    }
-  }).join('');
-}
-
->>>>>>> origin/dev/dangvh
 }

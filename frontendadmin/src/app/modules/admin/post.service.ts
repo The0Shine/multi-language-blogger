@@ -11,17 +11,10 @@ export class PostService {
   constructor(private http: HttpClient) {}
 
   // Lấy tất cả bài post (Admin)
-<<<<<<< HEAD
-  getAllPosts(): Observable<any> {
-    // SỬA LẠI: Thêm '/admin/all' để gọi đúng API cho admin
-    return this.http.get(`${this.apiUrl}/admin/all`);
-  }
-=======
- getAllPosts(params: any = {}): Observable<any> {
-  return this.http.get(`${this.apiUrl}/admin/all`, { params });
-}
 
->>>>>>> origin/dev/dangvh
+  getAllPosts(params: any = {}): Observable<any> {
+    return this.http.get(`${this.apiUrl}/admin/all`, { params });
+  }
 
   getPostById(postId: number): Observable<any> {
     return this.http.get(`${this.apiUrl}/${postId}`);

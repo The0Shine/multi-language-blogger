@@ -41,8 +41,7 @@
     </div>
   </ng-container>
 </div>
-<<<<<<< HEAD
-=======
+
 <div *ngIf="updateRoleSuccess"
   class="alert alert-success alert-dismissible bg-success text-white alert-label-icon fade show material-shadow"
   role="alert">
@@ -58,7 +57,7 @@
   <strong>Thất bại!</strong> - {{ alertMessage }}
   <button type="button" class="btn-close btn-close-white" (click)="updateRoleError = false" aria-label="Close"></button>
 </div>
->>>>>>> origin/dev/dangvh
+
 
 
 <div class="card">
@@ -93,9 +92,7 @@
         <td>{{ user.userid }}</td>
         <td>{{ user.username }}</td>
         <td>{{ user.email }}</td>
-<<<<<<< HEAD
-        <td>{{ roleMap[+user.roleid] || 'Unknown' }}</td>
-=======
+
      <td>
   <select [(ngModel)]="user.roleid"
           (change)="updateUserRole(user)"
@@ -108,7 +105,7 @@
 
 
 
->>>>>>> origin/dev/dangvh
+
 
         <td>
           <span class="badge" [ngClass]="{
@@ -203,23 +200,8 @@
             </div>
           </div>
 
-<<<<<<< HEAD
-          <div class="form-group">
-            <label for="role">Role:<span class="text-danger">*</span></label>
-            <select class="form-select" [(ngModel)]="newUser.roleid" name="roleid" required
-              (blur)="validateField('roleid')" (change)="clearError('roleid')">
-              <option value="">-- Chọn Role --</option>
-             <option *ngFor="let role of roles" [value]="role.roleid">{{ role.name }}</option>
-
-            </select>
-            <div *ngIf="validationErrors.roleid" class="error-message">
-              {{ validationErrors.roleid }}
-            </div>
-          </div>
 
 
-=======
->>>>>>> origin/dev/dangvh
 
           <div class="form-group" style="margin-top: 10px;">
             <label for="status">Status: </label>
@@ -291,9 +273,8 @@
     </div>
   </div>
 </div>
-<<<<<<< HEAD
 
-=======
+
 <div *ngIf="showSuccessModal" class="custom-modal-backdrop">
   <div class="custom-modal-content">
     <p>{{ modalMessage }}</p>
@@ -302,4 +283,4 @@
     </button>
   </div>
 </div>
->>>>>>> origin/dev/dangvh
+

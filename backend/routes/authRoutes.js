@@ -4,7 +4,6 @@ const router = express.Router();
 const authController = require("../modules/auth/controllers/authController");
 const authValidation = require("../modules/auth/validations/authValidation");
 const validateMiddleware = require("../middlewares/validateMiddleware");
-
 // User registration
 router.post(
   "/register",

@@ -142,15 +142,15 @@ export class HeaderComponent implements OnInit, OnDestroy {
     }
   }
 
-  private setupScrollHandler() {
-    // Get header height after view init
-    setTimeout(() => {
-      const headerElement = document.getElementById('mainHeader');
-      if (headerElement) {
-        this.headerHeight = headerElement.offsetHeight;
-      }
-    }, 0);
-  }
+  // private setupScrollHandler() {
+  //   // Get header height after view init
+  //   setTimeout(() => {
+  //     const headerElement = document.getElementById('mainHeader');
+  //     if (headerElement) {
+  //       this.headerHeight = headerElement.offsetHeight;
+  //     }
+  //   }, 0);
+  // }
 
   private requestTick() {
     if (!this.ticking) {
@@ -162,10 +162,13 @@ export class HeaderComponent implements OnInit, OnDestroy {
     }
   }
 
+  // Cập nhật method handleScroll trong HeaderComponent
   private handleScroll() {
     const header = document.getElementById('mainHeader')!;
     const navTabs = document.getElementById('navTabs');
+    const sidebar = document.querySelector('.sidebar-container') as HTMLElement;
     const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const mainContent = document.querySelector('.main-content') as HTMLElement;
 
     const delta = scrollTop - this.lastScrollTop;
 
@@ -184,21 +187,61 @@ export class HeaderComponent implements OnInit, OnDestroy {
     // Áp dụng translateY cho header
     header.style.transform = `translateY(${newY}px)`;
 
-    // NavTabs bám ngay phía dưới header, khi header ẩn hoàn toàn thì nav dính ở top
-    if (navTabs) {
+    // ✨ ÁP DỤNG CÙNG TRANSFORM CHO SIDEBAR
+    if (sidebar) {
+      sidebar.style.transform = `translateY(${newY}px)`;
+      sidebar.style.transition = 'transform linear';
+    }
+
+    // NavTabs positioning
+    if (navTabs && mainContent) {
+      const mainContentRect = mainContent.getBoundingClientRect();
+      const containerRect = document
+        .querySelector('.content-wrapper')
+        ?.getBoundingClientRect();
+
       if (newY <= -this.headerHeight) {
         // Header ẩn hoàn toàn -> navigation dính ở top
         navTabs.style.top = '0px';
-        console.log('Nav fixed at top');
+
+        if (containerRect) {
+          navTabs.style.left = `${containerRect.left}px`;
+          navTabs.style.right = 'auto';
+        }
       } else {
         // Header vẫn hiện -> navigation bám theo header
         navTabs.style.top = `${this.headerHeight + newY}px`;
-        console.log('Nav following header:', this.headerHeight + newY);
+
+        if (containerRect) {
+          navTabs.style.left = `${containerRect.left}px`;
+          navTabs.style.right = 'auto';
+        }
       }
     }
 
     // Cập nhật scrollTop cũ
     this.lastScrollTop = scrollTop;
+  }
+
+  // Thêm method để reset sidebar transform khi cần
+  private resetSidebarPosition() {
+    const sidebar = document.querySelector('.sidebar-container') as HTMLElement;
+    if (sidebar) {
+      sidebar.style.transform = 'translateY(0)';
+    }
+  }
+
+  // Cập nhật setupScrollHandler để đảm bảo sidebar được reset ban đầu
+  private setupScrollHandler() {
+    // Get header height after view init
+    setTimeout(() => {
+      const headerElement = document.getElementById('mainHeader');
+      if (headerElement) {
+        this.headerHeight = headerElement.offsetHeight;
+      }
+      // Reset sidebar position on init
+      this.resetSidebarPosition();
+    }, 0);
   }
 
   onSearch() {

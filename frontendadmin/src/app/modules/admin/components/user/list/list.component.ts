@@ -28,28 +28,22 @@ export class AdminUserListComponent implements OnInit {
   selectedUser: any = null;
   showDeleteModal = false;
 
-<<<<<<< HEAD
-=======
   // THÊM CÁC BIẾN MỚI NÀY VÀO
   updateRoleSuccess: boolean = false;
   updateRoleError: boolean = false;
   alertMessage: string = '';
 
->>>>>>> origin/dev/dangvh
   editSuccess: boolean | null = null;
   editError: boolean | null = null;
 
   roleMap: { [key: number]: string } = {};
 
-<<<<<<< HEAD
-=======
-    showSuccessModal = false;
+  showSuccessModal = false;
   modalMessage = '';
 
->>>>>>> origin/dev/dangvh
   newUser = this.getEmptyUser();
-showSaveUserConfirmModal = false;
-confirmingEditUser = false;
+  showSaveUserConfirmModal = false;
+  confirmingEditUser = false;
 
   constructor(
     private userService: UserService,
@@ -78,59 +72,58 @@ confirmingEditUser = false;
       password: '',
       status: 1,
 
-      email: ''
+      email: '',
     };
   }
 
-loadRoles() {
-  this.roleService.getRoles().subscribe({
-    next: (response) => {
-      const rolesData = response?.data?.data || response?.data || [];
-      if (response?.success && Array.isArray(rolesData)) {
-        this.roles = rolesData;
-        this.roleMap = this.roles.reduce((map, role) => {
-          map[+role.roleid] = role.name; // dùng roleid
-          return map;
-        }, {} as { [key: number]: string });
+  loadRoles() {
+    this.roleService.getRoles().subscribe({
+      next: (response) => {
+        const rolesData = response?.data?.data || response?.data || [];
+        if (response?.success && Array.isArray(rolesData)) {
+          this.roles = rolesData;
+          this.roleMap = this.roles.reduce((map, role) => {
+            map[+role.roleid] = role.name; // dùng roleid
+            return map;
+          }, {} as { [key: number]: string });
 
-        // Nếu users đã load trước đó thì cập nhật lại roleName
-        if (this.users.length) {
-          this.users = this.users.map(u => ({
-            ...u,
-            roleName: this.getRoleNameById(u.roleid)
-          }));
+          // Nếu users đã load trước đó thì cập nhật lại roleName
+          if (this.users.length) {
+            this.users = this.users.map((u) => ({
+              ...u,
+              roleName: this.getRoleNameById(u.roleid),
+            }));
+          }
+        } else {
+          this.roles = [];
+          this.roleMap = {};
         }
-      } else {
+      },
+      error: (err) => {
+        console.error('Load roles failed:', err);
         this.roles = [];
         this.roleMap = {};
-      }
-    },
-    error: (err) => {
-      console.error('Load roles failed:', err);
-      this.roles = [];
-      this.roleMap = {};
-    }
-  });
-}
+      },
+    });
+  }
 
-
-private loadUsers() {
-  this.userService.getAllUsers().subscribe((list) => {
-    this.users = list
-      .map((u: any) => ({
-        userid: u.userid ?? u.id,
-        roleid: u.roleid,
-        roleName: this.getRoleNameById(u.roleid), // luôn gọi hàm này
-        first_name: u.first_name || '',
-        last_name: u.last_name || '',
-        username: u.username || '',
-        password: '',
-        email: u.email || '',
-        status: typeof u.status === 'number' ? u.status : 1,
-      }))
-      .sort((a, b) => a.userid - b.userid);
-  });
-}
+  private loadUsers() {
+    this.userService.getAllUsers().subscribe((list) => {
+      this.users = list
+        .map((u: any) => ({
+          userid: u.userid ?? u.id,
+          roleid: u.roleid,
+          roleName: this.getRoleNameById(u.roleid), // luôn gọi hàm này
+          first_name: u.first_name || '',
+          last_name: u.last_name || '',
+          username: u.username || '',
+          password: '',
+          email: u.email || '',
+          status: typeof u.status === 'number' ? u.status : 1,
+        }))
+        .sort((a, b) => a.userid - b.userid);
+    });
+  }
 
   addUser() {
     this.newUser = this.getEmptyUser();
@@ -187,9 +180,7 @@ private loadUsers() {
       case 'email':
         if (!this.newUser.email?.trim()) {
           this.validationErrors.email = 'Bạn chưa nhập email';
-        } else if (
-          !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.newUser.email)
-        ) {
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.newUser.email)) {
           this.validationErrors.email = 'Email không hợp lệ';
         } else {
           this.validationErrors.email = '';
@@ -229,113 +220,125 @@ private loadUsers() {
         break;
     }
   }
-confirmEditUser() {
-  this.confirmingEditUser = true;
-  this.showSaveUserConfirmModal = false;
-  this.saveUser(); // chạy update
-  this.confirmingEditUser = false; // reset lại cho lần sau
-}
-
-openSaveConfirmModal(user: any) {
-  this.selectedUser = { ...user }; // gán tên user để modal hiển thị
-  this.showSaveUserConfirmModal = true;
-}
-
-closeSaveUserConfirmModal() {
-  this.showSaveUserConfirmModal = false;
-}
-
-saveUser() {
-  this.validateField('username');
-  if (!this.isEditMode) {
-    this.validateField('password');
-  }
-  this.validateField('email');
-  this.validateField('roleid');
-
-  if (Object.values(this.validationErrors).some(v => v)) return;
-
-  // Nếu đang edit và chưa xác nhận -> mở modal
-  if (this.isEditMode && !this.confirmingEditUser) {
-    this.openSaveConfirmModal(this.newUser); // gán selectedUser từ newUser
-    return;
+  confirmEditUser() {
+    this.confirmingEditUser = true;
+    this.showSaveUserConfirmModal = false;
+    this.saveUser(); // chạy update
+    this.confirmingEditUser = false; // reset lại cho lần sau
   }
 
-  const payload: any = {
-    roleid: Number(this.newUser.roleid),
-    first_name: this.newUser.first_name,
-    last_name: this.newUser.last_name,
-    username: this.newUser.username,
-    status: Number(this.newUser.status),
-    email: this.newUser.email,
-  };
-
-  if (!this.isEditMode || (this.newUser.password && this.newUser.password.trim())) {
-    payload.password = this.newUser.password;
+  openSaveConfirmModal(user: any) {
+    this.selectedUser = { ...user }; // gán tên user để modal hiển thị
+    this.showSaveUserConfirmModal = true;
   }
 
-  const request = this.isEditMode
-    ? this.userService.updateUser(Number(this.newUser.userid), payload)
-    : this.userService.createUser(payload);
+  closeSaveUserConfirmModal() {
+    this.showSaveUserConfirmModal = false;
+  }
 
-  request.subscribe({
-    next: (res) => {
-      const userFromApi = res.data ?? res;
+  saveUser() {
+    this.validateField('username');
+    if (!this.isEditMode) {
+      this.validateField('password');
+    }
+    this.validateField('email');
+    this.validateField('roleid');
 
-      const returnedId = userFromApi?.userid ?? userFromApi?.id ?? Number(this.newUser.userid);
-      const returnedRoleId = userFromApi?.roleid ?? Number(this.newUser.roleid);
+    if (Object.values(this.validationErrors).some((v) => v)) return;
 
-      const formattedUser = {
-        userid: returnedId,
-        roleid: returnedRoleId,
-        roleName: this.getRoleNameById(returnedRoleId),
-        first_name: userFromApi?.first_name ?? this.newUser.first_name ?? '',
-        last_name: userFromApi?.last_name ?? this.newUser.last_name ?? '',
-        username: userFromApi?.username ?? this.newUser.username ?? '',
-        password: '',
-        email: userFromApi?.email ?? this.newUser.email ?? '',
-        status: typeof userFromApi?.status === 'number' ? userFromApi.status : Number(this.newUser.status) ?? 1,
-      };
+    // Nếu đang edit và chưa xác nhận -> mở modal
+    if (this.isEditMode && !this.confirmingEditUser) {
+      this.openSaveConfirmModal(this.newUser); // gán selectedUser từ newUser
+      return;
+    }
 
-      if (this.isEditMode) {
-        const idx = this.users.findIndex(u => u.userid === Number(this.newUser.userid));
-        if (idx !== -1) {
-          const merged = { ...this.users[idx], ...formattedUser, userid: this.users[idx].userid ?? formattedUser.userid };
-          this.users = [
-            ...this.users.slice(0, idx),
-            merged,
-            ...this.users.slice(idx + 1)
-          ];
+    const payload: any = {
+      roleid: Number(this.newUser.roleid),
+      first_name: this.newUser.first_name,
+      last_name: this.newUser.last_name,
+      username: this.newUser.username,
+      status: Number(this.newUser.status),
+      email: this.newUser.email,
+    };
+
+    if (
+      !this.isEditMode ||
+      (this.newUser.password && this.newUser.password.trim())
+    ) {
+      payload.password = this.newUser.password;
+    }
+
+    const request = this.isEditMode
+      ? this.userService.updateUser(Number(this.newUser.userid), payload)
+      : this.userService.createUser(payload);
+
+    request.subscribe({
+      next: (res) => {
+        const userFromApi = res.data ?? res;
+
+        const returnedId =
+          userFromApi?.userid ?? userFromApi?.id ?? Number(this.newUser.userid);
+        const returnedRoleId =
+          userFromApi?.roleid ?? Number(this.newUser.roleid);
+
+        const formattedUser = {
+          userid: returnedId,
+          roleid: returnedRoleId,
+          roleName: this.getRoleNameById(returnedRoleId),
+          first_name: userFromApi?.first_name ?? this.newUser.first_name ?? '',
+          last_name: userFromApi?.last_name ?? this.newUser.last_name ?? '',
+          username: userFromApi?.username ?? this.newUser.username ?? '',
+          password: '',
+          email: userFromApi?.email ?? this.newUser.email ?? '',
+          status:
+            typeof userFromApi?.status === 'number'
+              ? userFromApi.status
+              : Number(this.newUser.status) ?? 1,
+        };
+
+        if (this.isEditMode) {
+          const idx = this.users.findIndex(
+            (u) => u.userid === Number(this.newUser.userid)
+          );
+          if (idx !== -1) {
+            const merged = {
+              ...this.users[idx],
+              ...formattedUser,
+              userid: this.users[idx].userid ?? formattedUser.userid,
+            };
+            this.users = [
+              ...this.users.slice(0, idx),
+              merged,
+              ...this.users.slice(idx + 1),
+            ];
+          } else {
+            this.users = [...this.users, formattedUser];
+          }
+          this.newUser = { ...formattedUser };
+          this.editSuccess = true;
+          setTimeout(() => (this.editSuccess = null), 1500);
         } else {
           this.users = [...this.users, formattedUser];
         }
-        this.newUser = { ...formattedUser };
-        this.editSuccess = true;
-        setTimeout(() => this.editSuccess = null, 1500);
-      } else {
-        this.users = [...this.users, formattedUser];
-      }
 
-      this.closeModal();
-    },
-    error: (err) => {
-      if (this.isEditMode) {
-        this.editError = true;
-        setTimeout(() => this.editError = null, 1500);
-      }
-      alert(`${this.isEditMode ? 'Cập nhật' : 'Tạo'} thất bại!`);
-      console.error(err);
-    }
-  });
-}
+        this.closeModal();
+      },
+      error: (err) => {
+        if (this.isEditMode) {
+          this.editError = true;
+          setTimeout(() => (this.editError = null), 1500);
+        }
+        alert(`${this.isEditMode ? 'Cập nhật' : 'Tạo'} thất bại!`);
+        console.error(err);
+      },
+    });
+  }
 
-
-
-// Hàm phụ để lấy tên role từ roleid
-private getRoleNameById(roleid: number): string {
-  const role = this.roles?.find(r => r.id === roleid);
-  return role ? role.name : 'Unknown';
-}
+  // Hàm phụ để lấy tên role từ roleid
+  private getRoleNameById(roleid: number): string {
+    const role = this.roles?.find((r) => r.id === roleid);
+    return role ? role.name : 'Unknown';
+  }
 
   deleteUser(userid: number) {
     if (!confirm('Bạn có muốn xóa user này không?')) return;
@@ -416,8 +419,6 @@ private getRoleNameById(roleid: number): string {
     this.newUser = this.getEmptyUser();
   }
 
-
-
   //hàm kiểm tra điều kiện để nút Save sáng
   isFormValid(): boolean {
     return this.newUser.username?.trim() &&
@@ -438,80 +439,76 @@ private getRoleNameById(roleid: number): string {
     this.showDeleteModal = true;
   }
 
-confirmDeleteUser() {
-  if (!this.selectedUser?.userid) {
-    alert('Xóa thất bại: Không có ID người dùng!');
-    console.error('Không có ID để xóa!');
-    return;
+  confirmDeleteUser() {
+    if (!this.selectedUser?.userid) {
+      alert('Xóa thất bại: Không có ID người dùng!');
+      console.error('Không có ID để xóa!');
+      return;
+    }
+
+    this.userService.deleteUser(this.selectedUser.userid).subscribe({
+      next: () => {
+        // ✅ Sửa lại: dùng userid thay vì id
+        this.users = this.users.filter(
+          (u) => u.userid !== this.selectedUser.userid
+        );
+
+        // Cập nhật lại danh sách phân trang
+        const filtered = this.filteredUsers();
+        const totalAfterDelete = filtered.length;
+        const totalPages = Math.ceil(totalAfterDelete / this.pageSize);
+        const startIndex = (this.currentPage - 1) * this.pageSize;
+
+        if (startIndex >= totalAfterDelete && this.currentPage > 1) {
+          this.changePage(this.currentPage - 1);
+        }
+
+        this.isSuccess = true;
+        this.closeDeleteModal();
+      },
+      error: (err) => {
+        alert('Thất bại! - Xóa user không thành công.');
+        console.error('Xóa lỗi:', err);
+        this.isSuccess = false;
+      },
+    });
   }
-
-  this.userService.deleteUser(this.selectedUser.userid).subscribe({
-    next: () => {
-      // ✅ Sửa lại: dùng userid thay vì id
-      this.users = this.users.filter(
-        (u) => u.userid !== this.selectedUser.userid
-      );
-
-      // Cập nhật lại danh sách phân trang
-      const filtered = this.filteredUsers();
-      const totalAfterDelete = filtered.length;
-      const totalPages = Math.ceil(totalAfterDelete / this.pageSize);
-      const startIndex = (this.currentPage - 1) * this.pageSize;
-
-      if (startIndex >= totalAfterDelete && this.currentPage > 1) {
-        this.changePage(this.currentPage - 1);
-      }
-
-      this.isSuccess = true;
-      this.closeDeleteModal();
-    },
-    error: (err) => {
-      alert('Thất bại! - Xóa user không thành công.');
-      console.error('Xóa lỗi:', err);
-      this.isSuccess = false;
-    },
-  });
-}
-
 
   closeDeleteModal() {
     this.showDeleteModal = false;
     this.selectedUser = null;
   }
-<<<<<<< HEAD
-=======
-updateUserRole(user: any) {
-  // Lấy tên role để hiển thị trong thông báo
-  const roleName = this.roles.find(r => r.roleid === user.roleid)?.name || '';
 
-  this.userService.updateUserRole(user.userid, user.roleid).subscribe({
-    next: (res) => {
-      // 1. Set nội dung thông báo
-      this.alertMessage = `Đã đổi vai trò thành công`;
-      // 2. Bật cờ để hiện alert thành công
-      this.updateRoleSuccess = true;
-      // 3. Tự động ẩn alert sau 3 giây
-      setTimeout(() => {
-        this.updateRoleSuccess = false;
-      }, 3000);
-    },
-    error: (err) => {
-      // 1. Set nội dung lỗi
-      this.alertMessage = 'Cập nhật vai trò thất bại, vui lòng thử lại.';
-      // 2. Bật cờ để hiện alert lỗi
-      this.updateRoleError = true;
-      // 3. Tự động ẩn alert sau 3 giây
-      setTimeout(() => {
-        this.updateRoleError = false;
-      }, 3000);
+  updateUserRole(user: any) {
+    // Lấy tên role để hiển thị trong thông báo
+    const roleName =
+      this.roles.find((r) => r.roleid === user.roleid)?.name || '';
 
-      console.error('Update role failed', err);
-      // Quan trọng: Phục hồi lại role cũ trên giao diện nếu thất bại
-      this.loadUsers(); // Tải lại danh sách user để đảm bảo dữ liệu đúng
-    }
-  });
-}
+    this.userService.updateUserRole(user.userid, user.roleid).subscribe({
+      next: (res) => {
+        // 1. Set nội dung thông báo
+        this.alertMessage = `Đã đổi vai trò thành công`;
+        // 2. Bật cờ để hiện alert thành công
+        this.updateRoleSuccess = true;
+        // 3. Tự động ẩn alert sau 3 giây
+        setTimeout(() => {
+          this.updateRoleSuccess = false;
+        }, 3000);
+      },
+      error: (err) => {
+        // 1. Set nội dung lỗi
+        this.alertMessage = 'Cập nhật vai trò thất bại, vui lòng thử lại.';
+        // 2. Bật cờ để hiện alert lỗi
+        this.updateRoleError = true;
+        // 3. Tự động ẩn alert sau 3 giây
+        setTimeout(() => {
+          this.updateRoleError = false;
+        }, 3000);
 
-
->>>>>>> origin/dev/dangvh
+        console.error('Update role failed', err);
+        // Quan trọng: Phục hồi lại role cũ trên giao diện nếu thất bại
+        this.loadUsers(); // Tải lại danh sách user để đảm bảo dữ liệu đúng
+      },
+    });
+  }
 }
