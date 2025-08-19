@@ -11,9 +11,12 @@ const authService = {
 
     const existingUser = await User.findOne({ where: { email: emailNorm } });
     if (existingUser) throw new Error("Email already in use.");
+
+    
     const existingUsername = await User.unscoped().findOne({
       where: { username },
     });
+
     if (existingUsername) {
       throw new Error("Username already exists");
     }
@@ -40,8 +43,18 @@ const authService = {
     const { first_name, last_name, email, username, password } = data;
     const emailNorm = String(email || "").trim().toLowerCase();
 
+        // ✅ Check username
+  const existingUsername = await User.unscoped().findOne({
+    where: { username },
+  });
+    if (existingUsername) {
+    throw new Error("Username already exists");
+  }
+
     const existingUser = await User.findOne({ where: { email: emailNorm } });
     if (existingUser) throw new Error("Email already in use.");
+
+  
 
     const adminRole = await Role.findOne({ where: { name: "Admin" } });
     if (!adminRole)

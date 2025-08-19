@@ -687,18 +687,14 @@ async deletePost(postid, userid = null) {
    */
   async approvePost(postid) {
     const post = await Post.findByPk(postid);
+    if (!post) throw new Error("Post not found");
 
-    if (!post) {
-      throw new Error("Post not found");
-    }
-
-    if (post.status === 1) {
-      throw new Error("Post is already approved");
+    // ✅ CHỈ cho phép từ pending (0) sang approved (1)
+    if (post.status !== 0) {
+      throw new Error("Only pending posts (status 0) can be approved");
     }
 
     await post.update({ status: 1 });
-
-    // Return updated post with associations
     return await Post.scope("full").findByPk(postid);
   },
 
@@ -708,21 +704,35 @@ async deletePost(postid, userid = null) {
    * @returns {Object} - Updated post
    */
   async rejectPost(postid) {
-    const post = await Post.findByPk(postid);
+  const post = await Post.findByPk(postid);
+  if (!post) throw new Error("Post not found");
 
-    if (!post) {
-      throw new Error("Post not found");
-    }
+  // ✅ CHỈ cho phép từ pending (0) sang rejected (-1)
+  if (post.status !== 0) {
+    throw new Error("Only pending posts (status 0) can be rejected");
+  }
 
-    if (post.status === -1) {
-      throw new Error("Post is already rejected");
-    }
+  await post.update({ status: -1 });
+  return await Post.scope("full").findByPk(postid);
+},
 
-    await post.update({ status: -1 });
+/**
+   * Reject post (admin only)
+   * @param {number} postid - Post ID
+   * @returns {Object} - Updated post
+   */
+  async rejectPost(postid) {
+  const post = await Post.findByPk(postid);
+  if (!post) throw new Error("Post not found");
 
-    // Return updated post with associations
-    return await Post.scope("full").findByPk(postid);
-  },
+  // ✅ CHỈ cho phép từ pending (0) sang rejected (-1)
+  if (post.status !== 0) {
+    throw new Error("Only pending posts (status 0) can be rejected");
+  }
+
+  await post.update({ status: -1 });
+  return await Post.scope("full").findByPk(postid);
+},
 
   /**
    * Get user's own posts

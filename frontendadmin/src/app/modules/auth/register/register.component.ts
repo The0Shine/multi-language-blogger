@@ -59,6 +59,7 @@ export class RegisterComponent {
           Validators.required,
           Validators.minLength(3),
           Validators.maxLength(30),
+          Validators.pattern(/^[a-zA-Z0-9]+$/), // ✅ Chỉ cho chữ & số
           noWhitespaceValidator, // Thêm validator không dấu cách
           capitalizedFirstLetterValidator, // Thêm validator viết hoa chữ cái đầu
         ],
@@ -86,6 +87,7 @@ export class RegisterComponent {
 
   onSubmit(): void {
     this.errorMessage = null; // Reset lỗi cũ
+
     if (this.registerForm.invalid) {
       this.registerForm.markAllAsTouched();
       return;
@@ -95,7 +97,6 @@ export class RegisterComponent {
       this.registerForm.value;
 
     if (!this.passwordsMatch(password, confirmPassword)) {
-      // ✅ Hiển thị lỗi dưới ô confirmPassword thay vì lỗi chung
       this.f['confirmPassword'].setErrors({ mismatch: true });
       return;
     }
@@ -119,20 +120,51 @@ export class RegisterComponent {
           }, 5000);
         },
         error: (err) => {
-          console.error(err);
-          // ✅ Xử lý lỗi cụ thể từ back-end
-          // Giả định back-end trả về lỗi có `code` hoặc `field`
+          console.error('Register error:', err);
           const errorData = err.error;
-          switch (errorData?.code) {
-            case 'USERNAME_EXISTS':
-              this.errorMessage = 'Username này đã được sử dụng.';
-              break;
-            case 'EMAIL_EXISTS':
-              this.errorMessage = 'Email này đã được sử dụng.';
-              break;
-            default:
-              this.errorMessage = errorData?.message || 'Có lỗi xảy ra, vui lòng thử lại.';
+
+          // ✅ Trường hợp UNIQUE constraint (username / email trùng)
+          if (errorData?.name === 'SequelizeUniqueConstraintError') {
+            const field = errorData.errors?.[0]?.path;
+            if (field === 'username') {
+              this.f['username'].setErrors({
+                backend: 'Username này đã được sử dụng.',
+              });
+            } else if (field === 'email') {
+              this.f['email'].setErrors({
+                backend: 'Email này đã được sử dụng.',
+              });
+            }
+            return;
           }
+
+          // ✅ Trường hợp ValidationError (BE custom message)
+          if (errorData?.name === 'SequelizeValidationError') {
+            const field = errorData.errors?.[0]?.path;
+            const message = errorData.errors?.[0]?.message;
+            if (field && this.f[field]) {
+              this.f[field].setErrors({ backend: message });
+              return;
+            }
+          }
+
+          // ✅ Nếu BE trả về code riêng
+          if (errorData?.code === 'USERNAME_EXISTS') {
+            this.f['username'].setErrors({
+              backend: 'Username này đã được sử dụng.',
+            });
+            return;
+          }
+          if (errorData?.code === 'EMAIL_EXISTS') {
+            this.f['email'].setErrors({
+              backend: 'Email này đã được sử dụng.',
+            });
+            return;
+          }
+
+          // ✅ Fallback error
+          this.errorMessage =
+            errorData?.message || 'Có lỗi xảy ra, vui lòng thử lại.';
         },
       });
   }

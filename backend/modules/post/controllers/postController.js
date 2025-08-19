@@ -210,50 +210,37 @@ destroy: async (req, res) => {
   }
 },
 
-
-  approve: async (req, res) => {
-    try {
-      const { postid } = req.params;
-      const updatedPost = await postService.approvePost(postid);
-
-      return responseUtils.ok(
-        res,
-        { post: updatedPost },
-        "Post approved successfully"
-      );
-    } catch (error) {
-      console.error("Approve post error:", error);
-      if (error.message === "Post not found") {
-        return responseUtils.notFound(res, error.message);
-      }
-      if (error.message === "Post is already approved") {
-        return responseUtils.badRequest(res, error.message);
-      }
-      return responseUtils.error(res, "Failed to approve post", error.message);
+approve: async (req, res) => {
+  try {
+    const { postid } = req.params;
+    const updatedPost = await postService.approvePost(postid);
+    return responseUtils.ok(res, { post: updatedPost }, "Post approved successfully");
+  } catch (error) {
+    if (error.message.startsWith("Only pending posts")) {
+      return responseUtils.badRequest(res, error.message); // 400 rõ ràng
     }
-  },
-
-  reject: async (req, res) => {
-    try {
-      const { postid } = req.params;
-      const updatedPost = await postService.rejectPost(postid);
-
-      return responseUtils.ok(
-        res,
-        { post: updatedPost },
-        "Post rejected successfully"
-      );
-    } catch (error) {
-      console.error("Reject post error:", error);
-      if (error.message === "Post not found") {
-        return responseUtils.notFound(res, error.message);
-      }
-      if (error.message === "Post is already rejected") {
-        return responseUtils.badRequest(res, error.message);
-      }
-      return responseUtils.error(res, "Failed to reject post", error.message);
+    if (error.message === "Post not found") {
+      return responseUtils.notFound(res, error.message);
     }
-  },
+    return responseUtils.error(res, "Failed to approve post", error.message);
+  }
+},
+
+reject: async (req, res) => {
+  try {
+    const { postid } = req.params;
+    const updatedPost = await postService.rejectPost(postid);
+    return responseUtils.ok(res, { post: updatedPost }, "Post rejected successfully");
+  } catch (error) {
+    if (error.message.startsWith("Only pending posts")) {
+      return responseUtils.badRequest(res, error.message);
+    }
+    if (error.message === "Post not found") {
+      return responseUtils.notFound(res, error.message);
+    }
+    return responseUtils.error(res, "Failed to reject post", error.message);
+  }
+},
 
   getMyPosts: async (req, res) => {
     try {
