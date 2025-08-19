@@ -22,8 +22,7 @@ const languageController = {
   // List languages (?onlyActive=1 optional)
   getAll: async (req, res) => {
     try {
-      const onlyActive = true;
-      console.log(onlyActive, "2222222222");
+      const onlyActive = req.query.onlyActive === "true";
 
       const languages = await languageService.getAll({ onlyActive });
       return responseUtils.ok(res, {

@@ -33,13 +33,11 @@ const languageService = {
   // List languages
   getAll: async ({ onlyActive = true } = {}) => {
     const where = {};
-    console.log(onlyActive);
 
     if (onlyActive) {
       where.status = 1;
       where.deleted_at = null;
     }
-    console.log(where, "111111111111111111111");
 
     return Language.findAll({
       attributes: [
