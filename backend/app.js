@@ -49,7 +49,7 @@ sequelize
     console.error("❌ Unable to connect to the database:", err);
   });
 
-  // =================================================================
+// =================================================================
 // <<< BƯỚC 3: THIẾT LẬP LOGIC CHO SOCKET.IO >>>
 // =================================================================
 
@@ -86,7 +86,6 @@ app.use((req, res, next) => {
   req.userSocketMap = userSocketMap;
   next();
 });
-
 
 // Swagger documentation (temporarily disabled)
 // app.use(

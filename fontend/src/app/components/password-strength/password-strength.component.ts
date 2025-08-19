@@ -16,7 +16,9 @@ export interface PasswordCriteria {
     <div class="mt-3" *ngIf="password">
       <!-- Strength Bar -->
       <div class="flex items-center space-x-3 mb-2">
-        <span class="text-sm text-gray-600 min-w-0 flex-shrink-0">Độ mạnh:</span>
+        <span class="text-sm text-gray-600 min-w-0 flex-shrink-0"
+          >Độ mạnh:</span
+        >
         <div class="flex-1 bg-gray-200 rounded-full h-2">
           <div
             class="h-2 rounded-full transition-all duration-300"
@@ -24,7 +26,10 @@ export interface PasswordCriteria {
             [style.background-color]="strengthColor"
           ></div>
         </div>
-        <span class="text-xs font-medium min-w-0 flex-shrink-0" [style.color]="strengthColor">
+        <span
+          class="text-xs font-medium min-w-0 flex-shrink-0"
+          [style.color]="strengthColor"
+        >
           {{ strengthLabel }}
         </span>
       </div>
@@ -61,7 +66,7 @@ export interface PasswordCriteria {
       </div>
     </div>
   `,
-  styles: []
+  styles: [],
 })
 export class PasswordStrengthComponent implements OnChanges {
   @Input() password: string = '';
@@ -71,32 +76,27 @@ export class PasswordStrengthComponent implements OnChanges {
       id: 'length',
       label: '6+ ký tự',
       met: false,
-      required: true
+      required: true,
     },
     {
       id: 'uppercase',
       label: 'Chữ hoa',
       met: false,
-      required: false
+      required: false,
     },
-    {
-      id: 'lowercase',
-      label: 'Chữ thường',
-      met: false,
-      required: false
-    },
+
     {
       id: 'number',
       label: 'Số',
       met: false,
-      required: false
+      required: false,
     },
     {
       id: 'special',
       label: 'Ký tự đặc biệt',
       met: false,
-      required: false
-    }
+      required: false,
+    },
   ];
 
   strengthPercentage = 0;
@@ -113,7 +113,7 @@ export class PasswordStrengthComponent implements OnChanges {
   private checkPasswordCriteria(): void {
     const password = this.password || '';
 
-    this.criteriaList.forEach(criteria => {
+    this.criteriaList.forEach((criteria) => {
       switch (criteria.id) {
         case 'length':
           criteria.met = password.length >= 6;
@@ -121,9 +121,7 @@ export class PasswordStrengthComponent implements OnChanges {
         case 'uppercase':
           criteria.met = /[A-Z]/.test(password);
           break;
-        case 'lowercase':
-          criteria.met = /[a-z]/.test(password);
-          break;
+
         case 'number':
           criteria.met = /[0-9]/.test(password);
           break;
@@ -135,10 +133,12 @@ export class PasswordStrengthComponent implements OnChanges {
   }
 
   private calculateStrength(): void {
-    const metCriteria = this.criteriaList.filter(c => c.met).length;
+    const metCriteria = this.criteriaList.filter((c) => c.met).length;
     const totalCriteria = this.criteriaList.length;
-    const requiredMet = this.criteriaList.filter(c => c.required && c.met).length;
-    const totalRequired = this.criteriaList.filter(c => c.required).length;
+    const requiredMet = this.criteriaList.filter(
+      (c) => c.required && c.met
+    ).length;
+    const totalRequired = this.criteriaList.filter((c) => c.required).length;
 
     // Calculate percentage based on met criteria
     this.strengthPercentage = Math.max((metCriteria / totalCriteria) * 100, 10);
@@ -159,19 +159,16 @@ export class PasswordStrengthComponent implements OnChanges {
     } else if (metCriteria === 4) {
       this.strengthLabel = 'Mạnh';
       this.strengthColor = '#22c55e';
-    } else if (metCriteria === 5) {
-      this.strengthLabel = 'Rất mạnh';
-      this.strengthColor = '#16a34a';
     }
   }
 
   // Public method to check if password meets minimum requirements
   public isPasswordValid(): boolean {
-    return this.criteriaList.filter(c => c.required).every(c => c.met);
+    return this.criteriaList.filter((c) => c.required).every((c) => c.met);
   }
 
   // Public method to get strength score (0-5)
   public getStrengthScore(): number {
-    return this.criteriaList.filter(c => c.met).length;
+    return this.criteriaList.filter((c) => c.met).length;
   }
 }

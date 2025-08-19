@@ -351,6 +351,7 @@ export class PostDetailComponent implements OnInit, OnDestroy {
     this.postService.getComments(+postId, page).subscribe((result) => {
       if (page === 1) {
         this.comments = result.comments;
+        console.log(this.comments, '22222222222222222222222222');
       } else {
         this.comments = [...this.comments, ...result.comments];
       }

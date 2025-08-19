@@ -63,7 +63,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (!password) {
       passwordStrength.className = "password-strength";
       passwordHelp.textContent =
-        "Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.";
+        "Password must be at least 6 characters long and include uppercase, lowercase, number, and special character.";
       passwordHelp.className = "text-sm text-gray-500 mt-2";
       return;
     }

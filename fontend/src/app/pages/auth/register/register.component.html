@@ -35,16 +35,16 @@
               name="first_name"
               [(ngModel)]="userData.first_name"
               (blur)="onFieldBlur('first_name')"
-              (input)="submitted && validateField('first_name')"
+              (input)="onFieldInput('first_name')"
               required
               [class]="getInputClasses('first_name')"
               placeholder="John"
             />
             <div
-              *ngIf="submitted && fieldErrors.first_name"
+              *ngIf="fieldErrors.first_name"
               class="mt-1 text-sm text-red-600"
             >
-              First name is required
+              {{ fieldErrorMessages.first_name }}
             </div>
           </div>
           <div>
@@ -60,16 +60,16 @@
               name="last_name"
               [(ngModel)]="userData.last_name"
               (blur)="onFieldBlur('last_name')"
-              (input)="submitted && validateField('last_name')"
+              (input)="onFieldInput('last_name')"
               required
               [class]="getInputClasses('last_name')"
               placeholder="Doe"
             />
             <div
-              *ngIf="submitted && fieldErrors.last_name"
+              *ngIf="fieldErrors.last_name"
               class="mt-1 text-sm text-red-600"
             >
-              Last name is required
+              {{ fieldErrorMessages.last_name }}
             </div>
           </div>
         </div>
@@ -106,7 +106,7 @@
               name="username"
               [(ngModel)]="userData.username"
               (blur)="onFieldBlur('username')"
-              (input)="submitted && validateField('username')"
+              (input)="onFieldInput('username')"
               required
               [class]="getInputClassesWithPadding('username', true, false)"
               placeholder="Choose a unique username"
@@ -116,11 +116,8 @@
             Username must be 3-30 characters, letters, numbers, and underscores
             only
           </p>
-          <div
-            *ngIf="submitted && fieldErrors.username"
-            class="mt-1 text-sm text-red-600"
-          >
-            Username is required
+          <div *ngIf="fieldErrors.username" class="mt-1 text-sm text-red-600">
+            {{ fieldErrorMessages.username }}
           </div>
         </div>
 
@@ -156,20 +153,14 @@
               name="email"
               [(ngModel)]="userData.email"
               (blur)="onFieldBlur('email')"
-              (input)="submitted && validateField('email')"
+              (input)="onFieldInput('email')"
               required
               [class]="getInputClassesWithPadding('email', true, false)"
               placeholder="Enter your email address"
             />
           </div>
-          <div
-            *ngIf="submitted && fieldErrors.email"
-            class="mt-1 text-sm text-red-600"
-          >
-            <span *ngIf="!userData.email.trim()">Email is required</span>
-            <span *ngIf="userData.email.trim() && !isValidEmail(userData.email)"
-              >Please enter a valid email address</span
-            >
+          <div *ngIf="fieldErrors.email" class="mt-1 text-sm text-red-600">
+            {{ fieldErrorMessages.email }}
           </div>
         </div>
 
@@ -251,20 +242,8 @@
             [password]="userData.password"
           >
           </app-password-strength>
-          <div
-            *ngIf="submitted && fieldErrors.password"
-            class="mt-1 text-sm text-red-600"
-          >
-            <span *ngIf="!userData.password">Password is required</span>
-            <span
-              *ngIf="
-                userData.password &&
-                passwordStrengthComponent &&
-                !passwordStrengthComponent.isPasswordValid()
-              "
-            >
-              Password must be at least 6 characters long
-            </span>
+          <div *ngIf="fieldErrors.password" class="mt-1 text-sm text-red-600">
+            {{ fieldErrorMessages.password }}
           </div>
         </div>
 
@@ -300,7 +279,7 @@
               name="password_confirmation"
               [(ngModel)]="userData.password_confirmation"
               (blur)="onFieldBlur('password_confirmation')"
-              (input)="submitted && validateField('password_confirmation')"
+              (input)="onFieldInput('password_confirmation')"
               required
               [class]="
                 getInputClassesWithPadding('password_confirmation', true, false)
@@ -309,20 +288,10 @@
             />
           </div>
           <div
-            *ngIf="submitted && fieldErrors.password_confirmation"
+            *ngIf="fieldErrors.password_confirmation"
             class="mt-1 text-sm text-red-600"
           >
-            <span *ngIf="!userData.password_confirmation"
-              >Password confirmation is required</span
-            >
-            <span
-              *ngIf="
-                userData.password_confirmation &&
-                userData.password !== userData.password_confirmation
-              "
-            >
-              Passwords do not match
-            </span>
+            {{ fieldErrorMessages.password_confirmation }}
           </div>
         </div>
 

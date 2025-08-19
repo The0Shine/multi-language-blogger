@@ -639,7 +639,7 @@ export class PostService {
       commentid: comment.commentid,
       author: comment.author,
       content: comment.content,
-      created_at: new Date(comment.created_at),
+      created_at: new Date(comment.createdAt),
       authorUser: comment.authorUser
         ? {
             userid: comment.authorUser.userid,

@@ -55,6 +55,11 @@ export class CommentSectionComponent {
   }
 
   formatDate(date: Date): string {
+    console.log('=== FORMAT DATE DEBUG ===');
+    console.log('Input:', date);
+    console.log('Type:', typeof date);
+    console.log('Is Date object:', date instanceof Date);
+
     const now = new Date();
     const diffTime = Math.abs(now.getTime() - date.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
@@ -87,6 +92,8 @@ export class CommentSectionComponent {
   }
 
   getAuthorDisplayName(comment: Comment): string {
+    console.log(comment);
+
     if (comment.authorUser) {
       const fullName =
         `${comment.authorUser.first_name} ${comment.authorUser.last_name}`.trim();

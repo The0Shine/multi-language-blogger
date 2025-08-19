@@ -1,5 +1,5 @@
 const { body, param, query } = require("express-validator");
-
+const { User } = require("models");
 const userValidation = {
   // Validation for getting all users
   getAllUsers: [
@@ -108,7 +108,17 @@ const userValidation = {
       .withMessage("Please provide a valid email address")
       .matches(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)
       .withMessage("Email format is invalid")
-      .normalizeEmail(),
+      .normalizeEmail()
+      .custom(async (value) => {
+        const existingUser = await User.findOne({
+          where: { email: value }, // $ne nghĩa là khác userid hiện tại
+        });
+        if (existingUser) {
+          throw new Error("Email is already in use");
+        }
+        return true;
+      }),
+    ,
   ],
 };
 module.exports = userValidation;

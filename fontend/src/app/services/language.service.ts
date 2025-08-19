@@ -251,7 +251,7 @@ export class LanguageService {
         'profile.delete_my_account': 'Delete My Account',
         'profile.delete_account_info':
           'Deleting your account will remove all your posts and comments.',
-        'profile.password_hint': 'Password must be at least 8 characters',
+        'profile.password_hint': 'Password must be at least 6 characters',
         'profile.char_limit': 'Character limit: {{max}}',
         'profile.password_strength': 'Password strength',
 
@@ -334,7 +334,7 @@ export class LanguageService {
         'profile.delete_my_account': 'Xóa tài khoản của tôi',
         'profile.delete_account_info':
           'Xóa tài khoản sẽ xóa tất cả bài viết và bình luận của bạn.',
-        'profile.password_hint': 'Mật khẩu phải có ít nhất 8 ký tự',
+        'profile.password_hint': 'Mật khẩu phải có ít nhất 6 ký tự',
         'profile.char_limit': 'Giới hạn ký tự: {{max}}',
         'profile.password_strength': 'Độ mạnh mật khẩu',
 
@@ -417,7 +417,7 @@ export class LanguageService {
         'profile.delete_account_info':
           'Supprimer votre compte supprimera tous vos articles et commentaires.',
         'profile.password_hint':
-          'Le mot de passe doit contenir au moins 8 caractères',
+          'Le mot de passe doit contenir au moins 6 caractères',
         'profile.char_limit': 'Limite de caractères: {{max}}',
         'profile.password_strength': 'Force du mot de passe',
 
@@ -500,7 +500,7 @@ export class LanguageService {
         'profile.delete_my_account': 'Mein Konto löschen',
         'profile.delete_account_info':
           'Das Löschen Ihres Kontos entfernt alle Ihre Beiträge und Kommentare.',
-        'profile.password_hint': 'Passwort muss mindestens 8 Zeichen haben',
+        'profile.password_hint': 'Passwort muss mindestens 6 Zeichen haben',
         'profile.char_limit': 'Zeichenlimit: {{max}}',
         'profile.password_strength': 'Passwortstärke',
 
@@ -584,7 +584,7 @@ export class LanguageService {
         'profile.delete_my_account': '내 계정 삭제',
         'profile.delete_account_info':
           '계정을 삭제하면 모든 게시물과 댓글이 제거됩니다.',
-        'profile.password_hint': '비밀번호는 최소 8자 이상이어야 합니다',
+        'profile.password_hint': '비밀번호는 최소 6자 이상이어야 합니다',
         'profile.char_limit': '문자 제한: {{max}}',
         'profile.password_strength': '비밀번호 강도',
 
@@ -663,7 +663,7 @@ export class LanguageService {
         'profile.delete_account': '删除账户',
         'profile.delete_my_account': '删除我的账户',
         'profile.delete_account_info': '删除您的账户将移除所有您的文章和评论。',
-        'profile.password_hint': '密码必须至少8个字符',
+        'profile.password_hint': '密码必须至少6个字符',
         'profile.char_limit': '字符限制：{{max}}',
         'profile.password_strength': '密码强度',
 
