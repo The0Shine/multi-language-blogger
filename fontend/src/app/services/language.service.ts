@@ -279,7 +279,89 @@ export class LanguageService {
         'message.post_updated': 'Post updated successfully',
         'message.post_deleted': 'Post deleted successfully',
       },
+      es: {
+        // Navigation
+        'nav.home': 'Inicio',
+        'nav.write': 'Escribir',
+        'nav.profile': 'Perfil',
+        'nav.login': 'Iniciar sesión',
+        'nav.register': 'Registrarse',
+        'nav.logout': 'Cerrar sesión',
+        'nav.my_stories': 'Mis historias',
 
+        // Common
+        'common.loading': 'Cargando...',
+        'common.save': 'Guardar',
+        'common.saving': 'Guardando...',
+        'common.processing': 'Procesando...',
+        'common.cancel': 'Cancelar',
+        'common.delete': 'Eliminar',
+        'common.edit': 'Editar',
+        'common.publish': 'Publicar',
+        'common.draft': 'Borrador',
+        'common.search': 'Buscar',
+        'common.language': 'Idioma',
+
+        // Posts
+        'post.title': 'Título',
+        'post.content': 'Contenido',
+        'post.author': 'Autor',
+        'post.created_at': 'Creado el',
+        'post.read_more': 'Leer más',
+        'post.comments': 'Comentarios',
+        'post.no_posts': 'No se encontraron publicaciones',
+
+        // Comments
+        'comment.add': 'Agregar comentario',
+        'comment.reply': 'Responder',
+        'comment.no_comments': 'Aún no hay comentarios',
+        'comment.placeholder': 'Escribir un comentario...',
+
+        // Profile
+        'profile.title': 'Información del perfil',
+        'profile.first_name': 'Nombre',
+        'profile.last_name': 'Apellido',
+        'profile.username': 'Nombre de usuario',
+        'profile.email': 'Correo electrónico',
+        'profile.update': 'Actualizar perfil',
+        'profile.change_password': 'Cambiar contraseña',
+        'profile.current_password': 'Contraseña actual',
+        'profile.new_password': 'Nueva contraseña',
+        'profile.confirm_password': 'Confirmar contraseña',
+        'profile.danger_zone': 'Zona peligrosa',
+        'profile.delete_account': 'Eliminar cuenta',
+        'profile.delete_my_account': 'Eliminar mi cuenta',
+        'profile.delete_account_info':
+          'Eliminar tu cuenta borrará todas tus publicaciones y comentarios.',
+        'profile.password_hint':
+          'La contraseña debe tener al menos 6 caracteres',
+        'profile.char_limit': 'Límite de caracteres: {{max}}',
+        'profile.password_strength': 'Seguridad de la contraseña',
+
+        // My Stories
+        'mystories.title': 'Tus historias',
+        'mystories.subtitle':
+          'Gestiona y rastrea tus historias publicadas y borradores',
+        'mystories.write_new': 'Escribir nueva historia',
+        'mystories.view_story': 'Ver historia',
+        'mystories.edit_story': 'Editar historia',
+        'mystories.delete_story': 'Eliminar historia',
+        'mystories.last_edited': 'Última edición',
+        'mystories.no_posts': 'No se encontraron historias',
+        'mystories.confirm_delete': 'Confirmar eliminación',
+        'mystories.delete_warning':
+          '¿Estás seguro de que quieres eliminar esta historia?',
+        'mystories.delete_info':
+          'Todas las traducciones de esta historia también serán eliminadas.',
+        'mystories.cannot_undo': 'Esta acción no se puede deshacer',
+
+        // Messages
+        'message.success': '¡Éxito!',
+        'message.error': 'Ocurrió un error',
+        'message.post_created': 'Publicación creada exitosamente',
+        'message.post_updated': 'Publicación actualizada exitosamente',
+        'message.post_deleted': 'Publicación eliminada exitosamente',
+      },
       vi_VN: {
         // Navigation
         'nav.home': 'Trang chủ',
