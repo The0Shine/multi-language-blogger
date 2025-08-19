@@ -142,15 +142,25 @@ ngOnInit() {
 
     const name = this.modalCategory.category_name?.trim() || '';
 
-    // 🔎 check trùng category_name
-    const isDuplicate = this.categories.some(
+  let isDuplicate = false;
+  if (this.editingCategory) { // Vẫn dùng biến boolean để kiểm tra chế độ
+    isDuplicate = this.categories.some(
+      (c) =>
+        c.category_name.trim().toLowerCase() === name.toLowerCase() &&
+        // <<< SỬA LẠI DÒNG NÀY >>>
+        // Lấy ID từ modalCategory thay vì editingCategory
+        c.categoryid !== this.modalCategory.categoryid
+    );
+  } else {
+    isDuplicate = this.categories.some(
       (c) => c.category_name.trim().toLowerCase() === name.toLowerCase()
     );
+  }
 
-    if (isDuplicate) {
-      this.validationErrors.category_name = 'Tên Category đã tồn tại';
-      return;
-    }
+if (isDuplicate) {
+  this.validationErrors.category_name = 'Tên Category đã tồn tại';
+  return;
+}
 
     const payload = {
       category_name: name,

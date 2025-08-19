@@ -76,15 +76,12 @@ onSubmit(): void {
 
   const { username, password, rememberMe } = this.loginForm.value;
 
-  const formattedUsername = username.charAt(0).toUpperCase() + username.slice(1);
-  if (username !== formattedUsername) {
-    this.errorMessage = 'Username must be capitalized.';
-    this.isLoading = false;
-    return;
-  }
+
+   // chuẩn hóa username về lowercase
+  const normalizedUsername = username.trim().toLowerCase();
 
   // AuthService sẽ tự động lưu token và user vào localStorage khi thành công
-  this.authService.login(formattedUsername, password).subscribe({
+  this.authService.login(normalizedUsername, password).subscribe({
     next: (res) => {
       this.isLoading = false;
 
@@ -102,7 +99,7 @@ onSubmit(): void {
       // Nếu mọi thứ ổn, điều hướng đến trang chủ
       // Ghi nhớ username nếu người dùng chọn
       if (rememberMe) {
-        localStorage.setItem('savedUsername', formattedUsername);
+        localStorage.setItem('savedUsername', normalizedUsername);
       } else {
         localStorage.removeItem('savedUsername');
       }

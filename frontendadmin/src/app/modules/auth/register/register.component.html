@@ -44,7 +44,7 @@
             <p *ngIf="f['username'].hasError('minlength')">Username must be at least 3 characters long.</p>
             <p *ngIf="f['username'].hasError('maxlength')">Username cannot exceed 30 characters.</p>
             <p *ngIf="f['username'].hasError('whitespace')">Username cannot contain whitespace.</p>
-            <p *ngIf="f['username'].hasError('notCapitalized')">Username must start with a capital letter.</p>
+
             <p *ngIf="f['username'].hasError('duplicate')">
               This username is already taken.
             </p>

@@ -61,7 +61,7 @@ export class RegisterComponent {
           Validators.maxLength(30),
           Validators.pattern(/^[a-zA-Z0-9]+$/), // ✅ Chỉ cho chữ & số
           noWhitespaceValidator, // Thêm validator không dấu cách
-          capitalizedFirstLetterValidator, // Thêm validator viết hoa chữ cái đầu
+
         ],
       ],
       password: ['', [Validators.required, Validators.minLength(6)]],
