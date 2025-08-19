@@ -9,7 +9,7 @@
   </div>
 </div>
 
-<div class="card">
+<div *ngIf="canViewPosts" class="card">
   <div class="card-title">Recent Posts</div>
   <table>
     <thead>
@@ -73,7 +73,7 @@
       <!-- Nội dung -->
       <div class="modal-body">
         <div class="d-flex justify-content-between flex-wrap mb-3 border-bottom pb-2">
-          <div><strong>Người tạo:</strong> {{ selectedPost?.username || 'Không rõ' }}</div>
+          <div><strong>Người tạo:</strong> {{ selectedPost.author.username }}</div>
       <div><strong>Ngày tạo:</strong> {{ (selectedPost?.created_at || selectedPost?.createdAt) | date: 'dd/MM/yyyy HH:mm' }}</div>
 
 

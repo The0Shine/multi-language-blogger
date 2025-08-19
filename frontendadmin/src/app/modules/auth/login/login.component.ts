@@ -5,6 +5,7 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../auth.service';
 import jwtDecode from 'jwt-decode';
+import { ActivatedRoute } from '@angular/router'; // Import ActivatedRoute
 
 @Component({
   selector: 'app-login',
@@ -18,26 +19,34 @@ export class LoginComponent implements OnInit {
   showPassword = false;
   isLoading = false;
   errorMessage: string | null = null;
+  loginMessage: string | null = null; // Biến để lưu thông báo
 
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private route: ActivatedRoute // Thêm ActivatedRoute vào constructor
   ) {
-    this.loginForm = this.fb.group({
-      username: ['', Validators.required],
-      password: ['', Validators.required],
+   this.loginForm = this.fb.group({
+      username: ['', [
+        Validators.required,
+        Validators.minLength(3),
+        Validators.maxLength(50)
+      ]],
+      password: ['', [
+        Validators.required,
+        Validators.minLength(3),
+        Validators.maxLength(50)
+      ]],
       rememberMe: [false],
     });
   }
 
   ngOnInit() {
-    // 🔹 Xóa token khi vào trang login
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('user');
 
-    // 🔹 Nếu đã lưu username → điền vào form
     const savedUsername = localStorage.getItem('savedUsername');
     if (savedUsername) {
       this.loginForm.patchValue({
@@ -45,79 +54,74 @@ export class LoginComponent implements OnInit {
         rememberMe: true,
       });
     }
+     this.route.queryParams.subscribe(params => {
+      this.loginMessage = params['message'] || null;
+    });
   }
 
   togglePassword(): void {
     this.showPassword = !this.showPassword;
   }
 
-  onSubmit(): void {
-    if (this.isLoading) return;
-    if (this.loginForm.invalid) {
-      this.loginForm.markAllAsTouched();
-      return;
-    }
+onSubmit(): void {
+  if (this.isLoading) return;
 
-    this.isLoading = true;
-    this.errorMessage = null;
-
-    const { username, password, rememberMe } = this.loginForm.value;
-
-    this.authService.login(username, password).subscribe({
-      next: (res) => {
-        console.log('📌 Login API response:', res);
-
-        if (res && res.success) {
-          const { accessToken, refreshToken, message } = res.data;
-
-          const decoded: any = jwtDecode(accessToken);
-
-          if (+decoded.roleid !== 2) {
-            this.errorMessage = 'Bạn không có quyền truy cập!';
-            this.isLoading = false;
-            return;
-          }
-
-          if (rememberMe) {
-            localStorage.setItem('savedUsername', username);
-          } else {
-            localStorage.removeItem('savedUsername');
-          }
-
-          localStorage.setItem('accessToken', accessToken);
-          localStorage.setItem('refreshToken', refreshToken);
-
-          // ✅ Lưu username kèm vào user object
-          localStorage.setItem(
-            'user',
-            JSON.stringify({
-              userid: decoded.userid,
-              roleid: decoded.roleid,
-              username: username, // lấy từ form login
-            })
-          );
-
-          this.router.navigate(['/admin/home']);
-        } else {
-          this.errorMessage = 'Invalid username or password.';
-        }
-
-        this.isLoading = false;
-      },
-      error: (err) => {
-        console.error('Login error:', err);
-
-        // Xóa token và user nếu login fail
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
-        localStorage.removeItem('user');
-
-        this.errorMessage = err.error?.message || 'Login failed';
-        this.isLoading = false;
-      },
-    });
+  if (this.loginForm.invalid) {
+    this.loginForm.markAllAsTouched();
+    return;
   }
 
+  this.isLoading = true;
+  this.errorMessage = null;
+
+  const { username, password, rememberMe } = this.loginForm.value;
+
+  const formattedUsername = username.charAt(0).toUpperCase() + username.slice(1);
+  if (username !== formattedUsername) {
+    this.errorMessage = 'Username must be capitalized.';
+    this.isLoading = false;
+    return;
+  }
+
+  // AuthService sẽ tự động lưu token và user vào localStorage khi thành công
+  this.authService.login(formattedUsername, password).subscribe({
+    next: (res) => {
+      this.isLoading = false;
+
+      // Lấy thông tin user mà AuthService vừa lưu để kiểm tra
+      const user = this.authService.getUser();
+
+      // Kiểm tra roleid sau khi đã chắc chắn đăng nhập thành công
+      if (user && user.roleid === 1) {
+        this.errorMessage = 'User does not have access.';
+        // Xóa token vừa được lưu vì user này không có quyền
+        this.authService.logout();
+        return;
+      }
+
+      // Nếu mọi thứ ổn, điều hướng đến trang chủ
+      // Ghi nhớ username nếu người dùng chọn
+      if (rememberMe) {
+        localStorage.setItem('savedUsername', formattedUsername);
+      } else {
+        localStorage.removeItem('savedUsername');
+      }
+      this.router.navigate(['/admin/home']);
+    },
+    error: (err) => {
+      this.isLoading = false;
+      console.error('Login error:', err);
+
+      // Luồng xử lý lỗi của bạn được giữ nguyên
+      const serverMessage = err.error?.message;
+      if (serverMessage === 'Refresh token is required.') {
+        this.errorMessage = 'Wrong account or password';
+      } else {
+        this.errorMessage = serverMessage || 'Login failed, please try again';
+      }
+    },
+  });
+}
   goToRegister() {
     this.router.navigate(['/register']);
   }

@@ -10,13 +10,6 @@ const { postCommentRouter } = require("./commentsRoutes");
 // Require login for all routes
 router.use(authMiddleware.authenticate);
 
-// Admin routes - get all posts including pending/rejected
-router.get(
-  "/admin/all",
-  // authMiddleware.requireRoles("admin"), // Tạm thời comment để test
-  postController.getAllForAdmin
-);
-
 // Public routes
 router.get("/", postController.index);
 router.get("/search", postController.search);
@@ -38,7 +31,21 @@ router.put(
 
   postController.update
 );
-router.delete("/:postid", authenticate, postController.destroy);
+
+// Admin routes - get all posts including pending/rejected
+router.get(
+  "/admin/all",
+  // <<< SỬA LẠI: Bỏ comment và dùng middleware kiểm tra quyền phù hợp >>>
+  authMiddleware.requireRoleOrPermission(['Admin'], ['moderate_posts']), 
+  postController.getAllForAdmin
+);
+
+// <<< SỬA LẠI: Thêm middleware kiểm tra quyền xóa bài viết >>>
+router.delete(
+  "/:postid", 
+  authMiddleware.requireRoleOrPermission(['Admin'], ['moderate_posts']), 
+  postController.destroy
+);
 // Create post
 // router.post(
 //   "/",
@@ -61,7 +68,7 @@ router.delete("/:postid", authenticate, postController.destroy);
 // Approve post (Admin only)
 router.patch(
   "/:postid/approve",
-  authMiddleware.requireRoles("Admin"),
+  authMiddleware.requireRoleOrPermission(['Admin'], ['moderate_posts']),
   validateMiddleware,
   postController.approve
 );
@@ -69,7 +76,7 @@ router.patch(
 // Reject post (Admin only)
 router.patch(
   "/:postid/reject",
-  authMiddleware.requireRoles("Admin"),
+  authMiddleware.requireRoleOrPermission(['Admin'], ['moderate_posts']),
   validateMiddleware,
   postController.reject
 );

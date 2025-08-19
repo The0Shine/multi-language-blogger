@@ -27,6 +27,7 @@ export class ProfileComponent implements OnInit {
   roles = [
     { roleid: '1', name: 'User' },
     { roleid: '2', name: 'admin' },
+    { roleid: '22', name: 'moderator'}
   ];
 
   constructor(private userService: UserService) {}

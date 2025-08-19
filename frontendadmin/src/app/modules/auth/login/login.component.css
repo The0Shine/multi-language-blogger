@@ -35,3 +35,8 @@ body {
   animation: fadeIn 1s ease-in-out forwards;
   /* KHÔNG thêm position: absolute ở đây */
 }
+.alert-purple-custom {
+  background-color: #d8b4fe;  /* Màu nền tím rất nhạt */
+  border-color: #d8b4fe;      /* Màu viền tím nhạt */
+  color: #050208;            /* Màu chữ tím đậm để dễ đọc */
+}

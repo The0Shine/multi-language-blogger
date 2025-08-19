@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { PostService } from '../modules/admin/post.service';
 import { UserService } from '../modules/admin/user.service';
 import { CategoryService } from '../modules/admin/category.service';
 import { LanguageService } from '../modules/admin/language.service';
+import { AuthService } from '../modules/auth/auth.service';
+
 @Component({
   selector: 'app-home',
   standalone: true,
@@ -17,92 +18,147 @@ export class HomeComponent implements OnInit {
   stats = [
     { section: 'post/list', icon: 'fa fa-file-alt', value: 0, label: 'Posts' },
     { section: 'user/list', icon: 'fa fa-users', value: 0, label: 'Users' },
-    {
-      section: 'category/list',
-      icon: 'fa fa-tags',
-      value: 0,
-      label: 'Categories',
-    },
-    {
-      section: 'language/list',
-      icon: 'fa fa-language',
-      value: 0,
-      label: 'Languages',
-    },
+    { section: 'category/list', icon: 'fa fa-tags', value: 0, label: 'Categories' },
+    { section: 'language/list', icon: 'fa fa-language', value: 0, label: 'Languages' },
   ];
 
-  users: any[] = [];
   recentPosts: any[] = [];
   selectedPost: any = null;
-  isPostModalOpen = false;
+  // Mảng `users` đã được xóa bỏ hoàn toàn
+  // <<< THÊM MỚI: Biến quản lý quyền, giúp code gọn hơn >>>
+  canViewPosts = false;
+  canManageUsers = false;
+  canManageCategories = false;
+  canManageLanguages = false;
 
   constructor(
     private router: Router,
     private postService: PostService,
-    private http: HttpClient,
     private userService: UserService,
     private categoryService: CategoryService,
-    private languageService: LanguageService
+    private languageService: LanguageService,
+    private authService: AuthService
   ) {}
 
-  ngOnInit() {
-    this.userService.getAllUsers().subscribe((users) => {
-      this.users = users;
+   ngOnInit() {
+    this.initializePermissions(); // Gán quyền vào các biến
+    this.buildStatsByRole();      // Xây dựng các ô thống kê dựa trên quyền
+    this.loadCounts();
+
+    // <<< THAY ĐỔI: Chỉ tải Recent Posts nếu có quyền >>>
+    if (this.canViewPosts) {
       this.loadRecentPosts();
-      this.loadCounts();
-    });
+    }
+  }
+ initializePermissions() {
+    const currentUser = this.authService.getUser();
+    const isAdmin = currentUser?.roleName === "admin";
+    const permissions: string[] = currentUser?.permissions || [];
+
+      // <<< THÊM DÒNG NÀY ĐỂ DEBUG >>>
+    console.log('DEBUG PERMISSIONS:', permissions);
+
+    this.canViewPosts = isAdmin || permissions.includes("moderate_posts") || permissions.includes("manage_posts");
+    this.canManageUsers = isAdmin || permissions.includes("manage_users");
+    this.canManageCategories = isAdmin || permissions.includes("manage_categories");
+    this.canManageLanguages = isAdmin || permissions.includes("manage_languages");
   }
 
-  // Trong file home.component.ts
+  // <<< THAY ĐỔI: Hàm này giờ chỉ dùng các biến boolean, rất sạch sẽ >>>
+  buildStatsByRole() {
+    this.stats = []; // reset mảng
+
+    // Posts
+    if (this.canViewPosts) {
+      this.stats.push({ section: 'post/list', icon: 'fa fa-file-alt', value: 0, label: 'Posts' });
+    }
+
+    // Users
+    if (this.canManageUsers) {
+      this.stats.push({ section: 'user/list', icon: 'fa fa-users', value: 0, label: 'Users' });
+    }
+
+    // Categories
+    if (this.canManageCategories) {
+      this.stats.push({ section: 'category/list', icon: 'fa fa-tags', value: 0, label: 'Categories' });
+    }
+
+    // Languages
+    if (this.canManageLanguages) {
+      this.stats.push({ section: 'language/list', icon: 'fa fa-language', value: 0, label: 'Languages' });
+    }
+  }
 
   loadRecentPosts() {
-    this.postService.getAllPosts().subscribe((res: any) => {
+    const params = { status: 1, limit: 5, sort: 'createdAt:desc' };
+    this.postService.getAllPosts(params).subscribe((res: any) => {
       const postsData = res?.data?.posts || [];
-
-      // 👉 Tổng số post = tất cả (mọi status)
-      this.stats[0].value = postsData.length;
-
-      // 👉 Chỉ lấy bài viết Published
-      const publishedPosts = postsData.filter(
-        (p: any) => Number(p.status) === 1
-      );
-
-      // 👉 Sort theo created_at mới nhất
-      const sorted = publishedPosts
-        .sort(
-          (a: any, b: any) =>
-            new Date(b.created_at || b.createdAt || '').getTime() -
-            new Date(a.created_at || a.createdAt || '').getTime()
-        )
-        .slice(0, 5);
-
-      // 👉 Map thêm username + format date
-      this.recentPosts = sorted.map((p: any) => {
-        const user = this.users.find(
-          (u) => String(u.userid ?? u.id) === String(p.userid ?? p.user_id)
-        );
-        const rawDate = p.created_at || p.createdAt || p.date;
-
-        return {
-          ...p,
-          username: user ? user.username : 'Unknown',
-          date: rawDate ? new Date(rawDate).toLocaleString('vi-VN') : 'N/A',
-        };
-      });
+      this.recentPosts = postsData.map((p: any) => ({
+        ...p,
+        username: p.author ? p.author.username : 'Unknown',
+        date: p.created_at ? new Date(p.created_at).toLocaleString('vi-VN') : 'N/A',
+      }));
     });
   }
 
-  loadCounts() {
-    this.stats[1].value = this.users.length;
 
-    this.categoryService.getCategories().subscribe((res) => {
-      const cats = res?.data?.data || [];
-      this.stats[2].value = cats.length;
+
+
+ // Trong file: home.component.ts
+
+loadCounts() {
+  // ✅ Posts
+  // <<< SỬA LẠI: Tìm mục 'Posts' một cách an toàn thay vì dùng stats[0] >>>
+  const postStat = this.stats.find(s => s.label === 'Posts');
+  if (postStat) {
+    this.postService.getAllPosts({ languageid: 1, limit: 1 }).subscribe({
+      next: (res) => { postStat.value = res?.data?.pagination?.totalItems || 0; },
+      error: () => { postStat.value = 0; }
     });
+  }
 
-    this.languageService.getLanguages().subscribe((res) => {
-      const langs = res?.data?.data || [];
-      this.stats[3].value = langs.length;
+  // ✅ Users
+  // <<< SỬA LẠI: Tìm mục 'Users' một cách an toàn thay vì dùng stats[1] >>>
+  const userStat = this.stats.find(s => s.label === 'Users');
+  if (userStat) {
+    this.userService.getAllUsers().subscribe({
+      next: (usersArray) => { userStat.value = usersArray.length; },
+      error: () => { userStat.value = 0; }
+    });
+  }
+
+  // ✅ Categories
+  // <<< SỬA LẠI: Tìm mục 'Categories' một cách an toàn thay vì dùng stats[2] >>>
+  const categoryStat = this.stats.find(s => s.label === 'Categories');
+  if (categoryStat) {
+    this.categoryService.getCategories().subscribe({
+      next: (res) => { categoryStat.value = res?.data?.data?.length || 0; },
+      error: () => { categoryStat.value = 0; }
+    });
+  }
+
+  // ✅ Languages
+  // <<< SỬA LẠI: Tìm mục 'Languages' một cách an toàn thay vì dùng stats[3] >>>
+  const languageStat = this.stats.find(s => s.label === 'Languages');
+  if (languageStat) {
+    this.languageService.getLanguages().subscribe({
+      next: (res) => { languageStat.value = res?.data?.data?.length || 0; },
+      error: () => { languageStat.value = 0; }
+    });
+  }
+}
+
+
+  // ✅ HÀM NÀY ĐÃ ĐƯỢC SỬA LẠI
+  openPostDetailFromHome(postId: number) {
+    this.postService.getPostById(postId).subscribe((res: any) => {
+      if (res && res.data && res.data.post) {
+        // Gán trực tiếp đối tượng post vào selectedPost
+        // Chúng ta không cần tìm và thêm `username` nữa vì nó đã có sẵn trong `post.author.username`
+        this.selectedPost = res.data.post;
+      } else {
+        console.error('Không tìm thấy dữ liệu bài viết trong response:', res);
+      }
     });
   }
 
@@ -124,33 +180,7 @@ export class HomeComponent implements OnInit {
     this.router.navigate(['/admin/post/list']);
   }
 
-  // Trong file home.component.ts
 
-  // Trong file home.component.ts
-
-  openPostDetailFromHome(postId: number) {
-    this.postService.getPostById(postId).subscribe((res: any) => {
-      console.log('API response for getPostById:', res);
-
-      // ✅ SỬA LẠI ĐIỀU KIỆN VÀ CÁCH LẤY DỮ LIỆU TẠI ĐÂY
-      if (res && res.data && res.data.post) {
-        // Lấy đúng object bài viết từ response.data.post
-        const post = res.data.post;
-
-        // Logic lấy username (giữ nguyên)
-        const user = this.users.find(
-          (u) => String(u.id ?? u.userid) === String(post.userid)
-        );
-        // Gán username vào đúng object post
-        post.username = user ? user.username : 'Unknown';
-
-        // Dòng quan trọng: Gán đúng object bài viết
-        this.selectedPost = post;
-      } else {
-        console.error('Không tìm thấy dữ liệu bài viết trong response:', res);
-      }
-    });
-  }
 
   closePostModal() {
     this.selectedPost = null;

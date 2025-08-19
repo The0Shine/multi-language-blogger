@@ -1,6 +1,5 @@
 <div class="gradient-bg min-h-screen flex items-center justify-center p-4">
   <div class="w-full max-w-md">
-    <!-- Logo Section -->
     <div class="text-center mb-12 fade-in">
       <div class="inline-flex items-center justify-center w-16 h-16 bg-white rounded-full shadow-lg mb-4">
         <svg class="w-8 h-8 text-indigo-600" fill="currentColor" viewBox="0 0 20 20">
@@ -10,12 +9,12 @@
       <h1 class="text-3xl font-bold text-white mb-2">Welcome Back</h1>
       <p class="text-indigo-100">Sign in to your Blog account</p>
     </div>
+   <div *ngIf="loginMessage" class="alert alert-purple-custom" role="alert">
+  {{ loginMessage }}
+</div>
 
-    <!-- Login Form -->
     <div class="glass-effect rounded-2xl p-8 shadow-xl fade-in relative z-10">
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-6">
-        <!-- Error Message -->
-
         <div *ngIf="errorMessage" class="bg-red-50 border border-red-200 text-red-700 px-4 py-2 rounded-lg">
           <div class="flex items-center justify-center">
             <svg class="h-5 w-5 text-red-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
@@ -27,7 +26,6 @@
           </div>
         </div>
 
-        <!-- Username Field -->
         <div>
           <label for="username" class="block text-sm font-medium text-gray-700 mb-2" style="margin-left: 27px;">
             Username
@@ -40,11 +38,23 @@
               </svg>
             </div>
             <input type="text" id="username" formControlName="username" placeholder="Enter your username"
-              class="flex-1 border rounded-lg px-3 py-2" />
+              class="flex-1 border rounded-lg px-3 py-2"
+              [ngClass]="{ 'border-red-500': loginForm.get('username')?.invalid && loginForm.get('username')?.touched }" />
+          </div>
+          <div *ngIf="loginForm.get('username')?.invalid && loginForm.get('username')?.touched"
+            class="text-red-500 text-sm mt-1" style="margin-left: 27px;">
+            <div *ngIf="loginForm.get('username')?.hasError('required')">
+              Please enter username.
+            </div>
+            <div *ngIf="loginForm.get('username')?.hasError('minlength')">
+              Username must be at least 3 characters.
+            </div>
+            <div *ngIf="loginForm.get('username')?.hasError('maxlength')">
+              Username must not exceed 50 characters.
+            </div>
           </div>
         </div>
 
-        <!-- Password Field -->
         <div>
           <label for="password" class="block text-sm font-medium text-gray-700 mb-2" style="margin-left: 27px;">
             Password
@@ -56,32 +66,41 @@
                   d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
               </svg>
             </div>
-
             <div class="relative w-full">
               <input [type]="showPassword ? 'text' : 'password'" id="password" formControlName="password"
-                placeholder="Enter your password" class="flex-1 border rounded-lg px-3 py-2 w-full" />
+                placeholder="Enter your password" class="flex-1 border rounded-lg px-3 py-2 w-full"
+                [ngClass]="{ 'border-red-500': loginForm.get('password')?.invalid && loginForm.get('password')?.touched }" />
               <button type="button" (click)="togglePassword()"
                 class="absolute inset-y-0 right-0 pr-3 flex items-center">
-                <!-- SVG icon -->
-              <svg *ngIf="!showPassword" class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" style="margin-bottom: 8px;"
-                stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                <path stroke-linecap="round" stroke-linejoin="round"
-                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-              </svg>
-              <svg *ngIf="showPassword" class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" style="margin-bottom: 8px;"
-                stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round"
-                  d="M13.875 18.825A10.05 10.05 0 0112 19c-4.477 0-8.268-2.943-9.542-7a9.96 9.96 0 012.36-3.993m3.143-2.507A9.953 9.953 0 0112 5c4.477 0 8.268 2.943 9.542 7a9.96 9.96 0 01-4.223 5.093M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                <path stroke-linecap="round" stroke-linejoin="round" d="M3 3l18 18" />
-              </svg>
+                <svg *ngIf="!showPassword" class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor"
+                  style="margin-bottom: 8px;" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+                <svg *ngIf="showPassword" class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor"
+                  style="margin-bottom: 8px;" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M13.875 18.825A10.05 10.05 0 0112 19c-4.477 0-8.268-2.943-9.542-7a9.96 9.96 0 012.36-3.993m3.143-2.507A9.953 9.953 0 0112 5c4.477 0 8.268 2.943 9.542 7a9.96 9.96 0 01-4.223 5.093M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3 3l18 18" />
+                </svg>
               </button>
+            </div>
+          </div>
+          <div *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
+            class="text-red-500 text-sm mt-1" style="margin-left: 27px;">
+            <div *ngIf="loginForm.get('password')?.hasError('required')">
+              Please enter password.
+            </div>
+            <div *ngIf="loginForm.get('password')?.hasError('minlength')">
+              Password must be at least 3 characters.
+            </div>
+            <div *ngIf="loginForm.get('password')?.hasError('maxlength')">
+              Password must not exceed 50 characters.
             </div>
           </div>
         </div>
 
-
-        <!-- Remember Me & Forgot Password -->
         <div class="flex items-center justify-between">
           <div class="flex items-center">
             <input id="remember-me" type="checkbox" formControlName="rememberMe" class="mr-2" />
@@ -97,9 +116,6 @@
           </div>
         </div>
 
-
-
-        <!-- Submit Button -->
         <button type="submit" class="btn-hover w-full flex justify-center py-3 px-4 rounded-lg text-white bg-indigo-600"
           [disabled]="isLoading">
           <span *ngIf="!isLoading">Sign In</span>
@@ -112,7 +128,6 @@
         </button>
       </form>
 
-      <!-- Divider -->
       <div class="mt-6">
         <div class="relative">
           <div class="absolute inset-0 flex items-center">
@@ -121,18 +136,13 @@
         </div>
       </div>
 
-      <!-- Sign Up Link -->
-      <!-- Sign Up Link -->
       <div class="mt-6 text-center">
         <a (click)="goToRegister()" class="font-medium text-indigo-600 hover:text-indigo-500 transition duration-200">
           Create your account →
         </a>
       </div>
-
-
     </div>
 
-    <!-- Footer -->
     <div class="text-center mt-8 text-indigo-100 text-sm">
       <p>&copy; 2024 Medium Blog. All rights reserved.</p>
     </div>

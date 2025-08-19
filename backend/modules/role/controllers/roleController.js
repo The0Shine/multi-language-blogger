@@ -1,4 +1,6 @@
 const roleService = require("modules/role/services/roleService");
+
+const userService = require("modules/user/services/userService"); // <<< THÊM MỚI: Import userService
 const responseUtils = require("utils/responseUtils");
 
 const roleController = {
@@ -54,10 +56,30 @@ const roleController = {
 
   update: async (req, res) => {
     try {
+      const { roleid } = req.params;
+      const { io, userSocketMap } = req; // <<< THÊM MỚI: Lấy io và map từ request
+
       const updatedRole = await roleService.update(req.params.roleid, req.body);
       if (!updatedRole) {
         return responseUtils.notFound(res, "Role not found");
       }
+      // <<< THÊM MỚI: Logic gửi sự kiện cho tất cả user bị ảnh hưởng >>>
+      console.log(`Role ${roleid} updated. Finding affected users...`);
+      const affectedUserIds = await userService.findUserIdsByRole(roleid);
+
+      console.log(`Found ${affectedUserIds.length} users with this role.`);
+
+      for (const userId of affectedUserIds) {
+        const targetSocketId = userSocketMap[userId];
+        if (targetSocketId) {
+          io.to(targetSocketId).emit("permissions_changed", {
+            message:
+              "Permissions for your user role have been changed. Please log in again.",
+          });
+          console.log(`✅ Sent 'permissions_changed' event to user ${userId}`);
+        }
+      }
+
       return responseUtils.ok(res, {
         message: "Role updated successfully",
         data: updatedRole,
@@ -107,6 +129,7 @@ const roleController = {
     }
   },
 
+  // Restore role
   restore: async (req, res) => {
     try {
       const restored = await roleService.restore(req.params.roleid);

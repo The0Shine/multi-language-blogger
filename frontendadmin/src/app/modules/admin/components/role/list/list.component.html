@@ -87,18 +87,18 @@
   <table>
     <thead>
       <tr>
-        <th style="width: 5%;">ID</th>
+
         <th style="width: 25%;">Role Name</th>
         <th style="width: 35%;">Description</th>
         <th style="width: 15%;">Status</th>
-        <th style="width: 15%; padding-right: 95px;" class="text-end">Actions</th>
+        <th style="width: 15%; padding-right: 40px;" class="text-end">Actions</th>
       </tr>
     </thead>
     <tbody>
 
       <tr *ngFor="let role of paginatedRoles()">
 
-        <td>{{ role.roleid }}</td>
+
         <td>{{ role.name }}</td>
         <td>{{ role.discription }}</td>
 
@@ -113,7 +113,10 @@
 
         <td class="text-end">
           <div class="d-inline-flex gap-2">
-            <button class="btn btn-info me-2" (click)="editRole(role)">
+            <button class="btn btn-info me-2"
+            (click)="editRole(role)"
+              *ngIf="role.name !== 'User' && role.name !== 'admin'"
+            >
               <i class="fa fa-edit"></i> Edit
             </button>
             <button class="btn btn-danger" (click)="openDeleteModal(role)">

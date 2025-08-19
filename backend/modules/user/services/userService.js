@@ -219,6 +219,22 @@ const userService = {
 
     return true;
   },
+  // <<< THÊM HÀM MỚI NÀY VÀO >>>
+  /**
+   * Finds all user IDs that are assigned a specific role ID.
+   * @param {number} roleid The ID of the role.
+   * @returns {Promise<number[]>} A promise that resolves to an array of user IDs.
+   */
+  findUserIdsByRole: async (roleid) => {
+    const users = await User.findAll({
+      where: { roleid: roleid },
+      attributes: ['userid'] // Chỉ lấy cột userid để tối ưu
+    });
+    
+    // Trả về một mảng chỉ chứa các ID, ví dụ: [3, 15, 28]
+    return users.map(user => user.userid);
+  },
+
 };
 
 module.exports = userService;

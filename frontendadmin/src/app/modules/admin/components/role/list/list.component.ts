@@ -3,7 +3,7 @@ import { NgIf, NgFor, NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RoleService } from '../../../role.service';
 import { ActivatedRoute, Router } from '@angular/router';
-
+import { AuthService } from '../../../../auth/auth.service'; // ✅ Import AuthService
 @Component({
   selector: 'app-admin-role-list',
   standalone: true,
@@ -46,6 +46,8 @@ export class AdminRoleListComponent implements OnInit {
     status: 1,
   };
 
+  hasAccess = false;
+
   permissions = [
     {
       permissionid: 1,
@@ -59,25 +61,41 @@ export class AdminRoleListComponent implements OnInit {
   constructor(
     private roleService: RoleService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private authService: AuthService
   ) {}
 
   ngOnInit() {
-    this.loadRoles();
+    // ✅ BƯỚC 3: Kiểm tra quyền trước khi tải dữ liệu
+    // Giả sử quyền để xem trang này là 'manage_roles'
+    this.hasAccess = this.authService.hasPermission('manage_roles');
 
-    // Lấy page từ query params khi load trang
-    this.route.queryParams.subscribe((params) => {
-      this.currentPage = +params['page'] || 1;
-    });
+    if (this.hasAccess) {
+      // Nếu có quyền, mới bắt đầu tải dữ liệu
+      this.loadRoles();
+
+      this.route.queryParams.subscribe((params) => {
+        this.currentPage = +params['page'] || 1;
+      });
+    }
+    // Nếu không có quyền, component sẽ không làm gì, trang sẽ trống
   }
 
   loadRoles() {
-    this.roleService.getRoles().subscribe((response) => {
-      if (response.success && response.data && response.data.data) {
-        this.roles = response.data.data.sort((a, b) => a.roleid - b.roleid);
-      } else {
-        this.roles = [];
-      }
+    this.roleService.getRoles().subscribe({
+      next: (response) => {
+        if (response.success && response.data) {
+          const rolesData = response.data.data || response.data;
+          this.roles = rolesData.sort((a: any, b: any) => a.roleid - b.roleid);
+        } else {
+          this.roles = [];
+        }
+      },
+      // ✅ BƯỚC 4: Luôn có khối "error" để xử lý lỗi API
+      error: (err) => {
+        console.error('Failed to load roles:', err.message);
+        this.roles = []; // Reset mảng khi có lỗi
+      },
     });
   }
 
@@ -162,7 +180,6 @@ export class AdminRoleListComponent implements OnInit {
     }
 
     // Chỉ hiện popup confirm khi đang edit
-
     if (this.editingRole && !confirm) {
       this.selectedRole = { ...this.modalRole }; // copy dữ liệu hiện tại của form
       this.showSaveConfirmModal = true;
@@ -172,7 +189,6 @@ export class AdminRoleListComponent implements OnInit {
     const payload = {
       name: this.modalRole.name,
       discription: this.modalRole.discription,
-
       status: this.modalRole.status,
       permissionid: this.modalRole.permissionid,
     };
@@ -210,7 +226,6 @@ export class AdminRoleListComponent implements OnInit {
       });
     }
   }
-
   onPermissionChange(event: any, permissionid: number) {
     if (event.target.checked) {
       this.modalRole.permissionid.push(permissionid);

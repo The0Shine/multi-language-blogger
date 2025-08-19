@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { CategoryService } from '../../../category.service'; // chỉnh lại nếu path khác
 import { ActivatedRoute, Router } from '@angular/router';
 declare var bootstrap: any;
-
+import { AuthService } from '../../../../auth/auth.service'; // ✅ Import AuthService
 @Component({
   selector: 'app-admin-category-list',
   standalone: true,
@@ -33,8 +33,10 @@ export class AdminCategorieListComponent implements OnInit {
     category_name: '',
   };
 
-  isSuccess: boolean | null = null;
-  showEditConfirmModal = false;
+
+isSuccess: boolean | null = null;
+showEditConfirmModal = false;
+ hasAccess = false; // ✅ Thêm thuộc tính này
 
   categories: any[] = [];
   modalCategory = {
@@ -43,26 +45,40 @@ export class AdminCategorieListComponent implements OnInit {
     status: 1,
   };
 
-  constructor(
-    private categoryService: CategoryService,
-    private router: Router,
-    private route: ActivatedRoute
+
+  constructor(private categoryService: CategoryService,
+      private router: Router,
+    private route: ActivatedRoute,
+           private authService: AuthService
   ) {}
 
-  ngOnInit() {
-    this.loadCategories();
+ngOnInit() {
+    // ✅ Kiểm tra quyền trước khi tải dữ liệu
+    // Giả sử quyền để xem trang này là 'manage_categories'
+    this.hasAccess = this.authService.hasPermission('manage_categories');
 
-    // Lấy page từ query params khi load trang
-    this.route.queryParams.subscribe((params) => {
-      this.currentPage = +params['page'] || 1;
-    });
+
+    if (this.hasAccess) {
+      // Nếu có quyền, mới bắt đầu tải dữ liệu
+      this.loadCategories();
+
+      this.route.queryParams.subscribe((params) => {
+        this.currentPage = +params['page'] || 1;
+      });
+    }
   }
 
-  loadCategories() {
-    this.categoryService.getCategories().subscribe((res) => {
-      this.categories = (res.data?.data ?? []).sort(
-        (a, b) => a.categoryid - b.categoryid
-      );
+ loadCategories() {
+    this.categoryService.getCategories().subscribe({
+      next: (res) => {
+        const categoriesData = res.data?.data ?? res.data ?? [];
+        this.categories = categoriesData.sort((a: any, b: any) => a.categoryid - b.categoryid);
+      },
+      // ✅ Thêm khối "error" để xử lý
+      error: (err) => {
+        console.error("Failed to load categories:", err.message);
+        this.categories = [];
+      }
     });
   }
 

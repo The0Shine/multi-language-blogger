@@ -170,82 +170,77 @@ const postController = {
     }
   },
 
-  destroy: async (req, res) => {
-    try {
-      const { postid } = req.params;
-      const userid = req.user.userid;
+destroy: async (req, res) => {
+  try {
+    console.log("req.user = ", req.user);
+    const { postid } = req.params;
+    const userid = req.user.userid;
 
-      // Check authorization first
-      const existingPost = await Post.findByPk(postid);
-      if (!existingPost) {
-        return responseUtils.notFound(res, "Post not found");
-      }
+    // Check authorization first
+    const existingPost = await Post.findByPk(postid);
+    if (!existingPost) {
+      return responseUtils.notFound(res, "Post not found");
+    }
 
-      if (existingPost.userid !== userid && req.user.role.name !== "admin") {
-        return responseUtils.forbidden(
-          res,
-          "You can only delete your own posts"
-        );
-      }
+    // Nếu không phải chủ post và cũng không phải admin thì cấm
+    if (existingPost.userid !== userid && req.user.roleid !== 2) {
+      return responseUtils.forbidden(
+        res,
+        "You can only delete your own posts"
+      );
+    }
 
+    // Nếu là admin thì bỏ check userid trong service
+    if (req.user.roleid === 2) {
+      await postService.deletePost(postid); 
+    } else {
       await postService.deletePost(postid, userid);
-
-      return responseUtils.ok(res, null, "Post deleted successfully");
-    } catch (error) {
-      console.error("Delete post error:", error);
-      if (error.message === "Post not found") {
-        return responseUtils.notFound(res, error.message);
-      }
-      if (error.message === "Unauthorized to delete this post") {
-        return responseUtils.forbidden(res, error.message);
-      }
-      return responseUtils.error(res, "Failed to delete post", error.message);
     }
-  },
 
-  approve: async (req, res) => {
-    try {
-      const { postid } = req.params;
-      const updatedPost = await postService.approvePost(postid);
-
-      return responseUtils.ok(
-        res,
-        { post: updatedPost },
-        "Post approved successfully"
-      );
-    } catch (error) {
-      console.error("Approve post error:", error);
-      if (error.message === "Post not found") {
-        return responseUtils.notFound(res, error.message);
-      }
-      if (error.message === "Post is already approved") {
-        return responseUtils.badRequest(res, error.message);
-      }
-      return responseUtils.error(res, "Failed to approve post", error.message);
+    return responseUtils.ok(res, null, "Post deleted successfully");
+  } catch (error) {
+    console.error("Delete post error:", error);
+    if (error.message === "Post not found") {
+      return responseUtils.notFound(res, error.message);
     }
-  },
-
-  reject: async (req, res) => {
-    try {
-      const { postid } = req.params;
-      const updatedPost = await postService.rejectPost(postid);
-
-      return responseUtils.ok(
-        res,
-        { post: updatedPost },
-        "Post rejected successfully"
-      );
-    } catch (error) {
-      console.error("Reject post error:", error);
-      if (error.message === "Post not found") {
-        return responseUtils.notFound(res, error.message);
-      }
-      if (error.message === "Post is already rejected") {
-        return responseUtils.badRequest(res, error.message);
-      }
-      return responseUtils.error(res, "Failed to reject post", error.message);
+    if (error.message === "Unauthorized to delete this post") {
+      return responseUtils.forbidden(res, error.message);
     }
-  },
+    return responseUtils.error(res, "Failed to delete post", error.message);
+  }
+},
+
+approve: async (req, res) => {
+  try {
+    const { postid } = req.params;
+    const updatedPost = await postService.approvePost(postid);
+    return responseUtils.ok(res, { post: updatedPost }, "Post approved successfully");
+  } catch (error) {
+    if (error.message.startsWith("Only pending posts")) {
+      return responseUtils.badRequest(res, error.message); // 400 rõ ràng
+    }
+    if (error.message === "Post not found") {
+      return responseUtils.notFound(res, error.message);
+    }
+    return responseUtils.error(res, "Failed to approve post", error.message);
+  }
+},
+
+reject: async (req, res) => {
+  try {
+    const { postid } = req.params;
+    const updatedPost = await postService.rejectPost(postid);
+    return responseUtils.ok(res, { post: updatedPost }, "Post rejected successfully");
+  } catch (error) {
+    if (error.message.startsWith("Only pending posts")) {
+      return responseUtils.badRequest(res, error.message);
+    }
+    if (error.message === "Post not found") {
+      return responseUtils.notFound(res, error.message);
+    }
+    return responseUtils.error(res, "Failed to reject post", error.message);
+  }
+},
 
   getMyPosts: async (req, res) => {
     try {
