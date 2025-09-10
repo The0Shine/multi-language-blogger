@@ -1,5 +1,5 @@
 import { bootstrapApplication } from '@angular/platform-browser';
-import { provideRouter } from '@angular/router';
+import { provideRouter, withHashLocation } from '@angular/router';
 import { importProvidersFrom } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
@@ -12,7 +12,7 @@ import { authInterceptor } from './app/interceptors/auth.interceptor';
 
 bootstrapApplication(App, {
   providers: [
-    provideRouter(routes),
+    provideRouter(routes, withHashLocation()),
     importProvidersFrom(FormsModule),
     provideHttpClient(withInterceptors([authInterceptor])), // ✅ Đăng ký interceptor
     provideAnimations(), // Required for ngx-toastr
