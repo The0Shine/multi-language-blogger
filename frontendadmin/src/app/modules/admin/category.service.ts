@@ -4,7 +4,8 @@ import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class CategoryService {
-  private apiUrl = 'https://multi-language-blogger.onrender.com/api/categories';
+  private apiUrl =
+    'https://nodejs-core-backend-hvlfihn4a-the-shines-projects.vercel.app/api/categories';
 
   constructor(private http: HttpClient) {}
 

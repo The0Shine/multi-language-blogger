@@ -30,7 +30,8 @@ export interface CloudinarySignature {
 })
 export class UploadService {
   private http = inject(HttpClient);
-  private baseUrl = 'https://multi-language-blogger.onrender.com/api/upload';
+  private baseUrl =
+    'https://nodejs-core-backend-1ibmfsh01-the-shines-projects.vercel.app/api/upload';
 
   // Upload image file
   uploadImage(file: File): Observable<UploadResponse> {

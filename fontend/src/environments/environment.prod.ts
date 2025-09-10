@@ -1,4 +1,5 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://multi-language-blogger.onrender.com/api',
+  apiUrl:
+    'https://nodejs-core-backend-1ibmfsh01-the-shines-projects.vercel.app/api',
 };

@@ -34,8 +34,10 @@ app.use(express.urlencoded({ extended: true }));
 // Middleware CORS cho Angular
 app.use(
   cors({
-    origin: "*", // Trong development cho phép tất cả
-    credentials: false, // Cho phép gửi cookie/token
+    origin: "*", // Cho phép tất cả domains
+    credentials: true, // Cho phép gửi cookie/token
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
   })
 );
 

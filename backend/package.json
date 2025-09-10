@@ -4,6 +4,8 @@
   "scripts": {
     "dev": "nodemon app.js",
     "start": "node app.js",
+    "seed": "node scripts/seed-data.js",
+    "seed:posts": "node scripts/seed-posts.js",
     "build": "echo 'Build completed'"
   },
   "dependencies": {

@@ -31,7 +31,7 @@ interface LanguageDetailResponse {
 @Injectable({ providedIn: 'root' })
 export class LanguageService {
   private apiUrl =
-    'https://multi-language-blogger.onrender.com/api/languages/admin/languages';
+    'https://nodejs-core-backend-hvlfihn4a-the-shines-projects.vercel.app/api/languages/admin/languages';
 
   constructor(private http: HttpClient) {}
 

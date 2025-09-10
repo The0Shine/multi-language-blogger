@@ -6,7 +6,8 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class PostService {
-  private apiUrl = 'https://multi-language-blogger.onrender.com/api/posts';
+  private apiUrl =
+    'https://nodejs-core-backend-hvlfihn4a-the-shines-projects.vercel.app/api/posts';
 
   constructor(private http: HttpClient) {}
 
@@ -49,7 +50,10 @@ export class PostService {
     const formData = new FormData();
     formData.append('file', file);
     // SỬA LẠI: URL upload thường là một endpoint riêng, không nằm trong /posts
-    return this.http.post('http://localhost:4000/api/upload', formData);
+    return this.http.post(
+      'https://nodejs-core-backend-hvlfihn4a-the-shines-projects.vercel.app/api/upload',
+      formData
+    );
   }
 
   // XÓA BỎ: Hàm addPost bị thừa và sai URL, dùng hàm create() ở trên
