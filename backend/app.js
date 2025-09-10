@@ -34,12 +34,36 @@ app.use(express.urlencoded({ extended: true }));
 // Middleware CORS cho Angular
 app.use(
   cors({
-    origin: "*", // Cho phép tất cả domains
-    credentials: true, // Cho phép gửi cookie/token
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+    origin: function (origin, callback) {
+      // Cho phép tất cả origins
+      callback(null, true);
+    },
+    credentials: false, // Tắt credentials để tránh conflict
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+      "X-Requested-With",
+      "Accept",
+      "Origin",
+    ],
+    optionsSuccessStatus: 200, // Cho IE11
   })
 );
+
+// Handle preflight requests
+app.options("*", (req, res) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, DELETE, OPTIONS, PATCH"
+  );
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Content-Type, Authorization, X-Requested-With, Accept, Origin"
+  );
+  res.sendStatus(200);
+});
 
 // Test database connection
 sequelize
