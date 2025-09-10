@@ -5,8 +5,7 @@ import { map } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
-  private apiUrl =
-    'https://nodejs-core-backend-hvlfihn4a-the-shines-projects.vercel.app/api';
+  private apiUrl = 'https://multi-language-blogger.onrender.com/api';
 
   constructor(private http: HttpClient) {}
 
@@ -72,7 +71,7 @@ export class UserService {
   // Admin: lấy danh sách role
   getAllRoles(): Observable<any[]> {
     return this.http.get<any[]>(
-      `https://nodejs-core-backend-hvlfihn4a-the-shines-projects.vercel.app/api/role/admin/roles`
+      `https://multi-language-blogger.onrender.com/api/role/admin/roles`
     );
   }
   getCurrentUser(): Observable<any> {

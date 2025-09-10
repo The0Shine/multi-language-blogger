@@ -6,8 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class PostService {
-  private apiUrl =
-    'https://nodejs-core-backend-hvlfihn4a-the-shines-projects.vercel.app/api/posts';
+  private apiUrl = 'https://multi-language-blogger.onrender.com/api/posts';
 
   constructor(private http: HttpClient) {}
 
@@ -51,7 +50,7 @@ export class PostService {
     formData.append('file', file);
     // SỬA LẠI: URL upload thường là một endpoint riêng, không nằm trong /posts
     return this.http.post(
-      'https://nodejs-core-backend-hvlfihn4a-the-shines-projects.vercel.app/api/upload',
+      'https://multi-language-blogger.onrender.com/api/upload',
       formData
     );
   }

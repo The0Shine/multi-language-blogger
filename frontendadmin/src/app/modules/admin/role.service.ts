@@ -29,7 +29,7 @@ interface RoleApiResponse {
 
 @Injectable({ providedIn: 'root' })
 export class RoleService {
-  private baseUrl = 'http://localhost:4000/api/roles';
+  private baseUrl = 'https://multi-language-blogger.onrender.com/api/roles';
   private adminUrl = `${this.baseUrl}/admin/roles`;
 
   constructor(private http: HttpClient) {}
