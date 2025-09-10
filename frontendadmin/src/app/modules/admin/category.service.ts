@@ -4,12 +4,18 @@ import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class CategoryService {
-  private apiUrl = 'http://localhost:4000/api/categories';
+  private apiUrl = 'https://multi-language-blogger.onrender.com/api/categories';
 
   constructor(private http: HttpClient) {}
 
-  getCategories(): Observable<{ success: boolean; data: { message: string; data: any[] } }> {
-    return this.http.get<{ success: boolean; data: { message: string; data: any[] } }>(this.apiUrl);
+  getCategories(): Observable<{
+    success: boolean;
+    data: { message: string; data: any[] };
+  }> {
+    return this.http.get<{
+      success: boolean;
+      data: { message: string; data: any[] };
+    }>(this.apiUrl);
   }
 
   createCategory(category: any): Observable<any> {

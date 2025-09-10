@@ -13,7 +13,6 @@ export interface Language {
 }
 
 interface LanguageListResponse {
-
   success: boolean;
   data: {
     message?: string;
@@ -31,7 +30,8 @@ interface LanguageDetailResponse {
 
 @Injectable({ providedIn: 'root' })
 export class LanguageService {
-  private apiUrl = 'http://localhost:4000/api/languages/admin/languages';
+  private apiUrl =
+    'https://multi-language-blogger.onrender.com/api/languages/admin/languages';
 
   constructor(private http: HttpClient) {}
 
@@ -42,26 +42,49 @@ export class LanguageService {
   }
 
   getLanguageById(languageid: number): Observable<LanguageDetailResponse> {
-    return this.http.get<LanguageDetailResponse>(`${this.apiUrl}/${languageid}`);
+    return this.http.get<LanguageDetailResponse>(
+      `${this.apiUrl}/${languageid}`
+    );
   }
 
-  createLanguage(language: Partial<Language>): Observable<LanguageDetailResponse> {
+  createLanguage(
+    language: Partial<Language>
+  ): Observable<LanguageDetailResponse> {
     return this.http.post<LanguageDetailResponse>(this.apiUrl, language);
   }
 
-  updateLanguage(languageid: number, language: Partial<Language>): Observable<LanguageDetailResponse> {
-    return this.http.put<LanguageDetailResponse>(`${this.apiUrl}/${languageid}`, language);
+  updateLanguage(
+    languageid: number,
+    language: Partial<Language>
+  ): Observable<LanguageDetailResponse> {
+    return this.http.put<LanguageDetailResponse>(
+      `${this.apiUrl}/${languageid}`,
+      language
+    );
   }
 
-  deleteLanguage(languageid: number): Observable<{ success: boolean; message: string }> {
-    return this.http.delete<{ success: boolean; message: string }>(`${this.apiUrl}/${languageid}`);
+  deleteLanguage(
+    languageid: number
+  ): Observable<{ success: boolean; message: string }> {
+    return this.http.delete<{ success: boolean; message: string }>(
+      `${this.apiUrl}/${languageid}`
+    );
   }
 
-  permanentDeleteLanguage(languageid: number): Observable<{ success: boolean; message: string }> {
-    return this.http.delete<{ success: boolean; message: string }>(`${this.apiUrl}/${languageid}/hard`);
+  permanentDeleteLanguage(
+    languageid: number
+  ): Observable<{ success: boolean; message: string }> {
+    return this.http.delete<{ success: boolean; message: string }>(
+      `${this.apiUrl}/${languageid}/hard`
+    );
   }
 
-  restoreLanguage(languageid: number): Observable<{ success: boolean; message: string }> {
-    return this.http.post<{ success: boolean; message: string }>(`${this.apiUrl}/${languageid}/restore`, {});
+  restoreLanguage(
+    languageid: number
+  ): Observable<{ success: boolean; message: string }> {
+    return this.http.post<{ success: boolean; message: string }>(
+      `${this.apiUrl}/${languageid}/restore`,
+      {}
+    );
   }
 }

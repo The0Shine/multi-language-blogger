@@ -65,7 +65,7 @@ export class HttpService {
     }
 
     return this.http
-      .get<ApiResponse<T>>(`${this.baseUrl}api${endpoint}`, {
+      .get<ApiResponse<T>>(`${this.baseUrl}${endpoint}`, {
         headers: this.getHeaders(),
         params: httpParams,
       })
@@ -84,7 +84,7 @@ export class HttpService {
 
   post<T>(endpoint: string, data: any): Observable<ApiResponse<T>> {
     return this.http
-      .post<ApiResponse<T>>(`${this.baseUrl}api${endpoint}`, data, {
+      .post<ApiResponse<T>>(`${this.baseUrl}${endpoint}`, data, {
         headers: this.getHeaders(),
       })
       .pipe(
@@ -102,7 +102,7 @@ export class HttpService {
 
   put<T>(endpoint: string, data: any): Observable<ApiResponse<T>> {
     return this.http
-      .put<ApiResponse<T>>(`${this.baseUrl}api${endpoint}`, data, {
+      .put<ApiResponse<T>>(`${this.baseUrl}${endpoint}`, data, {
         headers: this.getHeaders(),
       })
       .pipe(
@@ -120,7 +120,7 @@ export class HttpService {
 
   delete<T>(endpoint: string): Observable<ApiResponse<T>> {
     return this.http
-      .delete<ApiResponse<T>>(`${this.baseUrl}api${endpoint}`, {
+      .delete<ApiResponse<T>>(`${this.baseUrl}${endpoint}`, {
         headers: this.getHeaders(),
       })
       .pipe(
